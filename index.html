@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       for (const a of old.attributes) s.setAttribute(a.name, a.value);
       s.textContent = old.textContent;
       // text/babel scripts with a src: read and inline. transformScriptTags
-      // does XHR against the src, but blob:null/ from a file:// origin is
+      // does XHR against the src, but blob:null/ from file:// origin is
       // silently dropped. Inlining makes it a plain inline babel script,
       // which transformScriptTags handles unconditionally.
       if ((s.type === 'text/babel' || s.type === 'text/jsx') && s.src) {
