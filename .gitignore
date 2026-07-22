@@ -1,0 +1,10 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Bundled / generated output (не версионируем — нечитаемые диффы)
+github-pages-export/
+*.bundle.html
