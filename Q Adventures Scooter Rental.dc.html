@@ -182,6 +182,10 @@
     
   </div>
 
+  <sc-if value="{{ fleetLoading }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:28px;text-align:center;color:#8A8175;font-weight:600;font-size:14.5px">Loading the fleet…</div>
+  </sc-if>
+
   <div style="{{ fleetGridStyle }}">
     <sc-for list="{{ filteredFleet }}" as="bike" hint-placeholder-count="6">
       <div onClick="{{ bike.onBook }}" style="background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(27,23,18,.04);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);box-shadow:0 16px 34px rgba(27,23,18,.12)">
@@ -446,8 +450,63 @@ const BIKE_IMG = {
   vstrom250: "images/bike-vstrom250.png",
   rouser160: "images/bike-rouser160.png"
 };
+
+// --- Live catalog from the Odoo endpoint (Odoo_QAdventure/docs/qa_catalog_spec.md §3) ---
+// The site reads its fleet from Odoo instead of a hardcoded array. A wrong/missing key
+// or an unreachable Odoo makes the page fall back to FALLBACK_MODELS below, so it never
+// renders empty.
+//
+// The key is deliberately committed and NOT a secret: a static page has no server to hide
+// it behind, and the endpoint only serves already-public catalog data (prices, specs,
+// photos) — a leaked key exposes nothing the site doesn't already show. It is a soft
+// speed-bump against scrapers, paired with the endpoint's CORS origin check. Keep the
+// value in sync with Odoo's `qa_catalog.api_key` config param (do not regenerate it).
+// URL is localhost for now — repoint to the public Odoo host at deploy time.
+const CATALOG_API_URL = "http://localhost:8069/qa/catalog";
+const CATALOG_API_KEY = "uo_HMSZHGdkrKDQeSoYdvdpeNU-loThwYSiCfqopgh0";
+
+// Site tabs exist only for these slugs; the human label is derived here on the frontend
+// (the endpoint no longer sends a per-model catLabel — see spec §2.2).
+const CAT_LABELS = { scooter: 'Scooter', adventure: 'Adventure' };
+
+// Last-known catalog in the endpoint's response shape, used only when Odoo is unreachable.
+// Photos fall back to the bundled images/. Kept deliberately terse — it is a safety net,
+// not the source of truth (that is Odoo).
+const FALLBACK_MODELS = [
+  { id:'pcx160', name:'Honda PCX160', cc:'160cc', cat:'scooter', price:700, weekly:4410, monthly:16800, tag:'Best-selling premium scooter', badge:'Best Seller', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.pcx160], units:[],
+    overview:'The Honda PCX160 is a comfort-focused premium scooter that balances a refined ride with strong performance — well suited to both urban commutes and longer suburban trips.',
+    pros:['Comfort-focused ride — wide seat, spacious legroom, and superior suspension for longer trips.','Strong engine performance — the 157cc engine delivers smooth acceleration and excellent power for urban and suburban riding.','Premium design — stylish, modern body with LED lights and an upscale aesthetic.','Excellent fuel efficiency — great mileage despite the higher displacement.','Large under-seat storage — fits a helmet and additional items with ease.','Enhanced safety features — ABS and traction improvements (depending on model/year).'],
+    cons:['Wider body — less agile in heavy traffic than slimmer scooters like the Click 125i or Mio.','Heavier build — requires more effort to maneuver in tight spaces or when parking.','Higher price point — more costly than other 150cc-class scooters.'] },
+  { id:'aerox155', name:'Yamaha Aerox 155', cc:'155cc', cat:'scooter', price:700, weekly:4410, monthly:16800, tag:'Sporty and quick around town', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.aerox155], units:[] },
+  { id:'burgman', name:'Suzuki Burgman 125 EX', cc:'125cc', cat:'scooter', price:650, weekly:4095, monthly:15600, tag:'Comfortable maxi-style ride', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.burgman], units:[] },
+  { id:'gravis125', name:'Yamaha Gravis 125', cc:'125cc', cat:'scooter', price:600, weekly:3780, monthly:14400, tag:'Easy, economical everyday runabout', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.gravis125], units:[] },
+  { id:'click125i', name:'Honda Click 125i', cc:'125cc', cat:'scooter', price:600, weekly:3780, monthly:14400, tag:'The reliable all-rounder', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.click125i], units:[],
+    overview:'The Honda Click 125i is an excellent choice for city riding. Its slim, agile design makes it perfect for navigating heavy traffic and tight urban spaces.',
+    pros:['Lightweight & easy to handle — ideal for new riders or busy city environments.','Punchy performance — despite being a 125cc, it feels closer to a 150cc in acceleration.','Narrow body — lets you slip smoothly through congested roads and tight gaps.'],
+    cons:['Single rear shock — may feel uncomfortable on the back after long rides (40+ minutes).','Narrow seat — less comfortable for wider builds or long-distance travel.','Limited under-seat storage — enough for essentials, but not much more.'] },
+  { id:'pcx160abs', name:'Honda PCX160 ABS', cc:'160cc', cat:'scooter', price:850, weekly:5355, monthly:20400, tag:'PCX comfort with ABS safety', badge:'', specs:['Automatic','ABS','Top box'], photos:[BIKE_IMG.pcx160abs], units:[] },
+  { id:'adv160', name:'Honda ADV160 ABS', cc:'160cc', cat:'adventure', price:900, weekly:5670, monthly:21600, tag:'Adventure-styled and rugged', badge:'', specs:['Automatic','ABS','Big storage'], photos:[BIKE_IMG.adv160], units:[] },
+  { id:'adv350', name:'Honda ADV350', cc:'350cc', cat:'adventure', price:1900, weekly:11970, monthly:45600, tag:'The flagship — highway ready', badge:'Top spec', specs:['Automatic','ABS','Traction control'], photos:[BIKE_IMG.adv350], units:[] },
+  { id:'vstrom250', name:'Suzuki V-Strom 250', cc:'250cc', cat:'adventure', price:1300, weekly:8190, monthly:31200, tag:'Go anywhere, ride all day', badge:'Featured', specs:['Manual','Touring','Long range'], photos:[BIKE_IMG.vstrom250], units:[] },
+  { id:'rouser160', name:'Kawasaki Rouser 160', cc:'160cc', cat:'adventure', price:800, weekly:5040, monthly:19200, tag:'Punchy naked street bike', badge:'', specs:['Manual','Nimble','Fuel-efficient'], photos:[BIKE_IMG.rouser160], units:[] },
+];
+
+// Map one endpoint model (spec §3.1) to the shape the views consume: derive the pill
+// label from the slug and nest the description fields the modal reads.
+function normalizeModel(m) {
+  const hasDesc = !!(m.overview || (m.pros && m.pros.length) || (m.cons && m.cons.length));
+  return {
+    id: m.id, name: m.name, cc: m.cc, cat: m.cat,
+    catLabel: CAT_LABELS[m.cat] || (m.cat ? m.cat.charAt(0).toUpperCase() + m.cat.slice(1) : ''),
+    price: m.price, weekly: m.weekly, monthly: m.monthly,
+    tag: m.tag || '', badge: m.badge || '', specs: m.specs || [],
+    photos: m.photos || [], units: m.units || [],
+    desc: hasDesc ? { overview: m.overview || '', pros: m.pros || [], cons: m.cons || [] } : null,
+  };
+}
+
 class Component extends DCLogic {
-  state = { filter: 'all', selected: null, pickup: '', dropoff: '', delivery: false, step: 'form', sent: false, availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '', modalCalOpen: false, modalCursor: '', currency: 'PHP', isMobile: (typeof window !== 'undefined' && window.innerWidth <= 720), mobileMenuOpen: false };
+  state = { models: null, catalogError: false, filter: 'all', selected: null, pickup: '', dropoff: '', delivery: false, step: 'form', sent: false, availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '', modalCalOpen: false, modalCursor: '', currency: 'PHP', isMobile: (typeof window !== 'undefined' && window.innerWidth <= 720), mobileMenuOpen: false };
 
   componentDidMount() {
     this._onResize = () => {
@@ -455,6 +514,26 @@ class Component extends DCLogic {
       if (m !== this.state.isMobile) this.setState({ isMobile: m, mobileMenuOpen: m ? this.state.mobileMenuOpen : false });
     };
     window.addEventListener('resize', this._onResize);
+    this.loadCatalog();
+  }
+
+  loadCatalog() {
+    fetch(CATALOG_API_URL + '?key=' + encodeURIComponent(CATALOG_API_KEY))
+      .then(r => r.json())
+      .then(data => {
+        const models = (data && Array.isArray(data.models)) ? data.models : [];
+        if (models.length) {
+          this.setState({ models, catalogError: false });
+        } else {
+          // Reachable but empty (e.g. wrong key) — keep the page populated.
+          console.warn('[catalog] endpoint returned no models; using fallback');
+          this.setState({ models: FALLBACK_MODELS, catalogError: true });
+        }
+      })
+      .catch(err => {
+        console.warn('[catalog] endpoint unreachable; using fallback', err);
+        this.setState({ models: FALLBACK_MODELS, catalogError: true });
+      });
   }
 
   componentWillUnmount() {
@@ -529,61 +608,26 @@ class Component extends DCLogic {
     return { title: cur.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), cells };
   }
 
-    fleet() {
-    return [
-      { id:'pcx160',    name:'Honda PCX160',        cc:'160cc', cat:'scooter',   catLabel:'Scooter',   price:700,  weekly:4410,  monthly:16800, tag:'Best-selling premium scooter', specs:['Automatic','Top box','2 helmets'], badge:'Best Seller', booked:[[1,4]],
-        desc:{
-          overview:'The Honda PCX160 is a comfort-focused premium scooter that balances a refined ride with strong performance — well suited to both urban commutes and longer suburban trips.',
-          pros:[
-            'Comfort-focused ride — wide seat, spacious legroom, and superior suspension for longer trips.',
-            'Strong engine performance — the 157cc engine delivers smooth acceleration and excellent power for urban and suburban riding.',
-            'Premium design — stylish, modern body with LED lights and an upscale aesthetic.',
-            'Excellent fuel efficiency — great mileage despite the higher displacement.',
-            'Large under-seat storage — fits a helmet and additional items with ease.',
-            'Enhanced safety features — ABS and traction improvements (depending on model/year).',
-          ],
-          cons:[
-            'Wider body — less agile in heavy traffic than slimmer scooters like the Click 125i or Mio.',
-            'Heavier build — requires more effort to maneuver in tight spaces or when parking.',
-            'Higher price point — more costly than other 150cc-class scooters.',
-          ],
-        } },
-      { id:'aerox155',  name:'Yamaha Aerox 155',    cc:'155cc', cat:'scooter',   catLabel:'Scooter',   price:700,  weekly:4410,  monthly:16800, tag:'Sporty and quick around town', specs:['Automatic','Top box','2 helmets'], badge:'', booked:[[0,2]] },
-      { id:'burgman',   name:'Suzuki Burgman 125 EX',cc:'125cc',cat:'scooter',   catLabel:'Scooter',   price:650,  weekly:4095,  monthly:15600, tag:'Comfortable maxi-style ride', specs:['Automatic','Top box','2 helmets'], badge:'', booked:[] },
-      { id:'gravis125', name:'Yamaha Gravis 125',   cc:'125cc', cat:'scooter',   catLabel:'Scooter',   price:600,  weekly:3780,  monthly:14400, tag:'Easy, economical everyday runabout', specs:['Automatic','Top box','2 helmets'], badge:'', booked:[[9,14]] },
-      { id:'click125i', name:'Honda Click 125i',    cc:'125cc', cat:'scooter',   catLabel:'Scooter',   price:600,  weekly:3780,  monthly:14400, tag:'The reliable all-rounder', specs:['Automatic','Top box','2 helmets'], badge:'', booked:[[3,3]],
-        desc:{
-          overview:'The Honda Click 125i is an excellent choice for city riding. Its slim, agile design makes it perfect for navigating heavy traffic and tight urban spaces.',
-          pros:[
-            'Lightweight & easy to handle — ideal for new riders or busy city environments.',
-            'Punchy performance — despite being a 125cc, it feels closer to a 150cc in acceleration.',
-            'Narrow body — lets you slip smoothly through congested roads and tight gaps.',
-          ],
-          cons:[
-            'Single rear shock — may feel uncomfortable on the back after long rides (40+ minutes).',
-            'Narrow seat — less comfortable for wider builds or long-distance travel.',
-            'Limited under-seat storage — enough for essentials, but not much more.',
-          ],
-        } },
-      { id:'pcx160abs', name:'Honda PCX160 ABS',    cc:'160cc', cat:'scooter',   catLabel:'Scooter',   price:850,  weekly:5355,  monthly:20400, tag:'PCX comfort with ABS safety', specs:['Automatic','ABS','Top box'], badge:'', booked:[] },
-      { id:'adv160',    name:'Honda ADV160 ABS',    cc:'160cc', cat:'adventure', catLabel:'ADV Scooter',price:900, weekly:5670,  monthly:21600, tag:'Adventure-styled and rugged', specs:['Automatic','ABS','Big storage'], badge:'', booked:[] },
-      { id:'adv350',    name:'Honda ADV350',        cc:'350cc', cat:'adventure', catLabel:'ADV Scooter',price:1900,weekly:11970, monthly:45600, tag:'The flagship — highway ready', specs:['Automatic','ABS','Traction control'], badge:'Top spec', booked:[[6,12]] },
-      { id:'vstrom250', name:'Suzuki V-Strom 250',  cc:'250cc', cat:'adventure', catLabel:'Adventure', price:1300, weekly:8190,  monthly:31200, tag:'Go anywhere, ride all day', specs:['Manual','Touring','Long range'], badge:'Featured', booked:[[2,5]] },
-      { id:'rouser160', name:'Kawasaki Rouser 160', cc:'160cc', cat:'adventure', catLabel:'Street',    price:800,  weekly:5040,  monthly:19200, tag:'Punchy naked street bike', specs:['Manual','Nimble','Fuel-efficient'], badge:'', booked:[[8,15]] },
-    ];
+  fleet() {
+    // Live catalog from Odoo (or the fallback), mapped to the view shape. While the
+    // fetch is in flight state.models is null, so this is empty and the fleet grid
+    // shows its loading state.
+    return (this.state.models || []).map(normalizeModel);
   }
 
   availInfo() {
     const { availFrom, availTo } = this.state;
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    const parse = s => { const d = new Date(s); d.setHours(0, 0, 0, 0); return d; };
-    const off = n => { const d = new Date(today); d.setDate(d.getDate() + n); return d.getTime(); };
-    const chosen = !!(availFrom && availTo) && parse(availTo) >= parse(availFrom);
-    const from = chosen ? parse(availFrom).getTime() : 0;
-    const to = chosen ? parse(availTo).getTime() : 0;
+    const parseIso = s => { const d = new Date(s + 'T00:00:00'); d.setHours(0, 0, 0, 0); return d.getTime(); };
+    const chosen = !!(availFrom && availTo) && parseIso(availTo) >= parseIso(availFrom);
+    const from = chosen ? parseIso(availFrom) : 0;
+    const to = chosen ? parseIso(availTo) : 0;
+    // A model is available if AT LEAST ONE of its physical units is free over the range.
+    // units[].booked are ISO date ranges from the Odoo endpoint (spec §3.1); with no
+    // rentals recorded yet every unit is free, so every model shows as available.
     const isAvailable = b => {
       if (!chosen) return true;
-      return !(b.booked || []).some(([bs, be]) => from <= off(be) && to >= off(bs));
+      const units = (b.units && b.units.length) ? b.units : [{ booked: [] }];
+      return units.some(u => !(u.booked || []).some(([bs, be]) => from <= parseIso(be) && to >= parseIso(bs)));
     };
     return { chosen, isAvailable };
   }
@@ -656,7 +700,7 @@ class Component extends DCLogic {
       return {
       ...b,
       slotId: 'bike-' + b.id,
-      imgSrc: BIKE_IMG[b.id],
+      imgSrc: (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '',
       priceStr: this.peso(b.price),
       weeklyStr: this.peso(b.weekly) + '/wk · ' + this.peso(b.monthly) + '/mo',
       badgeStyle: b.badge
@@ -686,7 +730,7 @@ class Component extends DCLogic {
     const total = subtotal - discountAmt + deliveryFee;
     const canBook = d > 0;
 
-    const selectedVals = selected ? { ...selected, slotId: 'bike-' + selected.id, imgSrc: BIKE_IMG[selected.id], priceStr: this.peso(selected.price), weeklyStr: this.peso(selected.weekly) + '/wk · ' + this.peso(selected.monthly) + '/mo', hasDesc: !!selected.desc, desc: selected.desc || null } : null;
+    const selectedVals = selected ? { ...selected, slotId: 'bike-' + selected.id, imgSrc: (selected.photos && selected.photos[0]) || BIKE_IMG[selected.id] || '', priceStr: this.peso(selected.price), weeklyStr: this.peso(selected.weekly) + '/wk · ' + this.peso(selected.monthly) + '/mo', hasDesc: !!selected.desc, desc: selected.desc || null } : null;
 
     const mobileNavDefs = [
       { label: 'Fleet', id: 'fleet' },
@@ -738,6 +782,7 @@ class Component extends DCLogic {
 
       tabs,
       filteredFleet: fleetVals,
+      fleetLoading: this.state.models === null,
       availFrom, availTo, availOnly, datesChosen,
       calOpen,
       calTitle: cal.title,
