@@ -476,9 +476,14 @@ const BIKE_IMG = {
 const CATALOG_API_URL = "http://localhost:8069/qa/catalog";
 const CATALOG_API_KEY = "uo_HMSZHGdkrKDQeSoYdvdpeNU-loThwYSiCfqopgh0";
 
-// Site tabs exist only for these slugs; the human label is derived here on the frontend
-// (the endpoint no longer sends a per-model catLabel — see spec §2.2).
-const CAT_LABELS = { scooter: 'Scooter', adventure: 'Adventure' };
+// Category slug -> caption. Odoo owns both: the endpoint sends a `categories` array
+// (spec §3.1) carrying each category's name and the order the owner arranged them in,
+// so adding a category there gives the site a new filter tab with no code change here.
+// This is the fallback for when that array is absent — the bundled catalog below — and
+// it reproduces the two captions the site had hardcoded before.
+function catCaption(slug) {
+  return slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : '';
+}
 
 // Last-known catalog in the endpoint's response shape, used only when Odoo is unreachable.
 // Photos fall back to the bundled images/. Kept deliberately terse — it is a safety net,
@@ -502,13 +507,14 @@ const FALLBACK_MODELS = [
   { id:'rouser160', name:'Kawasaki Rouser 160', cc:'160cc', cat:'adventure', price:800, weekly:5040, monthly:19200, tag:'Punchy naked street bike', badge:'', specs:['Manual','Nimble','Fuel-efficient'], photos:[BIKE_IMG.rouser160], units:[] },
 ];
 
-// Map one endpoint model (spec §3.1) to the shape the views consume: derive the pill
-// label from the slug and nest the description fields the modal reads.
-function normalizeModel(m) {
+// Map one endpoint model (spec §3.1) to the shape the views consume: take the pill
+// label from the categories Odoo sent (falling back to the slug) and nest the
+// description fields the modal reads.
+function normalizeModel(m, captions) {
   const hasDesc = !!(m.overview || (m.pros && m.pros.length) || (m.cons && m.cons.length));
   return {
     id: m.id, name: m.name, cc: m.cc, cat: m.cat,
-    catLabel: CAT_LABELS[m.cat] || (m.cat ? m.cat.charAt(0).toUpperCase() + m.cat.slice(1) : ''),
+    catLabel: (captions && captions[m.cat]) || catCaption(m.cat),
     price: m.price, weekly: m.weekly, monthly: m.monthly,
     tag: m.tag || '', badge: m.badge || '', specs: m.specs || [],
     photos: m.photos || [], units: m.units || [],
@@ -517,7 +523,7 @@ function normalizeModel(m) {
 }
 
 class Component extends DCLogic {
-  state = { models: null, catalogError: false, filter: 'all', selected: null, photoIndex: 0, pickup: '', dropoff: '', delivery: false, step: 'form', sent: false, availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '', modalCalOpen: false, modalCursor: '', currency: 'PHP', isMobile: (typeof window !== 'undefined' && window.innerWidth <= 720), mobileMenuOpen: false };
+  state = { models: null, categories: null, catalogError: false, filter: 'all', selected: null, photoIndex: 0, pickup: '', dropoff: '', delivery: false, step: 'form', sent: false, availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '', modalCalOpen: false, modalCursor: '', currency: 'PHP', isMobile: (typeof window !== 'undefined' && window.innerWidth <= 720), mobileMenuOpen: false };
 
   componentDidMount() {
     this._onResize = () => {
@@ -534,16 +540,19 @@ class Component extends DCLogic {
       .then(data => {
         const models = (data && Array.isArray(data.models)) ? data.models : [];
         if (models.length) {
-          this.setState({ models, catalogError: false });
+          // categories drives the filter tabs (captions + order). Absent on the
+          // fallback path below, where catTabs() derives them from the models.
+          const categories = (data && Array.isArray(data.categories)) ? data.categories : null;
+          this.setState({ models, categories, catalogError: false });
         } else {
           // Reachable but empty (e.g. wrong key) — keep the page populated.
           console.warn('[catalog] endpoint returned no models; using fallback');
-          this.setState({ models: FALLBACK_MODELS, catalogError: true });
+          this.setState({ models: FALLBACK_MODELS, categories: null, catalogError: true });
         }
       })
       .catch(err => {
         console.warn('[catalog] endpoint unreachable; using fallback', err);
-        this.setState({ models: FALLBACK_MODELS, catalogError: true });
+        this.setState({ models: FALLBACK_MODELS, categories: null, catalogError: true });
       });
   }
 
@@ -623,7 +632,36 @@ class Component extends DCLogic {
     // Live catalog from Odoo (or the fallback), mapped to the view shape. While the
     // fetch is in flight state.models is null, so this is empty and the fleet grid
     // shows its loading state.
-    return (this.state.models || []).map(normalizeModel);
+    const captions = this.catCaptions();
+    return (this.state.models || []).map(m => normalizeModel(m, captions));
+  }
+
+  catCaptions() {
+    // slug -> caption, from whatever Odoo sent. Empty on the fallback path, where
+    // normalizeModel and catTabs both fall back to capitalising the slug.
+    const out = {};
+    (this.state.categories || []).forEach(c => { if (c && c.slug) out[c.slug] = c.label || catCaption(c.slug); });
+    return out;
+  }
+
+  catTabs() {
+    // The filter row: "All bikes" first, then one tab per category. Odoo decides
+    // which categories exist, what they are called and in what order they sit —
+    // adding one there is all it takes for a tab to appear here.
+    //
+    // Tabs are intersected with the slugs actually present in the catalog on hand.
+    // The endpoint already omits empty categories, but the fallback catalog is a
+    // stale snapshot that can disagree, and a tab filtering to nothing is worse
+    // than a missing one.
+    const present = new Set((this.state.models || []).map(m => m.cat).filter(Boolean));
+    const ordered = (this.state.categories || []).map(c => c && c.slug).filter(slug => present.has(slug));
+    // No categories from Odoo (fallback): derive them from the models themselves.
+    // Alphabetical, because a snapshot carries no notion of the owner's order.
+    const slugs = ordered.length ? ordered : Array.from(present).sort();
+    const captions = this.catCaptions();
+    return [{ key: 'all', label: 'All bikes' }].concat(
+      slugs.map(slug => ({ key: slug, label: captions[slug] || catCaption(slug) }))
+    );
   }
 
   availInfo() {
@@ -695,19 +733,14 @@ class Component extends DCLogic {
     const mcal = this.calData('modal');
     const all = this.fleet();
     const { chosen: datesChosen, isAvailable } = this.availInfo();
-    let filtered = all.filter(b => {
-      if (filter === 'all') return true;
-      if (filter === 'adventure') return b.cat === 'adventure' || b.cat === 'dual';
-      return b.cat === filter;
-    });
+    // The `dual` slug was a legacy alias folded into the adventure tab; no model
+    // carries it any more (checked in Odoo 2026-07-31), so the filter is now the
+    // plain slug match it always wanted to be.
+    let filtered = all.filter(b => filter === 'all' || b.cat === filter);
     if (datesChosen && availOnly) filtered = filtered.filter(isAvailable);
     const availCount = filtered.filter(isAvailable).length;
 
-    const tabDefs = [
-      { key: 'all', label: 'All bikes' },
-      { key: 'scooter', label: 'Scooters' },
-      { key: 'adventure', label: 'Adventure' },
-    ];
+    const tabDefs = this.catTabs();
     const tabs = tabDefs.map(t => ({
       label: t.label,
       style: this.tabStyle(filter === t.key),
