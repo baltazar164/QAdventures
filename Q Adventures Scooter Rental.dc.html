@@ -81,7 +81,7 @@
     <div style="animation:floatUp .6s ease both">
       <div style="display:inline-flex;align-items:center;gap:8px;background:#FFF0DE;border:1px solid #FFD9A8;color:#B25E12;font-weight:700;font-size:12.5px;padding:7px 13px;border-radius:100px;letter-spacing:.01em">☀ 10% off for 7+ days · 20% off for 28+ days</div>
       <h1 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.03em;margin:16px 0 0">Ride Cebu on<br>your own terms.</h1>
-      <p style="font-size:17px;line-height:1.55;color:#544D43;max-width:480px;margin:16px 0 0">Total freedom on two wheels — <strong style="color:#1B1712">no kilometer limits, no geography restrictions, and no deposits.</strong> Well-maintained scooters and adventure bikes, delivered ready to explore.</p>
+      <p style="font-size:17px;line-height:1.55;color:#544D43;max-width:480px;margin:16px 0 0">Total freedom on two wheels — <strong style="color:#1B1712">no kilometer limits, no geography restrictions, and no documents held.</strong> Well-maintained scooters and adventure bikes, delivered ready to explore.</p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:22px">
         <button onClick="{{ toFleet }}" style="background:#E4761B;color:#fff;border:none;font-weight:700;font-size:15px;padding:15px 26px;border-radius:12px;cursor:pointer;box-shadow:0 8px 20px rgba(228,118,27,.28)">Book your ride →</button>
         <button onClick="{{ toStory }}" style="background:transparent;color:#1B1712;border:1.5px solid rgba(27,23,18,.18);font-weight:700;font-size:15px;padding:15px 24px;border-radius:12px;cursor:pointer">Our promise</button>
@@ -91,7 +91,7 @@
         <div style="width:1px;background:rgba(27,23,18,.1)"></div>
         <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px">0km</div><div style="font-size:12.5px;color:#8A8175;font-weight:600">Distance limit</div></div>
         <div style="width:1px;background:rgba(27,23,18,.1)"></div>
-        <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px">{{ depositStr }}</div><div style="font-size:12.5px;color:#8A8175;font-weight:600">Deposit needed</div></div>
+        <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px">0</div><div style="font-size:12.5px;color:#8A8175;font-weight:600">Documents held</div></div>
       </div>
     </div>
     <div style="position:relative;animation:floatUp .6s .1s ease both">
@@ -109,7 +109,7 @@
 <!-- TRUST STRIP -->
 <section style="background:#1B1712;color:#F3EEE4">
   <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;gap:14px 34px;align-items:center;justify-content:center;font-weight:600;font-size:13.5px">
-    <span style="color:#FFB86B">✦ No deposits</span>
+    <span style="color:#FFB86B">✦ Refundable deposit</span>
     <span style="opacity:.35">·</span>
     <span style="color:#FFB86B">✦ No documents held</span>
     <span style="opacity:.35">·</span>
@@ -247,7 +247,7 @@
     <div>
       <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8FD9C4">Our promise</div>
       <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;line-height:1.08;margin:10px 0 0">Born from a rental nightmare.</h2>
-      <p style="font-size:16px;line-height:1.7;color:#CFE6DF;margin:20px 0 0">This company started after a rental shop lost my passport. So we do things differently: <strong style="color:#fff">no document holding, no deposits, fully equipped bikes, and zero restrictions.</strong> Just safe, convenient, worry-free riding anywhere in the Philippines.</p>
+      <p style="font-size:16px;line-height:1.7;color:#CFE6DF;margin:20px 0 0">This company started after a rental shop lost my passport. So we do things differently: <strong style="color:#fff">no document holding, fully equipped bikes, and zero restrictions.</strong> Just safe, convenient, worry-free riding anywhere in the Philippines.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px">
         <sc-for list="{{ promises }}" as="p" hint-placeholder-count="4">
           <div style="display:flex;gap:10px;align-items:flex-start">
@@ -276,7 +276,7 @@
         <div style="display:flex;gap:13px;align-items:center"><div style="width:42px;height:42px;border-radius:11px;background:#FFF0DE;color:#E4761B;display:flex;align-items:center;justify-content:center;font-size:18px">🕗</div><div><div style="font-weight:800;font-size:14.5px">Open today · 08:00 – 17:00</div><div style="font-size:13.5px;color:#8A8175">After-hours service on request</div></div></div>
       </div>
       <div style="display:flex;gap:12px;margin-top:26px;flex-wrap:wrap">
-        <a href="https://wa.me/16266266347" style="display:inline-flex;align-items:center;gap:9px;background:#0F5C4A;color:#fff;font-weight:700;font-size:14.5px;padding:14px 22px;border-radius:12px;{{ contactBtnStyle }}">Message on WhatsApp</a>
+        <a href="{{ shopWaHref }}" style="display:inline-flex;align-items:center;gap:9px;background:#0F5C4A;color:#fff;font-weight:700;font-size:14.5px;padding:14px 22px;border-radius:12px;{{ contactBtnStyle }}">Message on WhatsApp</a>
         <a href="tel:+639432458562" style="display:inline-flex;align-items:center;gap:9px;background:transparent;border:1.5px solid rgba(27,23,18,.18);color:#1B1712;font-weight:700;font-size:14.5px;padding:14px 22px;border-radius:12px;{{ contactBtnStyle }}">Call now</a>
       </div>
     </div>
@@ -396,26 +396,57 @@
                 </div>
               </div>
 
-            <label style="display:flex;align-items:center;gap:11px;margin-top:16px;padding:13px 15px;background:#fff;border:1.5px solid rgba(27,23,18,.1);border-radius:12px;cursor:pointer">
-              <input type="checkbox" checked="{{ delivery }}" onChange="{{ onDelivery }}" style="width:18px;height:18px;accent-color:#E4761B">
-              <span style="flex:1"><span style="font-weight:700;font-size:14px;display:block">Deliver to my hotel</span><span style="font-size:12.5px;color:#8A8175">Anywhere in Mactan / Cebu City</span></span>
-              <span style="font-weight:700;font-size:14px;color:#E4761B">{{ deliveryPlusStr }}</span>
-            </label>
+            <sc-if value="{{ hasZones }}" hint-placeholder-val="{{ true }}">
+              <div style="margin-top:16px">
+                <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">DELIVERY</label>
+                <select value="{{ zoneId }}" onChange="{{ onZone }}" aria-label="Delivery" style="width:100%;margin-top:6px;height:46px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:0 12px;background:#fff;font-size:14.5px;font-weight:600;color:#1B1712;cursor:pointer;appearance:auto">
+                  <sc-for list="{{ zoneOpts }}" as="z" hint-placeholder-count="3">
+                    <option value="{{ z.value }}">{{ z.label }}</option>
+                  </sc-for>
+                </select>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasZone }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:14px">
+                <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">DELIVERY ADDRESS</label>
+                <input value="{{ address }}" onChange="{{ onAddress }}" placeholder="Hotel and room number" style="width:100%;margin-top:6px;height:46px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:0 14px;background:#fff;font-size:14.5px;box-sizing:border-box">
+              </div>
+            </sc-if>
+
+            <div style="margin-top:14px">
+              <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">PHONE</label>
+              <input value="{{ phone }}" onChange="{{ onPhone }}" type="tel" placeholder="The number we can reach you on" style="width:100%;margin-top:6px;height:46px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:0 14px;background:#fff;font-size:14.5px;box-sizing:border-box">
+            </div>
+
+            <div style="margin-top:14px">
+              <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">ANYTHING WE SHOULD KNOW? <span style="font-weight:600;color:#8A8175">· optional</span></label>
+              <textarea value="{{ note }}" onChange="{{ onNote }}" rows="2" placeholder="Arrival time, an extra helmet, anything else" style="width:100%;margin-top:6px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:11px 14px;background:#fff;font-size:14.5px;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+            </div>
 
             <div style="margin-top:18px;background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:14px;padding:16px 18px">
               <div style="display:flex;justify-content:space-between;font-size:14px;color:#544D43;margin-bottom:9px"><span>{{ booking.daysLabel }} × {{ selected.priceStr }}</span><span style="font-weight:700;color:#1B1712">{{ booking.subtotalStr }}</span></div>
               <sc-if value="{{ booking.hasDiscount }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;justify-content:space-between;font-size:14px;color:#0F5C4A;margin-bottom:9px"><span>{{ booking.discountLabel }}</span><span style="font-weight:700;color:#0F5C4A">{{ booking.discountStr }}</span></div>
               </sc-if>
-              <sc-if value="{{ delivery }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;justify-content:space-between;font-size:14px;color:#544D43;margin-bottom:9px"><span>Hotel delivery</span><span style="font-weight:700;color:#1B1712">{{ deliveryFeeStr }}</span></div>
+              <sc-if value="{{ hasZone }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;justify-content:space-between;font-size:14px;color:#544D43;margin-bottom:9px"><span>{{ deliveryLabel }}</span><span style="font-weight:700;color:#1B1712">{{ deliveryFeeStr }}</span></div>
               </sc-if>
               <div style="height:1px;background:rgba(27,23,18,.1);margin:11px 0"></div>
               <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:800;font-size:15px">Total</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:24px">{{ booking.totalStr }}</span></div>
             </div>
 
-            <button onClick="{{ confirm }}" style="{{ confirmStyle }}">{{ confirmLabel }}</button>
-            <p style="text-align:center;font-size:12px;color:#8A8175;margin:12px 0 0">No deposit charged now · pay on pick-up · free cancellation</p>
+            <sc-if value="{{ showRequest }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ onRequest }}" style="{{ requestStyle }}">{{ requestLabel }}</button>
+            </sc-if>
+            <button onClick="{{ onWhatsApp }}" style="{{ whatsAppStyle }}">{{ whatsAppLabel }}</button>
+            <sc-if value="{{ hasHint }}" hint-placeholder-val="{{ false }}">
+              <p style="{{ hintStyle }}">{{ hint }}</p>
+            </sc-if>
+            <sc-if value="{{ hasWaNote }}" hint-placeholder-val="{{ false }}">
+              <p style="{{ waNoteStyle }}">{{ waNote }}</p>
+            </sc-if>
+            <p style="text-align:center;font-size:12px;color:#8A8175;margin:12px 0 0">Nothing to pay now · deposit on pick-up, refunded on return · free cancellation</p>
           </div>
         </sc-if>
 
@@ -423,10 +454,13 @@
           <div style="text-align:center;padding:14px 6px 8px">
             <div style="width:64px;height:64px;border-radius:50%;background:#E5F0EC;color:#0F5C4A;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto;animation:floatUp .4s ease both">✓</div>
             <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:25px;margin:18px 0 6px">Booking requested!</h2>
-            <p style="font-size:14.5px;line-height:1.6;color:#544D43;margin:0 auto;max-width:360px">We've noted your <strong style="color:#1B1712">{{ selected.name }}</strong> for {{ booking.daysLabel }}. We'll confirm by WhatsApp shortly — no deposit needed.</p>
+            <p style="font-size:14.5px;line-height:1.6;color:#544D43;margin:0 auto;max-width:360px">We've noted your <strong style="color:#1B1712">{{ selected.name }}</strong> for {{ booking.daysLabel }}. We'll confirm by WhatsApp shortly — nothing to pay until pick-up.</p>
+            <sc-if value="{{ hasAccount }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:12.5px;color:#8A8175;margin:10px 0 0">{{ accountLine }}</p>
+            </sc-if>
             <div style="background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:14px;padding:14px 18px;margin:20px 0;display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:700;font-size:14px">Estimated total</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:22px">{{ booking.totalStr }}</span></div>
             <div style="display:flex;gap:10px">
-              <a href="https://wa.me/16266266347" style="flex:1;background:#0F5C4A;color:#fff;font-weight:700;font-size:14.5px;padding:14px;border-radius:11px;text-align:center">Confirm on WhatsApp</a>
+              <a href="{{ shopWaHref }}" style="flex:1;background:#0F5C4A;color:#fff;font-weight:700;font-size:14.5px;padding:14px;border-radius:11px;text-align:center">Confirm on WhatsApp</a>
               <button onClick="{{ closeBike }}" style="flex:none;background:transparent;border:1.5px solid rgba(27,23,18,.16);color:#1B1712;font-weight:700;font-size:14.5px;padding:14px 20px;border-radius:11px;cursor:pointer">Done</button>
             </div>
           </div>
@@ -476,6 +510,30 @@ const BIKE_IMG = {
 const CATALOG_API_URL = "http://localhost:8069/qa/catalog";
 const CATALOG_API_KEY = "uo_HMSZHGdkrKDQeSoYdvdpeNU-loThwYSiCfqopgh0";
 
+// Where a booking is sent. Derived from the catalog URL rather than written out
+// again, so the deploy still repoints one constant.
+const BOOK_API_URL = CATALOG_API_URL.replace(/\/qa\/catalog\/?$/, '') + '/qa/book';
+
+// Sign-in with Google, required for a booking to reach Odoo. Client ids are
+// public by design — this one is as safe to commit as the catalog key above.
+// What is NOT interchangeable is the origin: the address this page is served
+// from must be registered as an authorised JavaScript origin on that client, or
+// the popup refuses with `origin_mismatch` and never returns a token. The local
+// dev origin and the published one are two separate entries.
+const GOOGLE_CLIENT_ID = "754460266117-11d4750piukfr2831t5ermlj86qn0k0q.apps.googleusercontent.com";
+const GOOGLE_SCRIPT_URL = "https://accounts.google.com/gsi/client";
+// How long to wait for Google's script before deciding it will never arrive —
+// an ad blocker, a privacy browser, hotel Wi-Fi or a network that blocks Google
+// outright. A visitor in that position should never be shown a button that
+// cannot work, so the wait is bounded and the form offers WhatsApp instead.
+const GOOGLE_LOAD_TIMEOUT = 4000;
+
+// The number the WhatsApp buttons write to until the catalog answers with the
+// real one. It cannot be dropped in favour of the payload: an unreachable Odoo
+// is exactly the moment this number matters most, and a site that had only
+// fetched it would lose its one working contact channel precisely then.
+const WHATSAPP_DEFAULT = "16266266347";
+
 // Category slug -> caption. Odoo owns both: the endpoint sends a `categories` array
 // (spec §3.1) carrying each category's name and the order the owner arranged them in,
 // so adding a category there gives the site a new filter tab with no code change here.
@@ -523,7 +581,22 @@ function normalizeModel(m, captions) {
 }
 
 class Component extends DCLogic {
-  state = { models: null, categories: null, catalogError: false, filter: 'all', selected: null, photoIndex: 0, pickup: '', dropoff: '', delivery: false, step: 'form', sent: false, availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '', modalCalOpen: false, modalCursor: '', currency: 'PHP', isMobile: (typeof window !== 'undefined' && window.innerWidth <= 720), mobileMenuOpen: false };
+  state = {
+    models: null, categories: null, catalogError: false, filter: 'all', selected: null, photoIndex: 0,
+    pickup: '', dropoff: '', step: 'form', sent: false,
+    availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '', modalCalOpen: false, modalCursor: '',
+    currency: 'PHP', isMobile: (typeof window !== 'undefined' && window.innerWidth <= 720), mobileMenuOpen: false,
+    // Priced by the shop, not by this file. `null` means the catalog never
+    // answered, and then the form quotes the day rate only — inventing a
+    // discount tier here is how a site ends up promising a number the counter
+    // will not honour.
+    discounts: null, zones: null, whatsapp: '',
+    // What the visitor fills in before choosing how to send it.
+    zoneId: '', address: '', phone: '', note: '',
+    // Sending. `waReason` is empty until something sends the visitor to
+    // WhatsApp, and then says what — it decides the wording, not just the exit.
+    sending: false, googleReady: false, googleFailed: false, account: null, waReason: '', hint: '',
+  };
 
   componentDidMount() {
     this._onResize = () => {
@@ -532,6 +605,27 @@ class Component extends DCLogic {
     };
     window.addEventListener('resize', this._onResize);
     this.loadCatalog();
+    this.loadGoogle();
+  }
+
+  // Google's sign-in library, fetched rather than written into the page, so the
+  // one case that has to be handled — it never arrives — is an event here and
+  // not a mystery at click time.
+  loadGoogle() {
+    if (typeof document === 'undefined') return;
+    const settle = (ok) => {
+      if (this._googleSettled) return;
+      this._googleSettled = true;
+      clearTimeout(this._googleTimer);
+      this.setState({ googleReady: ok, googleFailed: !ok });
+    };
+    this._googleTimer = setTimeout(() => settle(false), GOOGLE_LOAD_TIMEOUT);
+    const script = document.createElement('script');
+    script.src = GOOGLE_SCRIPT_URL;
+    script.async = true;
+    script.onload = () => settle(!!(window.google && window.google.accounts && window.google.accounts.oauth2));
+    script.onerror = () => settle(false);
+    document.head.appendChild(script);
   }
 
   loadCatalog() {
@@ -543,7 +637,18 @@ class Component extends DCLogic {
           // categories drives the filter tabs (captions + order). Absent on the
           // fallback path below, where catTabs() derives them from the models.
           const categories = (data && Array.isArray(data.categories)) ? data.categories : null;
-          this.setState({ models, categories, catalogError: false });
+          // Discount tiers, delivery zones and the WhatsApp number travel with
+          // the catalog and replace the copies this file used to keep. Taken
+          // only on this branch: an answer with no models is a broken call, and
+          // its other fields are no more trustworthy than its empty list.
+          this.setState({
+            models, categories, catalogError: false,
+            discounts: Array.isArray(data.discounts)
+              ? data.discounts.slice().sort((a, b) => a.min_days - b.min_days)
+              : null,
+            zones: Array.isArray(data.delivery_zones) ? data.delivery_zones : null,
+            whatsapp: (typeof data.whatsapp === 'string' && data.whatsapp) ? data.whatsapp : '',
+          });
         } else {
           // Reachable but empty (e.g. wrong key) — keep the page populated.
           console.warn('[catalog] endpoint returned no models; using fallback');
@@ -558,6 +663,7 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     if (this._onResize) window.removeEventListener('resize', this._onResize);
+    clearTimeout(this._googleTimer);
   }
 
   toISO(y, m, d) {
@@ -727,8 +833,181 @@ class Component extends DCLogic {
     return Math.round(d);
   }
 
+  // --- The quote -----------------------------------------------------------
+  // Every number below comes from the catalog. Nothing here decides what a
+  // rental costs; this page only adds up what the shop already published.
+
+  discountPct() {
+    // The best tier the stay qualifies for, or nothing at all. No tiers means
+    // the catalog never answered — and then the day rate is the honest quote.
+    const d = this.days();
+    let pct = 0;
+    for (const tier of (this.state.discounts || [])) {
+      if (d >= tier.min_days && tier.percent > pct) pct = tier.percent;
+    }
+    return pct / 100;
+  }
+
+  zone() {
+    const { zones, zoneId } = this.state;
+    if (!zoneId) return null;
+    return (zones || []).find(z => String(z.id) === String(zoneId)) || null;
+  }
+
+  quote() {
+    const days = this.days();
+    const price = this.state.selected ? this.state.selected.price : 0;
+    const subtotal = days * price;
+    const pct = this.discountPct();
+    const discount = Math.round(subtotal * pct);
+    const zone = this.zone();
+    const delivery = zone ? zone.price : 0;
+    return { days, subtotal, pct, discount, zone, delivery, total: subtotal - discount + delivery };
+  }
+
+  // --- Sending the booking -------------------------------------------------
+
+  waNumber() {
+    return this.state.whatsapp || WHATSAPP_DEFAULT;
+  }
+
+  // What the endpoint insists on, checked here so the visitor hears about it
+  // before a popup opens rather than after a round trip. The server checks all
+  // of it again — this is courtesy, not security.
+  bookProblem() {
+    const { selected, phone, address } = this.state;
+    if (!selected) return 'Pick a bike first.';
+    if (this.days() <= 0) return 'Choose your pick-up and drop-off dates.';
+    if (!phone.trim()) return 'Add a phone number — it is how we reach you.';
+    if (this.zone() && !address.trim()) return 'Add the address to deliver to.';
+    return '';
+  }
+
+  requestBooking() {
+    const problem = this.bookProblem();
+    if (problem) { this.setState({ hint: problem }); return; }
+    if (!this.state.googleReady) { this.toWhatsApp('nogoogle'); return; }
+
+    // The popup opens inside the click, with nothing awaited before it. After
+    // an await the user gesture is spent and the browser blocks the window —
+    // and it breaks only for the visitor, never with a console open.
+    let client;
+    try {
+      client = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'email profile',
+        callback: (resp) => {
+          if (!resp || !resp.access_token) { this.toWhatsApp('signin'); return; }
+          this.postBooking(resp.access_token);
+        },
+        error_callback: () => this.toWhatsApp('signin'),
+      });
+    } catch (err) {
+      this.toWhatsApp('nogoogle');
+      return;
+    }
+    this.setState({ hint: '', sending: true });
+    client.requestAccessToken();
+  }
+
+  postBooking(token) {
+    const { selected, pickup, dropoff, phone, note, address } = this.state;
+    const zone = this.zone();
+    const quoted = this.quote().total;
+    fetch(BOOK_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: CATALOG_API_KEY,
+        token,
+        model_id: selected.id,
+        pickup,
+        return: dropoff,
+        phone: phone.trim(),
+        zone_id: zone ? zone.id : null,
+        address: zone ? address.trim() : '',
+        note: note.trim(),
+        // Shown to the visitor, never used to price anything. It travels so a
+        // later "but the site said so" has an answer on the order itself.
+        quoted,
+      }),
+    })
+      .then(r => r.json())
+      .then(answer => {
+        if (answer && answer.ok) {
+          this.namedAccount(token);
+          this.setState({ sending: false, step: 'done', waReason: '', hint: '' });
+          return;
+        }
+        // An answer that said no must never be shown as a booking. Every one of
+        // them lands on WhatsApp with the form already written out.
+        this.toWhatsApp((answer && answer.error === 'unavailable') ? 'unavailable' : 'refused');
+      })
+      .catch(() => this.toWhatsApp('refused'));
+  }
+
+  // The confirmation names the account the booking went under. Sign-in happens
+  // at submit time, so there is no earlier moment to show it — and someone with
+  // two Google accounts will want to know which one was used.
+  namedAccount(token) {
+    fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } })
+      .then(r => r.json())
+      .then(p => this.setState({ account: { name: p.name || '', email: p.email || '' } }))
+      .catch(() => {});
+  }
+
+  toWhatsApp(reason) {
+    this.setState({ sending: false, waReason: reason, hint: '' });
+  }
+
+  // --- WhatsApp: the second exit, and the automatic one --------------------
+
+  // The booking written out for a person to read. Whatever is empty is left out
+  // rather than leaving a gap in the sentence: this opens a conversation, and a
+  // missing detail costs one question.
+  waMessage() {
+    const { selected, pickup, dropoff, phone, note, address, waReason } = this.state;
+    const name = selected ? selected.name : 'one of your bikes';
+    const dates = this.fmtDate(pickup) + ' – ' + this.fmtDate(dropoff);
+    const q = this.quote();
+
+    // Not a failure of the form, so it does not read like one.
+    if (waReason === 'unavailable') {
+      return 'Hi! I wanted to book the *' + name + '*, ' + dates +
+        ', but the site says it’s taken for those dates. Is anything else available?' +
+        ' Sent from the website.';
+    }
+
+    let text = 'Hi! I’d like to book the *' + name + '*, ' + dates +
+      ' (' + q.days + (q.days === 1 ? ' day' : ' days') + ')';
+    if (q.zone && address.trim()) text += ', delivery to ' + q.zone.name + ' — ' + address.trim();
+    else if (q.zone) text += ', delivery to ' + q.zone.name;
+    else text += ', pickup at the shop';
+    text += '.';
+    // Deliberate: a WhatsApp booking leaves no record, so the message has to be
+    // one — and a figure that has drifted from the shop's own shows up here,
+    // read at the keyboard rather than argued about at the counter.
+    if (q.total > 0) text += ' The site showed ' + this.peso(q.total) + '.';
+    // Goes in whenever it was typed, though this path does not need it: a
+    // tourist writes from a foreign number and rents on a local SIM.
+    if (phone.trim()) text += ' My number: ' + phone.trim() + '.';
+    // Ends with a stop of its own, or it runs straight into the line below.
+    if (note.trim()) text += ' ' + note.trim().replace(/([^.!?])$/, '$1.');
+    return text + ' Sent from the website.';
+  }
+
+  openWhatsApp() {
+    // Only a broken date range stops this. Everything else that is missing is
+    // simply left out of the message — demanding a phone number before someone
+    // may open a messenger asks for a fact the messenger is about to supply.
+    if (this.days() <= 0) { this.setState({ hint: 'Choose your dates first.' }); return; }
+    window.open('https://wa.me/' + this.waNumber() + '?text=' + encodeURIComponent(this.waMessage()),
+                '_blank', 'noopener');
+  }
+
   renderVals() {
-    const { filter, selected, photoIndex, pickup, dropoff, delivery, step, sent, availFrom, availTo, availOnly, calOpen, modalCalOpen, currency, isMobile, mobileMenuOpen } = this.state;
+    const { filter, selected, photoIndex, pickup, dropoff, step, sent, availFrom, availTo, availOnly, calOpen, modalCalOpen, currency, isMobile, mobileMenuOpen,
+            zones, zoneId, address, phone, note, sending, googleFailed, account, waReason, hint } = this.state;
     const cal = this.calData('avail');
     const mcal = this.calData('modal');
     const all = this.fleet();
@@ -768,19 +1047,20 @@ class Component extends DCLogic {
         : 'background:#1B1712;color:#fff;cursor:pointer'),
       onBook: () => {
         if (datesChosen && !avail) return;
-        this.setState({ selected: b, photoIndex: 0, step: 'form', pickup: availFrom || this.state.pickup, dropoff: availTo || this.state.dropoff });
+        // A fresh modal: whatever the last attempt ended in must not greet the
+        // next bike with somebody else's error.
+        this.setState({ selected: b, photoIndex: 0, step: 'form', pickup: availFrom || this.state.pickup, dropoff: availTo || this.state.dropoff,
+                        waReason: '', hint: '', account: null, sending: false });
       },
     };
     });
 
-    const d = this.days();
-    const price = selected ? selected.price : 0;
-    const subtotal = d * price;
-    const discountPct = d >= 28 ? 0.20 : (d >= 7 ? 0.10 : 0);
-    const discountAmt = Math.round(subtotal * discountPct);
-    const deliveryFee = delivery ? 300 : 0;
-    const total = subtotal - discountAmt + deliveryFee;
+    const q = this.quote();
+    const d = q.days;
     const canBook = d > 0;
+    // No zones in the payload means the shop's delivery table never arrived, so
+    // the option is hidden rather than offered at a guessed price.
+    const hasZones = !!(zones && zones.length);
 
     let selectedVals = null;
     if (selected) {
@@ -833,9 +1113,6 @@ class Component extends DCLogic {
       filterCurrencyWrapStyle: 'display:flex;align-items:center;gap:8px;' + (isMobile ? 'width:100%' : ''),
       filterCurrencySelectStyle: 'flex:' + (isMobile ? '1' : 'none') + ';height:34px;border:1.5px solid rgba(27,23,18,.14);border-radius:9px;background:#FBF9F4;color:#1B1712;font-weight:700;font-size:13.5px;padding:0 8px;cursor:pointer;appearance:auto',
       heroFromStr: this.peso(600),
-      depositStr: this.peso(0),
-      deliveryPlusStr: '+' + this.peso(300),
-      deliveryFeeStr: this.peso(300),
       mobileMenuOpen,
       toggleMobileMenu: () => this.setState(s => ({ mobileMenuOpen: !s.mobileMenuOpen })),
       mobileNavItems,
@@ -888,7 +1165,7 @@ class Component extends DCLogic {
       selected: selectedVals,
       notDone: !!selected && step === 'form',
       isDone: !!selected && step === 'done',
-      pickup, dropoff, delivery,
+      pickup, dropoff,
       modalCalOpen,
       mCalTitle: mcal.title,
       mCalDays: mcal.cells,
@@ -901,28 +1178,76 @@ class Component extends DCLogic {
       mNextMonth: () => this.shiftMonth('modal', 1),
       booking: {
         daysLabel: d > 0 ? (d + (d === 1 ? ' day' : ' days')) : 'Select dates',
-        subtotalStr: this.peso(subtotal),
-        hasDiscount: discountPct > 0,
-        discountLabel: discountPct > 0 ? ((discountPct * 100).toFixed(0) + '% long-stay discount') : '',
-        discountStr: discountPct > 0 ? ('−' + this.peso(discountAmt)) : '',
-        totalStr: this.peso(total),
+        subtotalStr: this.peso(q.subtotal),
+        hasDiscount: q.pct > 0,
+        discountLabel: q.pct > 0 ? ((q.pct * 100).toFixed(0) + '% long-stay discount') : '',
+        discountStr: q.pct > 0 ? ('−' + this.peso(q.discount)) : '',
+        totalStr: this.peso(q.total),
       },
       onPickup: e => this.setState({ pickup: e.target.value }),
       onDropoff: e => this.setState({ dropoff: e.target.value }),
-      onDelivery: e => this.setState({ delivery: e.target.checked }),
-      confirm: () => { if (this.days() > 0) this.setState({ step: 'done' }); },
-      confirmLabel: canBook ? 'Request this booking' : 'Select your dates',
-      confirmStyle: 'width:100%;margin-top:20px;border:none;border-radius:12px;padding:16px;font-weight:700;font-size:16px;cursor:' + (canBook ? 'pointer' : 'not-allowed') + ';color:#fff;background:' + (canBook ? '#E4761B' : '#C9BFAE') + ';box-shadow:' + (canBook ? '0 8px 20px rgba(228,118,27,.28)' : 'none'),
-      closeBike: () => this.setState({ selected: null }),
+
+      // --- Delivery, priced by the shop ---
+      hasZones,
+      zoneId,
+      zoneOpts: [{ value: '', label: 'Pick up at the shop — free' }].concat(
+        (zones || []).map(z => ({ value: String(z.id), label: z.name + ' — ' + this.peso(z.price) }))),
+      onZone: e => this.setState({ zoneId: e.target.value, hint: '' }),
+      hasZone: !!q.zone,
+      deliveryLabel: q.zone ? ('Delivery to ' + q.zone.name) : '',
+      deliveryFeeStr: this.peso(q.delivery),
+      address,
+      onAddress: e => this.setState({ address: e.target.value, hint: '' }),
+
+      // --- The two contact fields the visitor fills in ---
+      phone,
+      onPhone: e => this.setState({ phone: e.target.value, hint: '' }),
+      note,
+      onNote: e => this.setState({ note: e.target.value }),
+
+      // --- The two exits ---
+      // Google's script never arrived, so the button that needs it is not shown
+      // at all. Somebody on a network that blocks Google sees one exit, it
+      // works, and they never learn there was meant to be another.
+      showRequest: !googleFailed,
+      onRequest: () => this.requestBooking(),
+      requestLabel: sending ? 'Sending…' : (canBook ? 'Request booking' : 'Select your dates'),
+      requestStyle: 'width:100%;margin-top:20px;border:none;border-radius:12px;padding:16px;font-weight:700;font-size:16px;cursor:' + ((canBook && !sending) ? 'pointer' : 'not-allowed') + ';color:#fff;background:' + ((canBook && !sending) ? '#E4761B' : '#C9BFAE') + ';box-shadow:' + ((canBook && !sending) ? '0 8px 20px rgba(228,118,27,.28)' : 'none'),
+      onWhatsApp: () => this.openWhatsApp(),
+      whatsAppLabel: googleFailed ? 'Book on WhatsApp' : 'Book on WhatsApp instead',
+      whatsAppStyle: googleFailed
+        ? 'width:100%;margin-top:20px;border:none;border-radius:12px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;color:#fff;background:#0F5C4A;box-shadow:0 8px 20px rgba(15,92,74,.24)'
+        : 'width:100%;margin-top:10px;background:transparent;border:1.5px solid rgba(15,92,74,.35);color:#0F5C4A;border-radius:12px;padding:13px;font-weight:700;font-size:14.5px;cursor:pointer',
+
+      // --- What went wrong, if anything ---
+      hasHint: !!hint,
+      hint,
+      hintStyle: 'text-align:center;font-size:13px;font-weight:600;color:#B25E12;margin:10px 0 0',
+      hasWaNote: !!waReason,
+      waNote: {
+        nogoogle: 'Sign-in isn’t available on this connection. Send it on WhatsApp instead — the booking is already written out.',
+        signin: 'Sign-in didn’t finish. You can send the booking on WhatsApp instead — it is already written out.',
+        refused: 'We couldn’t send that just now. WhatsApp reaches the shop directly, with the booking already written out.',
+        unavailable: 'That bike was just taken for those dates. Ask on WhatsApp what else is free, or pick other dates.',
+      }[waReason] || '',
+      waNoteStyle: 'margin:14px 0 0;padding:12px 14px;background:#E5F0EC;border-radius:11px;font-size:13.5px;line-height:1.5;color:#0F5C4A',
+
+      // --- The confirmation ---
+      hasAccount: !!account,
+      accountLine: account ? ('Booked as ' + [account.name, account.email].filter(Boolean).join(' · ')) : '',
+      // The shop's own number, from the catalog when it answered and the
+      // bundled one otherwise.
+      shopWaHref: 'https://wa.me/' + this.waNumber(),
+      closeBike: () => this.setState({ selected: null, waReason: '', hint: '', account: null, sending: false }),
       prevPhoto: () => this.cyclePhoto(-1),
       nextPhoto: () => this.cyclePhoto(1),
       stop: e => e.stopPropagation(),
       steps: [
         { n: '1', title: 'Choose your bike', body: 'Browse the fleet — scooters for the city, adventure bikes for the mountains and coast.' },
         { n: '2', title: 'Pick your dates', body: 'Tell us pick-up and drop-off. Want it at your hotel? Add delivery in one tap.' },
-        { n: '3', title: 'Ride free', body: 'No deposit, no documents held, no distance limit. Pick up, gear up, and go explore.' },
+        { n: '3', title: 'Ride free', body: 'No documents held, no distance limit, no surprises. Pick up, gear up, and go explore.' },
       ],
-      promises: ['No document holding', 'Zero deposit required', 'Fully equipped bikes', 'Unlimited distance'],
+      promises: ['No document holding', 'Refundable deposit', 'Fully equipped bikes', 'Unlimited distance'],
       toTop: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
       toFleet: () => this.scrollTo('fleet'),
       toHow: () => this.scrollTo('how'),
