@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- The old bundle had neither of these: its <title> was literally "Bundled Page"
+     and it carried no description at all, because the export wrapped the whole
+     page in a script and there was nowhere to put them. -->
+<title>Q Adventures — Scooter &amp; Motorbike Rental in Cebu</title>
+<meta name="description" content="Rent a scooter or adventure bike in Cebu, Philippines. No documents held, no distance limit, refundable deposit. Delivered to your hotel, from ₱600 a day.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr__bar">
+    <div class="brand" id="to-top">
+      <div class="brand__mark">Q</div>
+      <div class="brand__text">
+        <div class="brand__name">Q Adventures</div>
+        <div class="brand__sub">Cebu Scooter Rental</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <span class="nav__item" data-scroll="fleet">Fleet</span>
+      <span class="nav__item" data-scroll="how">How it works</span>
+      <span class="nav__item" data-scroll="story">Why us</span>
+      <span class="nav__item" data-scroll="contact">Contact</span>
+    </nav>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <select class="cur cur--hdr" id="cur-hdr" aria-label="Currency"></select>
+    <a class="callbtn" href="tel:+639432458562">
+      <span class="callbtn__icon">✆</span><span class="callbtn__label">&nbsp;+63 943 245 8562</span>
+    </a>
+  </div>
+  <div class="mobnav" id="mobnav" hidden>
+    <div class="mobnav__scrim" id="mobnav-scrim"></div>
+    <div class="mobnav__sheet">
+      <span class="mobnav__item" data-scroll="fleet">Fleet</span>
+      <span class="mobnav__item" data-scroll="how">How it works</span>
+      <span class="mobnav__item" data-scroll="story">Why us</span>
+      <span class="mobnav__item" data-scroll="contact">Contact</span>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero__grid">
+    <div class="hero__copy">
+      <div class="pill">☀ 10% off for 7+ days · 20% off for 28+ days</div>
+      <h1 class="hero__h1">Ride Cebu on<br>your own terms.</h1>
+      <p class="hero__p">Total freedom on two wheels — <strong>no kilometer limits, no geography restrictions, and no documents held.</strong> Well-maintained scooters and adventure bikes, delivered ready to explore.</p>
+      <div class="hero__cta">
+        <button class="btn btn--primary" data-scroll="fleet">Book your ride →</button>
+        <button class="btn btn--ghost" data-scroll="story">Our promise</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat__n"><span id="hero-from">₱600</span><span class="stat__unit">/day</span></div><div class="stat__l">Scooters from</div></div>
+        <div class="stat__div"></div>
+        <div class="stat"><div class="stat__n">0km</div><div class="stat__l">Distance limit</div></div>
+        <div class="stat__div"></div>
+        <div class="stat"><div class="stat__n">0</div><div class="stat__l">Documents held</div></div>
+      </div>
+    </div>
+    <div class="hero__media">
+      <div class="hero__photo">
+        <img src="images/hero-photo.webp" alt="Rider on a scooter, Cebu coastline">
+      </div>
+      <div class="hero__badge">
+        <div class="hero__badge-icon">✓</div>
+        <div><div class="hero__badge-t">We never hold your passport</div><div class="hero__badge-s">Zero documents held. Ever.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<section class="trust">
+  <div class="trust__row">
+    <span class="trust__i">✦ Refundable deposit</span>
+    <span class="trust__d">·</span>
+    <span class="trust__i">✦ No documents held</span>
+    <span class="trust__d">·</span>
+    <span class="trust__i">✦ Unlimited kilometers</span>
+    <span class="trust__d">·</span>
+    <span class="trust__i">✦ Fully equipped bikes</span>
+    <span class="trust__d">·</span>
+    <span class="trust__i">✦ Local tour guides</span>
+  </div>
+</section>
+
+<!-- FLEET — the grid is filled by app.js; the category tabs are parked, see backlog 11 -->
+<section class="fleet" id="fleet">
+  <div class="filter">
+    <div class="filter__row">
+      <div class="filter__title">Check your travel dates</div>
+      <div class="filter__dates" id="avail-wrap">
+        <button class="datefield" id="avail-field" type="button">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E4761B" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="6"></line><line x1="16" y1="3" x2="16" y2="6"></line></svg>
+          <span class="datefield__label" id="avail-label">Select dates</span>
+        </button>
+        <!-- calendar dropdown is rendered here by app.js -->
+      </div>
+      <div class="filter__cur">
+        <span class="filter__cur-label">Currency</span>
+        <select class="cur cur--filter" id="cur-filter" aria-label="Currency"></select>
+      </div>
+      <div class="filter__only">
+        <label class="onlylbl" id="avail-only-label">
+          <input type="checkbox" id="avail-only" disabled>
+          <span>Show only available bikes</span>
+        </label>
+        <div class="availcount" id="avail-count" hidden></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fleet__loading" id="fleet-loading">Loading the fleet…</div>
+  <div class="fleet__grid" id="fleet-grid"></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="sec-head">
+    <div class="eyebrow eyebrow--orange">Simple as it should be</div>
+    <h2 class="sec-h2">Ride in three steps</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step__n">1</div>
+      <h3 class="step__t">Choose your bike</h3>
+      <p class="step__b">Browse the fleet — scooters for the city, adventure bikes for the mountains and coast.</p>
+    </div>
+    <div class="step">
+      <div class="step__n">2</div>
+      <h3 class="step__t">Pick your dates</h3>
+      <p class="step__b">Tell us pick-up and drop-off. Want it at your hotel? Add delivery in one tap.</p>
+    </div>
+    <div class="step">
+      <div class="step__n">3</div>
+      <h3 class="step__t">Ride free</h3>
+      <p class="step__b">No documents held, no distance limit, no surprises. Pick up, gear up, and go explore.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STORY / WHY US -->
+<section class="story" id="story">
+  <div class="story__grid">
+    <div>
+      <div class="eyebrow eyebrow--mint">Our promise</div>
+      <h2 class="story__h2">Born from a rental nightmare.</h2>
+      <p class="story__p">This company started after a rental shop lost my passport. So we do things differently: <strong>no document holding, fully equipped bikes, and zero restrictions.</strong> Just safe, convenient, worry-free riding anywhere in the Philippines.</p>
+      <div class="promises">
+        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">No document holding</div></div>
+        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Refundable deposit</div></div>
+        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Fully equipped bikes</div></div>
+        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Unlimited distance</div></div>
+      </div>
+    </div>
+    <div class="story__photo">
+      <img src="images/story-photo.webp" alt="The shop — owner with a bike">
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact__grid">
+    <div>
+      <div class="eyebrow eyebrow--orange">Visit or message</div>
+      <h2 class="contact__h2">Come say hi</h2>
+      <p class="contact__p">Drop by during business hours — we also serve authentic <strong>Vietnamese food and coffee</strong>. Our guide Visaya can help plan your route through the Central Visayas.</p>
+      <div class="contact__items">
+        <a class="citem" href="https://maps.app.goo.gl/cFdqnN46fKbPEFAk7" target="_blank" rel="noopener">
+          <div class="citem__i">📍</div>
+          <div><div class="citem__t">Q Adventures Motorbike Rental</div><div class="citem__s">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines <span class="citem__link">· View on map →</span></div></div>
+        </a>
+        <div class="citem">
+          <div class="citem__i">✆</div>
+          <div><div class="citem__t">+63 943 245 8562 · +63 919 551 7812</div><div class="citem__s">Call or WhatsApp, after hours too</div></div>
+        </div>
+        <div class="citem">
+          <div class="citem__i">🕗</div>
+          <div><div class="citem__t">Open today · 08:00 – 17:00</div><div class="citem__s">After-hours service on request</div></div>
+        </div>
+      </div>
+      <div class="contact__btns">
+        <a class="btn btn--wa" id="shop-wa" href="https://wa.me/16266266347" target="_blank" rel="noopener">Message on WhatsApp</a>
+        <a class="btn btn--outline" href="tel:+639432458562">Call now</a>
+      </div>
+    </div>
+    <div>
+      <div class="dropcard">
+        <h3 class="dropcard__h3">Drop us a line</h3>
+        <p class="dropcard__p">We'll get back within a few hours.</p>
+        <div class="dropcard__fields">
+          <input id="dl-name" placeholder="Your name">
+          <input id="dl-email" placeholder="Email">
+          <textarea id="dl-msg" placeholder="Which bike and dates are you thinking about?" rows="4"></textarea>
+          <button class="btn btn--primary btn--block" id="dl-send">Send on WhatsApp</button>
+          <p class="dropcard__hint" id="dl-hint" hidden></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="ftr">
+  <div class="ftr__row">
+    <div class="ftr__brand">
+      <div class="ftr__mark">Q</div>
+      <div><div class="ftr__name">Q Adventures Scooter Rental</div><div class="ftr__sub">Ride the adventure in Cebu · © 2026</div></div>
+    </div>
+    <div class="ftr__links">
+      <span class="ftr__link" data-scroll="fleet">Fleet</span>
+      <span class="ftr__link" data-scroll="contact">Contact</span>
+      <a class="ftr__link" href="https://web.facebook.com/profile.php?id=100088059482908&amp;_rdc=1&amp;_rdr" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.5-3.91 3.78-3.91 1.1 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+        Facebook
+      </a>
+    </div>
+  </div>
+  <div class="ftr__legal">Copyright © 2026 Cebu Scooter Rental - All Rights Reserved.</div>
+</footer>
+
+<!-- the bike / booking modal is rendered here by app.js -->
+<div id="modal-root"></div>
+
+</div>
+</body>
+</html>
