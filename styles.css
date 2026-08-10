@@ -139,10 +139,14 @@ input, button, select, textarea { font-family: inherit; }
 .filter__cur-label { font-size: 13px; font-weight: 700; color: var(--body); }
 .filter__only { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
-.datefield { width: 220px; height: 34px; display: flex; align-items: center; gap: 7px; border: 1.5px solid var(--line-2); border-radius: 9px; padding: 0 10px; background: var(--field); cursor: pointer; }
+/* 220px was the old fixed width, kept here as a minimum rather than a cap: a full
+   range with both years spelled out ("13 Aug 2026 – 22 Aug 2026") does not fit it,
+   and wrapping the label pushed the field onto two lines. It now grows by as much
+   as the dates need and never wraps. */
+.datefield { min-width: 220px; height: 34px; display: flex; align-items: center; gap: 7px; border: 1.5px solid var(--line-2); border-radius: 9px; padding: 0 10px; background: var(--field); cursor: pointer; }
 .datefield.is-open { border-color: var(--orange); }
 .datefield svg { flex: none; }
-.datefield__label { flex: 1; text-align: left; font-size: 14.5px; font-weight: 600; color: var(--muted); }
+.datefield__label { flex: 1; text-align: left; font-size: 14.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
 .datefield__label.is-filled { color: var(--ink); }
 
 .onlylbl { display: flex; align-items: center; gap: 8px; cursor: not-allowed; opacity: .5; }
