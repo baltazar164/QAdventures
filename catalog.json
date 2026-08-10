@@ -1,0 +1,280 @@
+{
+  "refreshed_at": "2026-08-10T02:49:44Z",
+  "currency": "PHP",
+  "categories": [
+    {
+      "slug": "scooter",
+      "label": "Scooter"
+    },
+    {
+      "slug": "adventure",
+      "label": "Adventure"
+    }
+  ],
+  "discounts": [
+    {
+      "min_days": 7,
+      "percent": 10
+    },
+    {
+      "min_days": 28,
+      "percent": 20
+    }
+  ],
+  "delivery_zones": [
+    {
+      "id": 1,
+      "name": "Mactan",
+      "price": 300
+    },
+    {
+      "id": 2,
+      "name": "Cebu & Mandaue",
+      "price": 500
+    }
+  ],
+  "whatsapp": "639432458562",
+  "models": [
+    {
+      "id": "adv160",
+      "name": "Honda ADV160 ABS",
+      "cc": "160cc",
+      "cat": "adventure",
+      "price": 1000,
+      "weekly": 6300,
+      "monthly": 22400,
+      "tag": "Adventure-styled and rugged",
+      "badge": "",
+      "specs": [
+        "Automatic",
+        "ABS",
+        "Big storage"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-adv160-1.png"
+      ]
+    },
+    {
+      "id": "adv350",
+      "name": "Honda ADV350",
+      "cc": "350cc",
+      "cat": "adventure",
+      "price": 1900,
+      "weekly": 11970,
+      "monthly": 42560,
+      "tag": "The flagship — highway ready",
+      "badge": "Top spec",
+      "specs": [
+        "Automatic",
+        "ABS",
+        "Traction control"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-adv350-1.png"
+      ]
+    },
+    {
+      "id": "aerox155",
+      "name": "Yamaha Aerox 155",
+      "cc": "155cc",
+      "cat": "scooter",
+      "price": 700,
+      "weekly": 4410,
+      "monthly": 15680,
+      "tag": "Sporty and quick around town",
+      "badge": "",
+      "specs": [
+        "Automatic",
+        "Top box",
+        "2 helmets"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-aerox155-1.png"
+      ]
+    },
+    {
+      "id": "burgman",
+      "name": "Suzuki Burgman 125 EX",
+      "cc": "125cc",
+      "cat": "scooter",
+      "price": 650,
+      "weekly": 4095,
+      "monthly": 14560,
+      "tag": "Comfortable maxi-style ride",
+      "badge": "",
+      "specs": [
+        "Automatic",
+        "Top box",
+        "2 helmets"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-burgman-1.png"
+      ]
+    },
+    {
+      "id": "click125i",
+      "name": "Honda Click 125i",
+      "cc": "125cc",
+      "cat": "scooter",
+      "price": 700,
+      "weekly": 4410,
+      "monthly": 15680,
+      "tag": "The reliable all-rounder",
+      "badge": "",
+      "specs": [
+        "Automatic",
+        "Top box",
+        "2 helmets"
+      ],
+      "overview": "The Honda Click 125i is an excellent choice for city riding. Its slim, agile design makes it perfect for navigating heavy traffic and tight urban spaces.",
+      "pros": [
+        "Lightweight & easy to handle — ideal for new riders or busy city environments.",
+        "Punchy performance — despite being a 125cc, it feels closer to a 150cc in acceleration.",
+        "Narrow body — lets you slip smoothly through congested roads and tight gaps."
+      ],
+      "cons": [
+        "Single rear shock — may feel uncomfortable on the back after long rides (40+ minutes).",
+        "Narrow seat — less comfortable for wider builds or long-distance travel.",
+        "Limited under-seat storage — enough for essentials, but not much more."
+      ],
+      "photos": [
+        "images/catalog/bike-click125i-1.png",
+        "images/catalog/bike-click125i-2.png",
+        "images/catalog/bike-click125i-3.png"
+      ]
+    },
+    {
+      "id": "gravis125",
+      "name": "Yamaha Gravis 125",
+      "cc": "125cc",
+      "cat": "scooter",
+      "price": 600,
+      "weekly": 3780,
+      "monthly": 13440,
+      "tag": "Easy, economical everyday runabout",
+      "badge": "",
+      "specs": [
+        "Automatic",
+        "Top box",
+        "2 helmets"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-gravis125-1.png"
+      ]
+    },
+    {
+      "id": "pcx160",
+      "name": "Honda PCX160",
+      "cc": "160cc",
+      "cat": "scooter",
+      "price": 700,
+      "weekly": 4410,
+      "monthly": 15680,
+      "tag": "Best-selling premium scooter",
+      "badge": "Best Seller",
+      "specs": [
+        "Automatic",
+        "Top box",
+        "2 helmets"
+      ],
+      "overview": "The Honda PCX160 is a comfort-focused premium scooter that balances a refined ride with strong performance — well suited to both urban commutes and longer suburban trips.",
+      "pros": [
+        "Comfort-focused ride — wide seat, spacious legroom, and superior suspension for longer trips.",
+        "Strong engine performance — the 157cc engine delivers smooth acceleration and excellent power for urban and suburban riding.",
+        "Premium design — stylish, modern body with LED lights and an upscale aesthetic.",
+        "Excellent fuel efficiency — great mileage despite the higher displacement.",
+        "Large under-seat storage — fits a helmet and additional items with ease.",
+        "Enhanced safety features — ABS and traction improvements (depending on model/year)."
+      ],
+      "cons": [
+        "Wider body — less agile in heavy traffic than slimmer scooters like the Click 125i or Mio.",
+        "Heavier build — requires more effort to maneuver in tight spaces or when parking.",
+        "Higher price point — more costly than other 150cc-class scooters."
+      ],
+      "photos": [
+        "images/catalog/bike-pcx160-1.png"
+      ]
+    },
+    {
+      "id": "pcx160abs",
+      "name": "Honda PCX160 ABS",
+      "cc": "160cc",
+      "cat": "scooter",
+      "price": 850,
+      "weekly": 5355,
+      "monthly": 19040,
+      "tag": "PCX comfort with ABS safety",
+      "badge": "",
+      "specs": [
+        "Automatic",
+        "ABS",
+        "Top box"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-pcx160abs-1.png"
+      ]
+    },
+    {
+      "id": "rouser160",
+      "name": "Kawasaki Rouser 160",
+      "cc": "160cc",
+      "cat": "adventure",
+      "price": 800,
+      "weekly": 5040,
+      "monthly": 17920,
+      "tag": "Punchy naked street bike",
+      "badge": "",
+      "specs": [
+        "Manual",
+        "Nimble",
+        "Fuel-efficient"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-rouser160-1.png"
+      ]
+    },
+    {
+      "id": "vstrom250",
+      "name": "Suzuki V-Strom 250",
+      "cc": "250cc",
+      "cat": "adventure",
+      "price": 1300,
+      "weekly": 8190,
+      "monthly": 29120,
+      "tag": "Go anywhere, ride all day",
+      "badge": "Featured",
+      "specs": [
+        "Manual",
+        "Touring",
+        "Long range"
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-vstrom250-1.png"
+      ]
+    }
+  ]
+}
