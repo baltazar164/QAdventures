@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<template id="__bundler_thumbnail" data-bg-color="#FBF7F0">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect x="360" y="240" width="480" height="320" rx="24" fill="#1B1712"/>
+    <circle cx="440" cy="600" r="60" fill="none" stroke="#1B1712" stroke-width="18"/>
+    <circle cx="760" cy="600" r="60" fill="none" stroke="#1B1712" stroke-width="18"/>
+    <rect x="500" y="320" width="200" height="24" rx="12" fill="#FBF7F0"/>
+  </svg>
+</template>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#FBF7F0;color:#1B1712;font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:#E4761B;text-decoration:none}
+  a:hover{color:#c25f0e}
+  ::selection{background:#FFA648;color:#1B1712}
+  @keyframes floatUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes overlayIn{from{opacity:0}to{opacity:1}}
+  @keyframes sheetIn{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+  input,button,select{font-family:inherit}
+</style>
+</helmet>
+
+<div style="max-width:100%;overflow-x:hidden">
+
+<!-- HEADER -->
+<header style="position:sticky;top:0;z-index:40;background:rgba(251,247,240,.86);backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,23,18,.08)">
+  <div style="{{ headerBarStyle }}">
+    <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onClick="{{ toTop }}">
+      <div style="width:34px;height:34px;background:#1B1712;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#FFA648;font-family:'Space Grotesk';font-weight:700;font-size:19px;flex:none">Q</div>
+      <div style="line-height:1.05">
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap">Q Adventures</div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8A8175;font-weight:600">Cebu Scooter Rental</div>
+      </div>
+    </div>
+    <nav style="{{ navStyle }}">
+      <span style="font-size:14px;font-weight:600;color:#4A443B;cursor:pointer" onClick="{{ toFleet }}">Fleet</span>
+      <span style="font-size:14px;font-weight:600;color:#4A443B;cursor:pointer" onClick="{{ toHow }}">How it works</span>
+      <span style="font-size:14px;font-weight:600;color:#4A443B;cursor:pointer" onClick="{{ toStory }}">Why us</span>
+      <span style="font-size:14px;font-weight:600;color:#4A443B;cursor:pointer" onClick="{{ toContact }}">Contact</span>
+    </nav>
+    <button onClick="{{ toggleMobileMenu }}" aria-label="Menu" style="{{ hamburgerStyle }}">
+      <span style="{{ hamburgerBarStyle }}"></span>
+      <span style="{{ hamburgerBarStyle }}"></span>
+      <span style="{{ hamburgerBarStyle }}"></span>
+    </button>
+    <select value="{{ currency }}" onChange="{{ onCurrency }}" aria-label="Currency" style="{{ currencySelectStyle }}">
+      <sc-for list="{{ currencyOpts }}" as="c" hint-placeholder-count="8">
+        <option value="{{ c.code }}">{{ c.label }}</option>
+      </sc-for>
+    </select>
+    <a href="tel:+639432458562" style="{{ callBtnStyle }}">
+      <span style="font-size:15px">✆</span><span style="{{ callLabelStyle }}">&nbsp;+63 943 245 8562</span>
+    </a>
+  </div>
+  <sc-if value="{{ mobileMenuOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ toggleMobileMenu }}" style="position:fixed;inset:0;z-index:35"></div>
+    <div style="position:relative;z-index:36;background:#FBF7F0;border-top:1px solid rgba(27,23,18,.08);padding:8px 18px 14px;display:flex;flex-direction:column">
+      <sc-for list="{{ mobileNavItems }}" as="item" hint-placeholder-count="4">
+        <span onClick="{{ item.onClick }}" style="padding:14px 4px;font-size:15.5px;font-weight:700;color:#1B1712;cursor:pointer;border-bottom:1px solid rgba(27,23,18,.06)">{{ item.label }}</span>
+      </sc-for>
+    </div>
+  </sc-if>
+</header>
+
+<!-- HERO -->
+<section style="{{ heroSectionStyle }}">
+  <div style="{{ heroGridStyle }}">
+    <div style="animation:floatUp .6s ease both">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:#FFF0DE;border:1px solid #FFD9A8;color:#B25E12;font-weight:700;font-size:12.5px;padding:7px 13px;border-radius:100px;letter-spacing:.01em">☀ 10% off for 7+ days · 20% off for 28+ days</div>
+      <h1 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.03em;margin:16px 0 0">Ride Cebu on<br>your own terms.</h1>
+      <p style="font-size:17px;line-height:1.55;color:#544D43;max-width:480px;margin:16px 0 0">Total freedom on two wheels — <strong style="color:#1B1712">no kilometer limits, no geography restrictions, and no documents held.</strong> Well-maintained scooters and adventure bikes, delivered ready to explore.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:22px">
+        <button onClick="{{ toFleet }}" style="background:#E4761B;color:#fff;border:none;font-weight:700;font-size:15px;padding:15px 26px;border-radius:12px;cursor:pointer;box-shadow:0 8px 20px rgba(228,118,27,.28)">Book your ride →</button>
+        <button onClick="{{ toStory }}" style="background:transparent;color:#1B1712;border:1.5px solid rgba(27,23,18,.18);font-weight:700;font-size:15px;padding:15px 24px;border-radius:12px;cursor:pointer">Our promise</button>
+      </div>
+      <div style="display:flex;gap:26px;margin-top:26px;flex-wrap:wrap">
+        <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px">{{ heroFromStr }}<span style="font-size:14px;color:#8A8175">/day</span></div><div style="font-size:12.5px;color:#8A8175;font-weight:600">Scooters from</div></div>
+        <div style="width:1px;background:rgba(27,23,18,.1)"></div>
+        <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px">0km</div><div style="font-size:12.5px;color:#8A8175;font-weight:600">Distance limit</div></div>
+        <div style="width:1px;background:rgba(27,23,18,.1)"></div>
+        <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px">0</div><div style="font-size:12.5px;color:#8A8175;font-weight:600">Documents held</div></div>
+      </div>
+    </div>
+    <div style="position:relative;animation:floatUp .6s .1s ease both">
+      <div style="position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;border:1px solid rgba(27,23,18,.08)">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hero-photo" src="images/hero-photo.webp" shape="rect" fit="cover" placeholder="Hero — rider on a scooter, Cebu coastline" hint-size="100%,100%"></x-import>
+      </div>
+      <div style="position:absolute;left:-16px;bottom:26px;background:#fff;border:1px solid rgba(27,23,18,.08);box-shadow:0 12px 30px rgba(27,23,18,.12);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:11px">
+        <div style="width:40px;height:40px;border-radius:10px;background:#0F5C4A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px">✓</div>
+        <div style="line-height:1.2"><div style="font-weight:800;font-size:13.5px">We never hold your passport</div><div style="font-size:11.5px;color:#8A8175">Zero documents held. Ever.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<section style="background:#1B1712;color:#F3EEE4">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;gap:14px 34px;align-items:center;justify-content:center;font-weight:600;font-size:13.5px">
+    <span style="color:#FFB86B">✦ Refundable deposit</span>
+    <span style="opacity:.35">·</span>
+    <span style="color:#FFB86B">✦ No documents held</span>
+    <span style="opacity:.35">·</span>
+    <span style="color:#FFB86B">✦ Unlimited kilometers</span>
+    <span style="opacity:.35">·</span>
+    <span style="color:#FFB86B">✦ Fully equipped bikes</span>
+    <span style="opacity:.35">·</span>
+    <span style="color:#FFB86B">✦ Local tour guides</span>
+  </div>
+</section>
+
+<!-- FLEET -->
+<section id="fleet" style="{{ fleetSectionStyle }}">
+  
+
+  <!-- AVAILABILITY FILTER -->
+  <div style="margin-top:14px;background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:14px;padding:12px 16px;box-shadow:0 2px 10px rgba(27,23,18,.04)">
+    <div style="{{ filterRowStyle }}">
+      <div style="flex:none;min-width:0">
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:14px;letter-spacing:-.01em">Check your travel dates</div>
+      </div>
+      <div style="{{ availWrapStyle }}">
+        <button onClick="{{ toggleCal }}" style="{{ calFieldStyle }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E4761B" stroke-width="2" stroke-linecap="round" style="flex:none"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="6"></line><line x1="16" y1="3" x2="16" y2="6"></line></svg>
+          <span style="{{ rangeLabelStyle }}">{{ rangeLabel }}</span>
+        </button>
+        <sc-if value="{{ calOpen }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeCal }}" style="position:fixed;inset:0;z-index:55"></div>
+          <div style="{{ calDropdownStyle }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <button onClick="{{ prevMonth }}" style="width:34px;height:34px;border:none;border-radius:50%;background:#F5F0E6;color:#1B1712;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px">{{ calTitle }}</div>
+              <button onClick="{{ nextMonth }}" style="width:34px;height:34px;border:none;border-radius:50%;background:#F5F0E6;color:#1B1712;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px">
+              <sc-for list="{{ weekdays }}" as="wd" hint-placeholder-count="7">
+                <div style="{{ wd.style }}">{{ wd.label }}</div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px 0">
+              <sc-for list="{{ calDays }}" as="day" hint-placeholder-count="35">
+                <div onClick="{{ day.onClick }}" style="{{ day.style }}">{{ day.label }}</div>
+              </sc-for>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid rgba(27,23,18,.08)">
+              <button onClick="{{ clearAvail }}" style="background:transparent;border:none;color:#8A8175;font-weight:700;font-size:13px;cursor:pointer;padding:0">Clear</button>
+              <button onClick="{{ closeCal }}" style="background:#1B1712;color:#fff;border:none;font-weight:700;font-size:13.5px;padding:9px 18px;border-radius:9px;cursor:pointer">Done</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="{{ filterCurrencyWrapStyle }}">
+        <span style="font-size:13px;font-weight:700;color:#544D43">Currency</span>
+        <select value="{{ currency }}" onChange="{{ onCurrency }}" aria-label="Currency" style="{{ filterCurrencySelectStyle }}">
+          <sc-for list="{{ currencyOpts }}" as="c" hint-placeholder-count="8">
+            <option value="{{ c.code }}">{{ c.label }}</option>
+          </sc-for>
+        </select>
+      </div>
+      <div style="{{ availOnlyWrapStyle }}">
+        <label style="{{ availOnlyLabelStyle }}">
+          <input type="checkbox" checked="{{ availOnly }}" disabled="{{ availOnlyDisabled }}" onChange="{{ onAvailOnly }}" style="width:16px;height:16px;accent-color:#E4761B;flex:none">
+          <span style="{{ availOnlyTextStyle }}">Show only available bikes</span>
+        </label>
+        <sc-if value="{{ datesChosen }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ availCountStyle }}">{{ availCountLabel }}</div>
+        </sc-if>
+      </div>
+    </div>
+    
+  </div>
+
+  <sc-if value="{{ fleetLoading }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:28px;text-align:center;color:#8A8175;font-weight:600;font-size:14.5px">Loading the fleet…</div>
+  </sc-if>
+
+  <div style="{{ fleetGridStyle }}">
+    <sc-for list="{{ filteredFleet }}" as="bike" hint-placeholder-count="6">
+      <div onClick="{{ bike.onBook }}" style="background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(27,23,18,.04);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);box-shadow:0 16px 34px rgba(27,23,18,.12)">
+        <div style="position:relative;aspect-ratio:4/3;overflow:hidden">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ bike.slotId }}" src="{{ bike.imgSrc }}" fit="contain" shape="rect" placeholder="{{ bike.name }}" hint-size="100%,100%"></x-import>
+          <span style="{{ bike.badgeStyle }}">{{ bike.badge }}</span>
+          <sc-if value="{{ bike.showAvail }}" hint-placeholder-val="{{ false }}">
+            <span style="{{ bike.availChipStyle }}">{{ bike.availChipLabel }}</span>
+          </sc-if>
+          <sc-if value="{{ bike.dimmed }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;z-index:1;background:rgba(251,247,240,.62);pointer-events:none"></div>
+          </sc-if>
+        </div>
+        <div style="padding: 15px 18px 16px; display: flex; flex-direction: column; flex: 1; position: relative">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#0F5C4A;background:#E5F0EC;padding:3px 8px;border-radius:6px">{{ bike.catLabel }}</span>
+            <span style="font-size:11.5px;font-weight:600;color:#8A8175">{{ bike.cc }}</span>
+          </div>
+          <h3 style="font-family:'Space Grotesk';font-weight:600;font-size:20px;letter-spacing:-.01em;margin:9px 0 2px">{{ bike.name }}</h3>
+          <div style="font-size:13.5px;color:#8A8175;font-weight:500">{{ bike.tag }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin:11px 0 14px">
+            <sc-for list="{{ bike.specs }}" as="spec" hint-placeholder-count="3">
+              <span style="font-size:11.5px;font-weight:600;color:#544D43;background:#F5F0E6;padding:5px 9px;border-radius:7px">{{ spec }}</span>
+            </sc-for>
+          </div>
+          <div style="margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+            <div>
+              <div><span style="font-family:'Space Grotesk';font-weight:700;font-size:23px">{{ bike.priceStr }}</span><span style="font-size:13px;color:#8A8175;font-weight:600">/day</span></div>
+              <div style="font-size:11px;color:#8A8175;font-weight:600;margin-top:2px">{{ bike.weeklyStr }}</div>
+            </div>
+            <button onClick="{{ bike.onBook }}" style="{{ bike.bookStyle }}">{{ bike.bookLabel }}</button>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="max-width:1200px;margin:0 auto;padding:{{ howSectionPad }}">
+  <div style="text-align:center">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#E4761B">Simple as it should be</div>
+    <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(28px,4vw,42px);letter-spacing:-.02em;margin:8px 0 0">Ride in three steps</h2>
+  </div>
+  <div style="{{ stepsGridStyle }}">
+    <sc-for list="{{ steps }}" as="step" hint-placeholder-count="3">
+      <div style="background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:18px;padding:24px 22px">
+        <div style="width:44px;height:44px;border-radius:12px;background:#FFF0DE;color:#E4761B;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:20px">{{ step.n }}</div>
+        <h3 style="font-family:'Space Grotesk';font-weight:600;font-size:20px;margin:14px 0 6px">{{ step.title }}</h3>
+        <p style="font-size:14.5px;line-height:1.6;color:#544D43;margin:0">{{ step.body }}</p>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- STORY / WHY US -->
+<section id="story" style="background:#0F5C4A;color:#EAF3EF">
+  <div style="max-width:1200px;margin:0 auto;padding:{{ storySectionPad }};{{ twoColGridStyle }}">
+    <div>
+      <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8FD9C4">Our promise</div>
+      <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;line-height:1.08;margin:10px 0 0">Born from a rental nightmare.</h2>
+      <p style="font-size:16px;line-height:1.7;color:#CFE6DF;margin:20px 0 0">This company started after a rental shop lost my passport. So we do things differently: <strong style="color:#fff">no document holding, fully equipped bikes, and zero restrictions.</strong> Just safe, convenient, worry-free riding anywhere in the Philippines.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px">
+        <sc-for list="{{ promises }}" as="p" hint-placeholder-count="4">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex:none;width:22px;height:22px;border-radius:7px;background:rgba(255,166,72,.22);color:#FFC98A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">✓</div>
+            <div style="font-size:14px;font-weight:600;line-height:1.35">{{ p }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="position:relative;aspect-ratio:1/1;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.14)">
+      <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="story-photo" fit="contain" src="images/story-photo.webp" shape="rect" placeholder="Photo — the shop / owner with a bike" hint-size="100%,100%"></x-import>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="max-width:1200px;margin:0 auto;padding:{{ contactSectionPad }}">
+  <div style="{{ contactGridStyle }}">
+    <div>
+      <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#E4761B">Visit or message</div>
+      <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:8px 0 18px">Come say hi</h2>
+      <p style="font-size:15.5px;line-height:1.65;color:#544D43;max-width:440px">Drop by during business hours — we also serve authentic <strong style="color:#1B1712">Vietnamese food and coffee</strong>. Our guide Visaya can help plan your route through the Central Visayas.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:26px">
+        <a href="https://maps.app.goo.gl/cFdqnN46fKbPEFAk7" target="_blank" rel="noopener" style="display:flex;gap:13px;align-items:center;text-decoration:none;color:inherit"><div style="width:42px;height:42px;border-radius:11px;background:#FFF0DE;color:#E4761B;display:flex;align-items:center;justify-content:center;font-size:18px">📍</div><div><div style="font-weight:800;font-size:14.5px">Q Adventures Motorbike Rental</div><div style="font-size:13.5px;color:#8A8175">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines <span style="color:#E4761B;font-weight:700">· View on map →</span></div></div></a>
+        <div style="display:flex;gap:13px;align-items:center"><div style="width:42px;height:42px;border-radius:11px;background:#FFF0DE;color:#E4761B;display:flex;align-items:center;justify-content:center;font-size:18px">✆</div><div><div style="font-weight:800;font-size:14.5px">+63 943 245 8562 · +63 919 551 7812</div><div style="font-size:13.5px;color:#8A8175">Call or WhatsApp, after hours too</div></div></div>
+        <div style="display:flex;gap:13px;align-items:center"><div style="width:42px;height:42px;border-radius:11px;background:#FFF0DE;color:#E4761B;display:flex;align-items:center;justify-content:center;font-size:18px">🕗</div><div><div style="font-weight:800;font-size:14.5px">Open today · 08:00 – 17:00</div><div style="font-size:13.5px;color:#8A8175">After-hours service on request</div></div></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:26px;flex-wrap:wrap">
+        <a href="{{ shopWaHref }}" style="display:inline-flex;align-items:center;gap:9px;background:#0F5C4A;color:#fff;font-weight:700;font-size:14.5px;padding:14px 22px;border-radius:12px;{{ contactBtnStyle }}">Message on WhatsApp</a>
+        <a href="tel:+639432458562" style="display:inline-flex;align-items:center;gap:9px;background:transparent;border:1.5px solid rgba(27,23,18,.18);color:#1B1712;font-weight:700;font-size:14.5px;padding:14px 22px;border-radius:12px;{{ contactBtnStyle }}">Call now</a>
+      </div>
+    </div>
+    <div>
+      <div style="background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:18px;padding:26px;box-shadow:0 10px 30px rgba(27,23,18,.06)">
+        <h3 style="font-family:'Space Grotesk';font-weight:600;font-size:20px;margin:0 0 4px">Drop us a line</h3>
+        <p style="font-size:13.5px;color:#8A8175;margin:0 0 18px">We'll get back within a few hours.</p>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <input placeholder="Your name" style="border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:13px 15px;font-size:14.5px;background:#FBF9F4">
+          <input placeholder="Email" style="border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:13px 15px;font-size:14.5px;background:#FBF9F4">
+          <textarea placeholder="Which bike and dates are you thinking about?" rows="4" style="border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:13px 15px;font-size:14.5px;background:#FBF9F4;resize:vertical"></textarea>
+          <button onClick="{{ fakeSend }}" style="background:#E4761B;color:#fff;border:none;font-weight:700;font-size:15px;padding:14px;border-radius:11px;cursor:pointer">{{ sendLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#1B1712;color:#B7AF9F">
+  <div style="max-width:1200px;margin:0 auto;padding:36px 24px 26px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center">
+    <div style="display:flex;align-items:center;gap:11px">
+      <div style="width:38px;height:38px;background:#FFA648;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#1B1712;font-family:'Space Grotesk';font-weight:700;font-size:20px">Q</div>
+      <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff">Q Adventures Scooter Rental</div><div style="font-size:12px">Ride the adventure in Cebu · © 2026</div></div>
+    </div>
+    <div style="display:flex;gap:22px;font-size:13.5px;font-weight:600;align-items:center">
+      <span style="cursor:pointer" onClick="{{ toFleet }}">Fleet</span>
+      <span style="cursor:pointer" onClick="{{ toContact }}">Contact</span>
+      <a href="https://web.facebook.com/profile.php?id=100088059482908&_rdc=1&_rdr" target="_blank" rel="noopener" aria-label="Facebook" style="display:inline-flex;align-items:center;gap:7px;color:#B7AF9F;text-decoration:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.5-3.91 3.78-3.91 1.1 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+        Facebook
+      </a>
+    </div>
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,0.08);padding:16px 24px;text-align:center;font-size:12.5px;color:#8C846F">Copyright © 2026 Cebu Scooter Rental - All Rights Reserved.</div>
+</footer>
+
+<!-- BOOKING MODAL -->
+<sc-if value="{{ selected }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:80;background:rgba(20,17,12,.55);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;overflow-y:auto;animation:overlayIn .2s ease" onClick="{{ closeBike }}">
+    <div style="width:100%;max-width:520px;background:#FBF7F0;border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:sheetIn .28s cubic-bezier(.2,.8,.2,1)" onClick="{{ stop }}">
+      <div style="position:relative;aspect-ratio:16/9;overflow:hidden;background:#F5F0E6">
+        <img src="{{ selected.mainPhoto }}" alt="{{ selected.name }}" style="width:100%;height:100%;object-fit:contain;display:block">
+        <button onClick="{{ closeBike }}" style="position:absolute;top:14px;right:14px;z-index:3;width:36px;height:36px;border-radius:50%;border:none;background:rgba(27,23,18,.9);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+        <sc-if value="{{ selected.hasMultiplePhotos }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ prevPhoto }}" aria-label="Previous photo" style="position:absolute;top:50%;left:12px;transform:translateY(-50%);z-index:3;width:38px;height:38px;border-radius:50%;border:none;background:rgba(27,23,18,.55);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+          <button onClick="{{ nextPhoto }}" aria-label="Next photo" style="position:absolute;top:50%;right:12px;transform:translateY(-50%);z-index:3;width:38px;height:38px;border-radius:50%;border:none;background:rgba(27,23,18,.55);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
+        </sc-if>
+      </div>
+      <sc-if value="{{ selected.hasMultiplePhotos }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px 12px;background:#fff;border-bottom:1px solid rgba(27,23,18,.06)">
+          <sc-for list="{{ selected.thumbs }}" as="t" hint-placeholder-count="3">
+            <img src="{{ t.src }}" onClick="{{ t.onClick }}" style="{{ t.style }}">
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div style="padding:24px">
+        <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#0F5C4A;background:#E5F0EC;padding:3px 8px;border-radius:6px">{{ selected.catLabel }}</span>
+              <span style="font-size:12px;font-weight:600;color:#8A8175">{{ selected.cc }}</span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:10px">
+              <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:26px;letter-spacing:-.02em;margin:0">{{ selected.name }}</h2>
+              <div style="white-space:nowrap;text-align:right"><div><span style="font-family:'Space Grotesk';font-weight:700;font-size:22px">{{ selected.priceStr }}</span><span style="font-size:13px;color:#8A8175;font-weight:600">/day</span></div><div style="font-size:11px;color:#8A8175;font-weight:600">{{ selected.weeklyStr }}</div></div>
+            </div>
+
+            <sc-if value="{{ selected.hasDesc }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:18px;background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:14px;padding:16px 18px">
+                <p style="font-size:13.5px;line-height:1.6;color:#544D43;margin:0">{{ selected.desc.overview }}</p>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:14px"><span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#0F5C4A">Pros</span><span style="flex:1;height:1px;background:rgba(15,92,74,.18)"></span></div>
+                <ul style="margin:9px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px">
+                  <sc-for list="{{ selected.desc.pros }}" as="p" hint-placeholder-count="3">
+                    <li style="display:flex;gap:9px;font-size:13px;line-height:1.5;color:#544D43"><span style="color:#0F5C4A;font-weight:800;flex:none">+</span><span>{{ p }}</span></li>
+                  </sc-for>
+                </ul>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:14px"><span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#C0562A">Cons</span><span style="flex:1;height:1px;background:rgba(192,86,42,.18)"></span></div>
+                <ul style="margin:9px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px">
+                  <sc-for list="{{ selected.desc.cons }}" as="c" hint-placeholder-count="3">
+                    <li style="display:flex;gap:9px;font-size:13px;line-height:1.5;color:#544D43"><span style="color:#C0562A;font-weight:800;flex:none">−</span><span>{{ c }}</span></li>
+                  </sc-for>
+                </ul>
+              </div>
+            </sc-if>
+
+            <div style="margin-top:22px">
+              <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">TRAVEL DATES</label>
+              <div style="position:relative;margin-top:6px">
+                <button onClick="{{ toggleModalCal }}" style="{{ modalCalFieldStyle }}">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E4761B" stroke-width="2" stroke-linecap="round" style="flex:none"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="6"></line><line x1="16" y1="3" x2="16" y2="6"></line></svg>
+                  <span style="{{ mRangeLabelStyle }}">{{ mRangeLabel }}</span>
+                </button>
+                <sc-if value="{{ modalCalOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;top:54px;left:0;right:0;z-index:6;background:#fff;border:1px solid rgba(27,23,18,.1);border-radius:16px;box-shadow:0 22px 54px rgba(27,23,18,.2);padding:16px">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                      <button onClick="{{ mPrevMonth }}" style="width:34px;height:34px;border:none;border-radius:50%;background:#F5F0E6;color:#1B1712;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+                      <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px">{{ mCalTitle }}</div>
+                      <button onClick="{{ mNextMonth }}" style="width:34px;height:34px;border:none;border-radius:50%;background:#F5F0E6;color:#1B1712;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px">
+                      <sc-for list="{{ weekdays }}" as="wd" hint-placeholder-count="7">
+                        <div style="{{ wd.style }}">{{ wd.label }}</div>
+                      </sc-for>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px 0">
+                      <sc-for list="{{ mCalDays }}" as="day" hint-placeholder-count="35">
+                        <div onClick="{{ day.onClick }}" style="{{ day.style }}">{{ day.label }}</div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid rgba(27,23,18,.08)">
+                      <button onClick="{{ closeModalCal }}" style="background:#1B1712;color:#fff;border:none;font-weight:700;font-size:13.5px;padding:9px 18px;border-radius:9px;cursor:pointer">Done</button>
+                    </div>
+                  </div>
+                </sc-if>
+                </div>
+              </div>
+
+            <sc-if value="{{ hasZones }}" hint-placeholder-val="{{ true }}">
+              <div style="margin-top:16px">
+                <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">DELIVERY</label>
+                <select value="{{ zoneId }}" onChange="{{ onZone }}" aria-label="Delivery" style="width:100%;margin-top:6px;height:46px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:0 12px;background:#fff;font-size:14.5px;font-weight:600;color:#1B1712;cursor:pointer;appearance:auto">
+                  <sc-for list="{{ zoneOpts }}" as="z" hint-placeholder-count="3">
+                    <option value="{{ z.value }}">{{ z.label }}</option>
+                  </sc-for>
+                </select>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasZone }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:14px">
+                <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">DELIVERY ADDRESS</label>
+                <input value="{{ address }}" onChange="{{ onAddress }}" placeholder="Hotel and room number" style="width:100%;margin-top:6px;height:46px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:0 14px;background:#fff;font-size:14.5px;box-sizing:border-box">
+              </div>
+            </sc-if>
+
+            <div style="margin-top:14px">
+              <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">PHONE</label>
+              <input value="{{ phone }}" onChange="{{ onPhone }}" type="tel" placeholder="The number we can reach you on" style="width:100%;margin-top:6px;height:46px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:0 14px;background:#fff;font-size:14.5px;box-sizing:border-box">
+            </div>
+
+            <div style="margin-top:14px">
+              <label style="font-size:12px;font-weight:700;color:#544D43;letter-spacing:.02em">ANYTHING WE SHOULD KNOW? <span style="font-weight:600;color:#8A8175">· optional</span></label>
+              <textarea value="{{ note }}" onChange="{{ onNote }}" rows="2" placeholder="Arrival time, an extra helmet, anything else" style="width:100%;margin-top:6px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;padding:11px 14px;background:#fff;font-size:14.5px;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+            </div>
+
+            <div style="margin-top:18px;background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:14px;padding:16px 18px">
+              <div style="display:flex;justify-content:space-between;font-size:14px;color:#544D43;margin-bottom:9px"><span>{{ booking.daysLabel }} × {{ selected.priceStr }}</span><span style="font-weight:700;color:#1B1712">{{ booking.subtotalStr }}</span></div>
+              <sc-if value="{{ booking.hasDiscount }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;justify-content:space-between;font-size:14px;color:#0F5C4A;margin-bottom:9px"><span>{{ booking.discountLabel }}</span><span style="font-weight:700;color:#0F5C4A">{{ booking.discountStr }}</span></div>
+              </sc-if>
+              <sc-if value="{{ hasZone }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;justify-content:space-between;font-size:14px;color:#544D43;margin-bottom:9px"><span>{{ deliveryLabel }}</span><span style="font-weight:700;color:#1B1712">{{ deliveryFeeStr }}</span></div>
+              </sc-if>
+              <div style="height:1px;background:rgba(27,23,18,.1);margin:11px 0"></div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:800;font-size:15px">Total</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:24px">{{ booking.totalStr }}</span></div>
+            </div>
+
+            <sc-if value="{{ showRequest }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ onRequest }}" style="{{ requestStyle }}">{{ requestLabel }}</button>
+            </sc-if>
+            <button onClick="{{ onWhatsApp }}" style="{{ whatsAppStyle }}">{{ whatsAppLabel }}</button>
+            <sc-if value="{{ hasHint }}" hint-placeholder-val="{{ false }}">
+              <p style="{{ hintStyle }}">{{ hint }}</p>
+            </sc-if>
+            <sc-if value="{{ hasWaNote }}" hint-placeholder-val="{{ false }}">
+              <p style="{{ waNoteStyle }}">{{ waNote }}</p>
+            </sc-if>
+            <p style="text-align:center;font-size:12px;color:#8A8175;margin:12px 0 0">Nothing to pay now · deposit on pick-up, refunded on return · free cancellation</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:14px 6px 8px">
+            <div style="width:64px;height:64px;border-radius:50%;background:#E5F0EC;color:#0F5C4A;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto;animation:floatUp .4s ease both">✓</div>
+            <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:25px;margin:18px 0 6px">Booking requested!</h2>
+            <p style="font-size:14.5px;line-height:1.6;color:#544D43;margin:0 auto;max-width:360px">We've noted your <strong style="color:#1B1712">{{ selected.name }}</strong> for {{ booking.daysLabel }}. We'll confirm by WhatsApp shortly — nothing to pay until pick-up.</p>
+            <sc-if value="{{ hasAccount }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:12.5px;color:#8A8175;margin:10px 0 0">{{ accountLine }}</p>
+            </sc-if>
+            <div style="background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:14px;padding:14px 18px;margin:20px 0;display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:700;font-size:14px">Estimated total</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:22px">{{ booking.totalStr }}</span></div>
+            <div style="display:flex;gap:10px">
+              <button onClick="{{ closeBike }}" style="flex:1;background:#1B1712;color:#fff;border:none;font-weight:700;font-size:14.5px;padding:14px;border-radius:11px;cursor:pointer">Done</button>
+              <a href="{{ shopWaHref }}" style="flex:none;background:transparent;border:1.5px solid rgba(15,92,74,.35);color:#0F5C4A;font-weight:700;font-size:14.5px;padding:14px 20px;border-radius:11px;text-align:center">Message us on WhatsApp</a>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CURRENCIES = {
+  PHP: { symbol: '₱',   rate: 1,       label: '₱ PHP' },
+  USD: { symbol: '$',   rate: 0.017,   label: '$ USD' },
+  EUR: { symbol: '€',   rate: 0.016,   label: '€ EUR' },
+  AUD: { symbol: 'A$',  rate: 0.026,   label: 'A$ AUD' },
+  SGD: { symbol: 'S$',  rate: 0.023,   label: 'S$ SGD' },
+  KRW: { symbol: '₩',   rate: 23.5,    label: '₩ KRW' },
+  JPY: { symbol: '¥',   rate: 2.6,     label: '¥ JPY' },
+  CNY: { symbol: 'CN¥', rate: 0.12,    label: 'CN¥ CNY' },
+};
+const BIKE_IMG = {
+  pcx160: "images/bike-pcx160.png",
+  aerox155: "images/bike-aerox155.png",
+  burgman: "images/bike-burgman.png",
+  gravis125: "images/bike-gravis125.png",
+  click125i: "images/bike-click125i.webp",
+  pcx160abs: "images/bike-pcx160abs.png",
+  adv160: "images/bike-adv160.png",
+  adv350: "images/bike-adv350.png",
+  vstrom250: "images/bike-vstrom250.png",
+  rouser160: "images/bike-rouser160.png"
+};
+
+// --- Live catalog from the Odoo endpoint (Odoo_QAdventure/docs/qa_catalog_spec.md §3) ---
+// The site reads its fleet from Odoo instead of a hardcoded array. A wrong/missing key
+// or an unreachable Odoo makes the page fall back to FALLBACK_MODELS below, so it never
+// renders empty.
+//
+// The key is deliberately committed and NOT a secret: a static page has no server to hide
+// it behind, and the endpoint only serves already-public catalog data (prices, specs,
+// photos) — a leaked key exposes nothing the site doesn't already show. It is a soft
+// speed-bump against scrapers, paired with the endpoint's CORS origin check. Keep the
+// value in sync with Odoo's `qa_catalog.api_key` config param (do not regenerate it).
+// URL is localhost for now — repoint to the public Odoo host at deploy time.
+const CATALOG_API_URL = "http://localhost:8069/qa/catalog";
+const CATALOG_API_KEY = "uo_HMSZHGdkrKDQeSoYdvdpeNU-loThwYSiCfqopgh0";
+
+// Where a booking is sent. Derived from the catalog URL rather than written out
+// again, so the deploy still repoints one constant.
+const BOOK_API_URL = CATALOG_API_URL.replace(/\/qa\/catalog\/?$/, '') + '/qa/book';
+
+// Sign-in with Google, required for a booking to reach Odoo. Client ids are
+// public by design — this one is as safe to commit as the catalog key above.
+// What is NOT interchangeable is the origin: the address this page is served
+// from must be registered as an authorised JavaScript origin on that client, or
+// the popup refuses with `origin_mismatch` and never returns a token. The local
+// dev origin and the published one are two separate entries.
+const GOOGLE_CLIENT_ID = "754460266117-11d4750piukfr2831t5ermlj86qn0k0q.apps.googleusercontent.com";
+const GOOGLE_SCRIPT_URL = "https://accounts.google.com/gsi/client";
+// How long to wait for Google's script before deciding it will never arrive —
+// an ad blocker, a privacy browser, hotel Wi-Fi or a network that blocks Google
+// outright. A visitor in that position should never be shown a button that
+// cannot work, so the wait is bounded and the form offers WhatsApp instead.
+const GOOGLE_LOAD_TIMEOUT = 4000;
+
+// The number the WhatsApp buttons write to until the catalog answers with the
+// real one. It cannot be dropped in favour of the payload: an unreachable Odoo
+// is exactly the moment this number matters most, and a site that had only
+// fetched it would lose its one working contact channel precisely then.
+const WHATSAPP_DEFAULT = "16266266347";
+
+// Category slug -> caption. Odoo owns both: the endpoint sends a `categories` array
+// (spec §3.1) carrying each category's name and the order the owner arranged them in,
+// so adding a category there gives the site a new filter tab with no code change here.
+// This is the fallback for when that array is absent — the bundled catalog below — and
+// it reproduces the two captions the site had hardcoded before.
+function catCaption(slug) {
+  return slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : '';
+}
+
+// Last-known catalog in the endpoint's response shape, used only when Odoo is unreachable.
+// Photos fall back to the bundled images/. Kept deliberately terse — it is a safety net,
+// not the source of truth (that is Odoo).
+const FALLBACK_MODELS = [
+  { id:'pcx160', name:'Honda PCX160', cc:'160cc', cat:'scooter', price:700, weekly:4410, monthly:16800, tag:'Best-selling premium scooter', badge:'Best Seller', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.pcx160], units:[],
+    overview:'The Honda PCX160 is a comfort-focused premium scooter that balances a refined ride with strong performance — well suited to both urban commutes and longer suburban trips.',
+    pros:['Comfort-focused ride — wide seat, spacious legroom, and superior suspension for longer trips.','Strong engine performance — the 157cc engine delivers smooth acceleration and excellent power for urban and suburban riding.','Premium design — stylish, modern body with LED lights and an upscale aesthetic.','Excellent fuel efficiency — great mileage despite the higher displacement.','Large under-seat storage — fits a helmet and additional items with ease.','Enhanced safety features — ABS and traction improvements (depending on model/year).'],
+    cons:['Wider body — less agile in heavy traffic than slimmer scooters like the Click 125i or Mio.','Heavier build — requires more effort to maneuver in tight spaces or when parking.','Higher price point — more costly than other 150cc-class scooters.'] },
+  { id:'aerox155', name:'Yamaha Aerox 155', cc:'155cc', cat:'scooter', price:700, weekly:4410, monthly:16800, tag:'Sporty and quick around town', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.aerox155], units:[] },
+  { id:'burgman', name:'Suzuki Burgman 125 EX', cc:'125cc', cat:'scooter', price:650, weekly:4095, monthly:15600, tag:'Comfortable maxi-style ride', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.burgman], units:[] },
+  { id:'gravis125', name:'Yamaha Gravis 125', cc:'125cc', cat:'scooter', price:600, weekly:3780, monthly:14400, tag:'Easy, economical everyday runabout', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.gravis125], units:[] },
+  { id:'click125i', name:'Honda Click 125i', cc:'125cc', cat:'scooter', price:600, weekly:3780, monthly:14400, tag:'The reliable all-rounder', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.click125i], units:[],
+    overview:'The Honda Click 125i is an excellent choice for city riding. Its slim, agile design makes it perfect for navigating heavy traffic and tight urban spaces.',
+    pros:['Lightweight & easy to handle — ideal for new riders or busy city environments.','Punchy performance — despite being a 125cc, it feels closer to a 150cc in acceleration.','Narrow body — lets you slip smoothly through congested roads and tight gaps.'],
+    cons:['Single rear shock — may feel uncomfortable on the back after long rides (40+ minutes).','Narrow seat — less comfortable for wider builds or long-distance travel.','Limited under-seat storage — enough for essentials, but not much more.'] },
+  { id:'pcx160abs', name:'Honda PCX160 ABS', cc:'160cc', cat:'scooter', price:850, weekly:5355, monthly:20400, tag:'PCX comfort with ABS safety', badge:'', specs:['Automatic','ABS','Top box'], photos:[BIKE_IMG.pcx160abs], units:[] },
+  { id:'adv160', name:'Honda ADV160 ABS', cc:'160cc', cat:'adventure', price:900, weekly:5670, monthly:21600, tag:'Adventure-styled and rugged', badge:'', specs:['Automatic','ABS','Big storage'], photos:[BIKE_IMG.adv160], units:[] },
+  { id:'adv350', name:'Honda ADV350', cc:'350cc', cat:'adventure', price:1900, weekly:11970, monthly:45600, tag:'The flagship — highway ready', badge:'Top spec', specs:['Automatic','ABS','Traction control'], photos:[BIKE_IMG.adv350], units:[] },
+  { id:'vstrom250', name:'Suzuki V-Strom 250', cc:'250cc', cat:'adventure', price:1300, weekly:8190, monthly:31200, tag:'Go anywhere, ride all day', badge:'Featured', specs:['Manual','Touring','Long range'], photos:[BIKE_IMG.vstrom250], units:[] },
+  { id:'rouser160', name:'Kawasaki Rouser 160', cc:'160cc', cat:'adventure', price:800, weekly:5040, monthly:19200, tag:'Punchy naked street bike', badge:'', specs:['Manual','Nimble','Fuel-efficient'], photos:[BIKE_IMG.rouser160], units:[] },
+];
+
+// Map one endpoint model (spec §3.1) to the shape the views consume: take the pill
+// label from the categories Odoo sent (falling back to the slug) and nest the
+// description fields the modal reads.
+function normalizeModel(m, captions) {
+  const hasDesc = !!(m.overview || (m.pros && m.pros.length) || (m.cons && m.cons.length));
+  return {
+    id: m.id, name: m.name, cc: m.cc, cat: m.cat,
+    catLabel: (captions && captions[m.cat]) || catCaption(m.cat),
+    price: m.price, weekly: m.weekly, monthly: m.monthly,
+    tag: m.tag || '', badge: m.badge || '', specs: m.specs || [],
+    photos: m.photos || [], units: m.units || [],
+    desc: hasDesc ? { overview: m.overview || '', pros: m.pros || [], cons: m.cons || [] } : null,
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    models: null, categories: null, catalogError: false, filter: 'all', selected: null, photoIndex: 0,
+    pickup: '', dropoff: '', step: 'form', sent: false,
+    availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '', modalCalOpen: false, modalCursor: '',
+    currency: 'PHP', isMobile: (typeof window !== 'undefined' && window.innerWidth <= 720), mobileMenuOpen: false,
+    // Priced by the shop, not by this file. `null` means the catalog never
+    // answered, and then the form quotes the day rate only — inventing a
+    // discount tier here is how a site ends up promising a number the counter
+    // will not honour.
+    discounts: null, zones: null, whatsapp: '',
+    // What the visitor fills in before choosing how to send it.
+    zoneId: '', address: '', phone: '', note: '',
+    // Sending. `waReason` is empty until something sends the visitor to
+    // WhatsApp, and then says what — it decides the wording, not just the exit.
+    sending: false, googleReady: false, googleFailed: false, account: null, waReason: '', hint: '',
+  };
+
+  componentDidMount() {
+    this._onResize = () => {
+      const m = window.innerWidth <= 720;
+      if (m !== this.state.isMobile) this.setState({ isMobile: m, mobileMenuOpen: m ? this.state.mobileMenuOpen : false });
+    };
+    window.addEventListener('resize', this._onResize);
+    this.loadCatalog();
+    this.loadGoogle();
+  }
+
+  // Google's sign-in library, fetched rather than written into the page, so the
+  // one case that has to be handled — it never arrives — is an event here and
+  // not a mystery at click time.
+  loadGoogle() {
+    if (typeof document === 'undefined') return;
+    const settle = (ok) => {
+      if (this._googleSettled) return;
+      this._googleSettled = true;
+      clearTimeout(this._googleTimer);
+      this.setState({ googleReady: ok, googleFailed: !ok });
+    };
+    this._googleTimer = setTimeout(() => settle(false), GOOGLE_LOAD_TIMEOUT);
+    const script = document.createElement('script');
+    script.src = GOOGLE_SCRIPT_URL;
+    script.async = true;
+    script.onload = () => settle(!!(window.google && window.google.accounts && window.google.accounts.oauth2));
+    script.onerror = () => settle(false);
+    document.head.appendChild(script);
+  }
+
+  loadCatalog() {
+    fetch(CATALOG_API_URL + '?key=' + encodeURIComponent(CATALOG_API_KEY))
+      .then(r => r.json())
+      .then(data => {
+        const models = (data && Array.isArray(data.models)) ? data.models : [];
+        if (models.length) {
+          // categories drives the filter tabs (captions + order). Absent on the
+          // fallback path below, where catTabs() derives them from the models.
+          const categories = (data && Array.isArray(data.categories)) ? data.categories : null;
+          // Discount tiers, delivery zones and the WhatsApp number travel with
+          // the catalog and replace the copies this file used to keep. Taken
+          // only on this branch: an answer with no models is a broken call, and
+          // its other fields are no more trustworthy than its empty list.
+          this.setState({
+            models, categories, catalogError: false,
+            discounts: Array.isArray(data.discounts)
+              ? data.discounts.slice().sort((a, b) => a.min_days - b.min_days)
+              : null,
+            zones: Array.isArray(data.delivery_zones) ? data.delivery_zones : null,
+            whatsapp: (typeof data.whatsapp === 'string' && data.whatsapp) ? data.whatsapp : '',
+          });
+        } else {
+          // Reachable but empty (e.g. wrong key) — keep the page populated.
+          console.warn('[catalog] endpoint returned no models; using fallback');
+          this.setState({ models: FALLBACK_MODELS, categories: null, catalogError: true });
+        }
+      })
+      .catch(err => {
+        console.warn('[catalog] endpoint unreachable; using fallback', err);
+        this.setState({ models: FALLBACK_MODELS, categories: null, catalogError: true });
+      });
+  }
+
+  componentWillUnmount() {
+    if (this._onResize) window.removeEventListener('resize', this._onResize);
+    clearTimeout(this._googleTimer);
+  }
+
+  toISO(y, m, d) {
+    return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+  }
+
+  ctxCfg(ctx) {
+    return ctx === 'modal'
+      ? { fromKey: 'pickup', toKey: 'dropoff', curKey: 'modalCursor', openKey: 'modalCalOpen' }
+      : { fromKey: 'availFrom', toKey: 'availTo', curKey: 'calCursor', openKey: 'calOpen' };
+  }
+
+  cursorDate(ctx) {
+    const cfg = this.ctxCfg(ctx);
+    const c = this.state[cfg.curKey] || this.state[cfg.fromKey];
+    const base = c ? new Date(c + 'T00:00:00') : new Date();
+    return new Date(base.getFullYear(), base.getMonth(), 1);
+  }
+
+  shiftMonth(ctx, delta) {
+    const cfg = this.ctxCfg(ctx);
+    const c = this.cursorDate(ctx);
+    const n = new Date(c.getFullYear(), c.getMonth() + delta, 1);
+    this.setState({ [cfg.curKey]: this.toISO(n.getFullYear(), n.getMonth(), 1) });
+  }
+
+  pickDay(ctx, iso) {
+    const cfg = this.ctxCfg(ctx);
+    const from = this.state[cfg.fromKey], to = this.state[cfg.toKey];
+    if (!from || (from && to)) {
+      this.setState({ [cfg.fromKey]: iso, [cfg.toKey]: '' });
+    } else if (iso < from) {
+      this.setState({ [cfg.fromKey]: iso });
+    } else {
+      this.setState({ [cfg.toKey]: iso, [cfg.openKey]: false });
+    }
+  }
+
+  calData(ctx) {
+    const cfg = this.ctxCfg(ctx);
+    const cur = this.cursorDate(ctx);
+    const y = cur.getFullYear(), m = cur.getMonth();
+    const startWd = (new Date(y, m, 1).getDay() + 6) % 7;
+    const dim = new Date(y, m + 1, 0).getDate();
+    const today = new Date();
+    const todayIso = this.toISO(today.getFullYear(), today.getMonth(), today.getDate());
+    const from = this.state[cfg.fromKey], to = this.state[cfg.toKey];
+    const cells = [];
+    for (let i = 0; i < startWd; i++) cells.push({ key: 'b' + i, label: '', style: 'height:38px;visibility:hidden' });
+    for (let d = 1; d <= dim; d++) {
+      const iso = this.toISO(y, m, d);
+      const wd = (startWd + d - 1) % 7;
+      const past = iso < todayIso;
+      const selected = !!from && ((to && iso >= from && iso <= to) || (!to && iso === from));
+      const roundL = iso === from || wd === 0 || d === 1;
+      const roundR = (to ? iso === to : iso === from) || wd === 6 || d === dim;
+      let s = 'height:38px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;';
+      if (past) {
+        s += 'color:#CFC8BA;cursor:default';
+      } else if (selected) {
+        const tl = roundL ? '10px' : '0', tr = roundR ? '10px' : '0';
+        s += 'background:#E4761B;color:#fff;cursor:pointer;border-radius:' + tl + ' ' + tr + ' ' + tr + ' ' + tl;
+      } else {
+        s += 'color:#1B1712;cursor:pointer;border-radius:10px';
+      }
+      cells.push({ key: iso, label: String(d), style: s, onClick: past ? undefined : () => this.pickDay(ctx, iso) });
+    }
+    return { title: cur.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), cells };
+  }
+
+  fleet() {
+    // Live catalog from Odoo (or the fallback), mapped to the view shape. While the
+    // fetch is in flight state.models is null, so this is empty and the fleet grid
+    // shows its loading state.
+    const captions = this.catCaptions();
+    return (this.state.models || []).map(m => normalizeModel(m, captions));
+  }
+
+  catCaptions() {
+    // slug -> caption, from whatever Odoo sent. Empty on the fallback path, where
+    // normalizeModel and catTabs both fall back to capitalising the slug.
+    const out = {};
+    (this.state.categories || []).forEach(c => { if (c && c.slug) out[c.slug] = c.label || catCaption(c.slug); });
+    return out;
+  }
+
+  catTabs() {
+    // The filter row: "All bikes" first, then one tab per category. Odoo decides
+    // which categories exist, what they are called and in what order they sit —
+    // adding one there is all it takes for a tab to appear here.
+    //
+    // Tabs are intersected with the slugs actually present in the catalog on hand.
+    // The endpoint already omits empty categories, but the fallback catalog is a
+    // stale snapshot that can disagree, and a tab filtering to nothing is worse
+    // than a missing one.
+    const present = new Set((this.state.models || []).map(m => m.cat).filter(Boolean));
+    const ordered = (this.state.categories || []).map(c => c && c.slug).filter(slug => present.has(slug));
+    // No categories from Odoo (fallback): derive them from the models themselves.
+    // Alphabetical, because a snapshot carries no notion of the owner's order.
+    const slugs = ordered.length ? ordered : Array.from(present).sort();
+    const captions = this.catCaptions();
+    return [{ key: 'all', label: 'All bikes' }].concat(
+      slugs.map(slug => ({ key: slug, label: captions[slug] || catCaption(slug) }))
+    );
+  }
+
+  availInfo() {
+    const { availFrom, availTo } = this.state;
+    const parseIso = s => { const d = new Date(s + 'T00:00:00'); d.setHours(0, 0, 0, 0); return d.getTime(); };
+    const chosen = !!(availFrom && availTo) && parseIso(availTo) >= parseIso(availFrom);
+    const from = chosen ? parseIso(availFrom) : 0;
+    const to = chosen ? parseIso(availTo) : 0;
+    // A model is available if AT LEAST ONE of its physical units is free over the range.
+    // units[].booked are ISO date ranges from the Odoo endpoint (spec §3.1); with no
+    // rentals recorded yet every unit is free, so every model shows as available.
+    const isAvailable = b => {
+      if (!chosen) return true;
+      const units = (b.units && b.units.length) ? b.units : [{ booked: [] }];
+      return units.some(u => !(u.booked || []).some(([bs, be]) => from <= parseIso(be) && to >= parseIso(bs)));
+    };
+    return { chosen, isAvailable };
+  }
+
+  // Step the modal photo carousel by delta, wrapping around. No-op for a single photo.
+  cyclePhoto(delta) {
+    const sel = this.state.selected;
+    const len = (sel && sel.photos && sel.photos.length) ? sel.photos.length : 1;
+    if (len <= 1) return;
+    this.setState(s => ({ photoIndex: ((s.photoIndex + delta) % len + len) % len }));
+  }
+
+  peso(n) {
+    const c = CURRENCIES[this.state.currency] || CURRENCIES.PHP;
+    const v = Math.round(n * c.rate);
+    return c.symbol + v.toLocaleString('en-US');
+  }
+
+  fmtDate(s) {
+    if (!s) return '';
+    const d = new Date(s + 'T00:00:00');
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  dateSpanStyle(filled) {
+    return 'position:absolute;left:14px;top:0;height:46px;display:flex;align-items:center;pointer-events:none;font-size:14.5px;font-weight:600;color:' + (filled ? '#1B1712' : '#8A8175');
+  }
+
+  tabStyle(active) {
+    const base = 'border:none;cursor:pointer;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:9px;transition:all .15s ease;';
+    return active
+      ? base + 'background:#1B1712;color:#fff;box-shadow:0 2px 8px rgba(27,23,18,.2)'
+      : base + 'background:transparent;color:#6B6459';
+  }
+
+  scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 68, behavior: 'smooth' });
+  }
+
+  days() {
+    const { pickup, dropoff } = this.state;
+    if (!pickup || !dropoff) return 0;
+    const d = (new Date(dropoff) - new Date(pickup)) / 86400000;
+    if (d < 0) return 0;
+    if (d === 0) return 1;
+    return Math.round(d);
+  }
+
+  // --- The quote -----------------------------------------------------------
+  // Every number below comes from the catalog. Nothing here decides what a
+  // rental costs; this page only adds up what the shop already published.
+
+  discountPct() {
+    // The best tier the stay qualifies for, or nothing at all. No tiers means
+    // the catalog never answered — and then the day rate is the honest quote.
+    const d = this.days();
+    let pct = 0;
+    for (const tier of (this.state.discounts || [])) {
+      if (d >= tier.min_days && tier.percent > pct) pct = tier.percent;
+    }
+    return pct / 100;
+  }
+
+  zone() {
+    const { zones, zoneId } = this.state;
+    if (!zoneId) return null;
+    return (zones || []).find(z => String(z.id) === String(zoneId)) || null;
+  }
+
+  quote() {
+    const days = this.days();
+    const price = this.state.selected ? this.state.selected.price : 0;
+    const subtotal = days * price;
+    const pct = this.discountPct();
+    const discount = Math.round(subtotal * pct);
+    const zone = this.zone();
+    const delivery = zone ? zone.price : 0;
+    return { days, subtotal, pct, discount, zone, delivery, total: subtotal - discount + delivery };
+  }
+
+  // --- Sending the booking -------------------------------------------------
+
+  waNumber() {
+    return this.state.whatsapp || WHATSAPP_DEFAULT;
+  }
+
+  // What the endpoint insists on, checked here so the visitor hears about it
+  // before a popup opens rather than after a round trip. The server checks all
+  // of it again — this is courtesy, not security.
+  bookProblem() {
+    const { selected, phone, address } = this.state;
+    if (!selected) return 'Pick a bike first.';
+    if (this.days() <= 0) return 'Choose your pick-up and drop-off dates.';
+    if (!phone.trim()) return 'Add a phone number — it is how we reach you.';
+    if (this.zone() && !address.trim()) return 'Add the address to deliver to.';
+    return '';
+  }
+
+  requestBooking() {
+    const problem = this.bookProblem();
+    if (problem) { this.setState({ hint: problem }); return; }
+    if (!this.state.googleReady) { this.toWhatsApp('nogoogle'); return; }
+
+    // The popup opens inside the click, with nothing awaited before it. After
+    // an await the user gesture is spent and the browser blocks the window —
+    // and it breaks only for the visitor, never with a console open.
+    let client;
+    try {
+      client = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'email profile',
+        callback: (resp) => {
+          if (!resp || !resp.access_token) { this.toWhatsApp('signin'); return; }
+          this.postBooking(resp.access_token);
+        },
+        error_callback: () => this.toWhatsApp('signin'),
+      });
+    } catch (err) {
+      this.toWhatsApp('nogoogle');
+      return;
+    }
+    this.setState({ hint: '', sending: true });
+    client.requestAccessToken();
+  }
+
+  postBooking(token) {
+    const { selected, pickup, dropoff, phone, note, address } = this.state;
+    const zone = this.zone();
+    const quoted = this.quote().total;
+    fetch(BOOK_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: CATALOG_API_KEY,
+        token,
+        model_id: selected.id,
+        pickup,
+        return: dropoff,
+        phone: phone.trim(),
+        zone_id: zone ? zone.id : null,
+        address: zone ? address.trim() : '',
+        note: note.trim(),
+        // Shown to the visitor, never used to price anything. It travels so a
+        // later "but the site said so" has an answer on the order itself.
+        quoted,
+      }),
+    })
+      .then(r => r.json())
+      .then(answer => {
+        if (answer && answer.ok) {
+          this.namedAccount(token);
+          this.setState({ sending: false, step: 'done', waReason: '', hint: '' });
+          return;
+        }
+        // An answer that said no must never be shown as a booking. Every one of
+        // them lands on WhatsApp with the form already written out.
+        this.toWhatsApp((answer && answer.error === 'unavailable') ? 'unavailable' : 'refused');
+      })
+      .catch(() => this.toWhatsApp('refused'));
+  }
+
+  // The confirmation names the account the booking went under. Sign-in happens
+  // at submit time, so there is no earlier moment to show it — and someone with
+  // two Google accounts will want to know which one was used.
+  namedAccount(token) {
+    fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } })
+      .then(r => r.json())
+      .then(p => this.setState({ account: { name: p.name || '', email: p.email || '' } }))
+      .catch(() => {});
+  }
+
+  toWhatsApp(reason) {
+    this.setState({ sending: false, waReason: reason, hint: '' });
+  }
+
+  // --- WhatsApp: the second exit, and the automatic one --------------------
+
+  // The booking written out for a person to read. Whatever is empty is left out
+  // rather than leaving a gap in the sentence: this opens a conversation, and a
+  // missing detail costs one question.
+  waMessage() {
+    const { selected, pickup, dropoff, phone, note, address, waReason } = this.state;
+    const name = selected ? selected.name : 'one of your bikes';
+    const dates = this.fmtDate(pickup) + ' – ' + this.fmtDate(dropoff);
+    const q = this.quote();
+
+    // Not a failure of the form, so it does not read like one.
+    if (waReason === 'unavailable') {
+      return 'Hi! I wanted to book the *' + name + '*, ' + dates +
+        ', but the site says it’s taken for those dates. Is anything else available?' +
+        ' Sent from the website.';
+    }
+
+    let text = 'Hi! I’d like to book the *' + name + '*, ' + dates +
+      ' (' + q.days + (q.days === 1 ? ' day' : ' days') + ')';
+    if (q.zone && address.trim()) text += ', delivery to ' + q.zone.name + ' — ' + address.trim();
+    else if (q.zone) text += ', delivery to ' + q.zone.name;
+    else text += ', pickup at the shop';
+    text += '.';
+    // Deliberate: a WhatsApp booking leaves no record, so the message has to be
+    // one — and a figure that has drifted from the shop's own shows up here,
+    // read at the keyboard rather than argued about at the counter.
+    if (q.total > 0) text += ' The site showed ' + this.peso(q.total) + '.';
+    // Goes in whenever it was typed, though this path does not need it: a
+    // tourist writes from a foreign number and rents on a local SIM.
+    if (phone.trim()) text += ' My number: ' + phone.trim() + '.';
+    // Ends with a stop of its own, or it runs straight into the line below.
+    if (note.trim()) text += ' ' + note.trim().replace(/([^.!?])$/, '$1.');
+    return text + ' Sent from the website.';
+  }
+
+  openWhatsApp() {
+    // Only a broken date range stops this. Everything else that is missing is
+    // simply left out of the message — demanding a phone number before someone
+    // may open a messenger asks for a fact the messenger is about to supply.
+    if (this.days() <= 0) { this.setState({ hint: 'Choose your dates first.' }); return; }
+    window.open('https://wa.me/' + this.waNumber() + '?text=' + encodeURIComponent(this.waMessage()),
+                '_blank', 'noopener');
+  }
+
+  renderVals() {
+    const { filter, selected, photoIndex, pickup, dropoff, step, sent, availFrom, availTo, availOnly, calOpen, modalCalOpen, currency, isMobile, mobileMenuOpen,
+            zones, zoneId, address, phone, note, sending, googleFailed, account, waReason, hint } = this.state;
+    const cal = this.calData('avail');
+    const mcal = this.calData('modal');
+    const all = this.fleet();
+    const { chosen: datesChosen, isAvailable } = this.availInfo();
+    // The `dual` slug was a legacy alias folded into the adventure tab; no model
+    // carries it any more (checked in Odoo 2026-07-31), so the filter is now the
+    // plain slug match it always wanted to be.
+    let filtered = all.filter(b => filter === 'all' || b.cat === filter);
+    if (datesChosen && availOnly) filtered = filtered.filter(isAvailable);
+    const availCount = filtered.filter(isAvailable).length;
+
+    const tabDefs = this.catTabs();
+    const tabs = tabDefs.map(t => ({
+      label: t.label,
+      style: this.tabStyle(filter === t.key),
+      onClick: () => this.setState({ filter: t.key }),
+    }));
+
+    const fleetVals = filtered.map(b => {
+      const avail = isAvailable(b);
+      return {
+      ...b,
+      slotId: 'bike-' + b.id,
+      imgSrc: (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '',
+      priceStr: this.peso(b.price),
+      weeklyStr: this.peso(b.weekly) + '/wk · ' + this.peso(b.monthly) + '/mo',
+      badgeStyle: b.badge
+        ? 'position:absolute;top:12px;left:12px;z-index:2;pointer-events:none;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:#E4761B;padding:5px 10px;border-radius:100px'
+        : 'display:none',
+      showAvail: datesChosen,
+      dimmed: datesChosen && !avail,
+      availChipLabel: avail ? '● Available' : '● Booked',
+      availChipStyle: 'position:absolute;top:12px;right:12px;z-index:2;pointer-events:none;font-size:11px;font-weight:800;letter-spacing:.02em;color:#fff;padding:5px 10px;border-radius:100px;background:' + (avail ? '#0F5C4A' : '#8A8175'),
+      bookLabel: (datesChosen && !avail) ? 'Booked' : 'Book',
+      bookStyle: 'border:none;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:10px;' + ((datesChosen && !avail)
+        ? 'background:#EDE6D8;color:#9A9182;cursor:not-allowed'
+        : 'background:#1B1712;color:#fff;cursor:pointer'),
+      onBook: () => {
+        if (datesChosen && !avail) return;
+        // A fresh modal: whatever the last attempt ended in must not greet the
+        // next bike with somebody else's error.
+        this.setState({ selected: b, photoIndex: 0, step: 'form', pickup: availFrom || this.state.pickup, dropoff: availTo || this.state.dropoff,
+                        waReason: '', hint: '', account: null, sending: false });
+      },
+    };
+    });
+
+    const q = this.quote();
+    const d = q.days;
+    const canBook = d > 0;
+    // No zones in the payload means the shop's delivery table never arrived, so
+    // the option is hidden rather than offered at a guessed price.
+    const hasZones = !!(zones && zones.length);
+
+    let selectedVals = null;
+    if (selected) {
+      const imgSrc = (selected.photos && selected.photos[0]) || BIKE_IMG[selected.id] || '';
+      const photos = (selected.photos && selected.photos.length) ? selected.photos : (imgSrc ? [imgSrc] : []);
+      const idx = Math.min(Math.max(photoIndex, 0), Math.max(0, photos.length - 1));
+      selectedVals = {
+        ...selected,
+        slotId: 'bike-' + selected.id,
+        imgSrc,
+        mainPhoto: photos[idx] || imgSrc,
+        hasMultiplePhotos: photos.length > 1,
+        thumbs: photos.map((p, i) => ({
+          src: p,
+          onClick: () => this.setState({ photoIndex: i }),
+          style: 'width:54px;height:40px;object-fit:cover;border-radius:7px;cursor:pointer;flex:none;border:2px solid ' + (i === idx ? '#E4761B' : 'transparent') + ';opacity:' + (i === idx ? '1' : '.6'),
+        })),
+        priceStr: this.peso(selected.price),
+        weeklyStr: this.peso(selected.weekly) + '/wk · ' + this.peso(selected.monthly) + '/mo',
+        hasDesc: !!selected.desc,
+        desc: selected.desc || null,
+      };
+    }
+
+    const mobileNavDefs = [
+      { label: 'Fleet', id: 'fleet' },
+      { label: 'How it works', id: 'how' },
+      { label: 'Why us', id: 'story' },
+      { label: 'Contact', id: 'contact' },
+    ];
+    const mobileNavItems = mobileNavDefs.map(n => ({
+      label: n.label,
+      onClick: () => { this.scrollTo(n.id); this.setState({ mobileMenuOpen: false }); },
+    }));
+
+    return {
+      isMobile,
+      headerBarStyle: 'max-width:1200px;margin:0 auto;padding:' + (isMobile ? '12px 18px' : '14px 24px') + ';display:flex;align-items:center;gap:' + (isMobile ? '10px' : '20px'),
+      navStyle: isMobile ? 'display:none' : 'margin-left:auto;display:flex;align-items:center;gap:26px',
+      hamburgerStyle: 'margin-left:auto;display:' + (isMobile ? 'flex' : 'none') + ';align-items:center;justify-content:center;flex-direction:column;gap:4px;width:44px;height:44px;border:1.5px solid rgba(27,23,18,.14);border-radius:11px;background:#fff;cursor:pointer;flex:none',
+      hamburgerBarStyle: 'width:18px;height:2px;background:#1B1712;border-radius:2px',
+      callBtnStyle: isMobile
+        ? 'display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;flex:none;background:#1B1712;color:#fff;border-radius:11px'
+        : 'display:inline-flex;align-items:center;gap:8px;background:#1B1712;color:#fff;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:10px;white-space:nowrap;flex:none',
+      callLabelStyle: isMobile ? 'display:none' : 'white-space:nowrap',
+      currency,
+      currencyOpts: Object.keys(CURRENCIES).map(code => ({ code, label: CURRENCIES[code].label })),
+      onCurrency: e => this.setState({ currency: e.target.value }),
+      currencySelectStyle: 'flex:none;height:' + (isMobile ? '44px' : '38px') + ';border:1.5px solid rgba(27,23,18,.14);border-radius:' + (isMobile ? '11px' : '10px') + ';background:#fff;color:#1B1712;font-weight:700;font-size:13.5px;padding:0 8px;cursor:pointer;appearance:auto',
+      filterCurrencyWrapStyle: 'display:flex;align-items:center;gap:8px;' + (isMobile ? 'width:100%' : ''),
+      filterCurrencySelectStyle: 'flex:' + (isMobile ? '1' : 'none') + ';height:34px;border:1.5px solid rgba(27,23,18,.14);border-radius:9px;background:#FBF9F4;color:#1B1712;font-weight:700;font-size:13.5px;padding:0 8px;cursor:pointer;appearance:auto',
+      heroFromStr: this.peso(600),
+      mobileMenuOpen,
+      toggleMobileMenu: () => this.setState(s => ({ mobileMenuOpen: !s.mobileMenuOpen })),
+      mobileNavItems,
+
+      heroSectionStyle: 'position:relative;max-width:1200px;margin:0 auto;padding:' + (isMobile ? '26px 20px 22px' : '40px 24px 30px'),
+      heroGridStyle: 'display:grid;grid-template-columns:' + (isMobile ? '1fr' : '1.05fr .95fr') + ';gap:' + (isMobile ? '26px' : '44px') + ';align-items:center',
+      storySectionPad: isMobile ? '40px 20px' : '50px 24px',
+      contactSectionPad: isMobile ? '40px 20px' : '50px 24px',
+      howSectionPad: isMobile ? '40px 20px' : '48px 24px',
+      fleetSectionStyle: 'max-width:1200px;margin:0 auto;padding:' + (isMobile ? '10px 20px' : '10px 24px'),
+      twoColGridStyle: 'display:grid;grid-template-columns:' + (isMobile ? '1fr' : '1fr 1fr') + ';gap:' + (isMobile ? '32px' : '44px') + ';align-items:center',
+      contactGridStyle: 'display:grid;grid-template-columns:' + (isMobile ? '1fr' : '1fr 1fr') + ';gap:' + (isMobile ? '32px' : '44px'),
+      fleetGridStyle: 'display:grid;grid-template-columns:' + (isMobile ? '1fr' : 'repeat(auto-fill,minmax(280px,1fr))') + ';gap:' + (isMobile ? '16px' : '20px') + ';margin-top:22px',
+      stepsGridStyle: 'display:grid;grid-template-columns:' + (isMobile ? '1fr' : 'repeat(auto-fit,minmax(240px,1fr))') + ';gap:18px;margin-top:28px',
+      filterRowStyle: 'display:flex;flex-wrap:wrap;gap:10px 20px;align-items:' + (isMobile ? 'stretch' : 'center') + ';' + (isMobile ? 'flex-direction:column' : ''),
+      contactBtnStyle: isMobile ? 'flex:1 1 auto;justify-content:center;text-align:center' : '',
+
+      tabs,
+      filteredFleet: fleetVals,
+      fleetLoading: this.state.models === null,
+      availFrom, availTo, availOnly, datesChosen,
+      calOpen,
+      calTitle: cal.title,
+      calDays: cal.cells,
+      weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((w, i) => ({
+        label: w,
+        style: 'height:30px;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;letter-spacing:.02em;color:' + (i > 4 ? '#B8AFA0' : '#8A8175'),
+      })),
+      rangeLabel: (availFrom && availTo) ? (this.fmtDate(availFrom) + ' \u2013 ' + this.fmtDate(availTo)) : (availFrom ? (this.fmtDate(availFrom) + ' \u2013 \u2026') : 'Select dates'),
+      rangeLabelStyle: 'flex:1;text-align:left;font-size:14.5px;font-weight:600;color:' + (availFrom ? '#1B1712' : '#8A8175'),
+      calFieldStyle: 'width:' + (isMobile ? '100%' : '220px') + ';height:34px;display:flex;align-items:center;gap:7px;border:1.5px solid ' + (calOpen ? '#E4761B' : 'rgba(27,23,18,.14)') + ';border-radius:9px;padding:0 10px;background:#FBF9F4;cursor:pointer',
+      calDropdownStyle: isMobile
+        ? 'position:absolute;top:52px;left:0;right:0;z-index:56;width:auto;background:#fff;border:1px solid rgba(27,23,18,.1);border-radius:16px;box-shadow:0 22px 54px rgba(27,23,18,.2);padding:16px'
+        : 'position:absolute;top:76px;right:0;z-index:56;width:322px;background:#fff;border:1px solid rgba(27,23,18,.1);border-radius:16px;box-shadow:0 22px 54px rgba(27,23,18,.2);padding:16px',
+      availWrapStyle: isMobile ? 'position:relative;width:100%' : 'position:relative',
+      toggleCal: () => this.setState(s => ({ calOpen: !s.calOpen })),
+      closeCal: () => this.setState({ calOpen: false }),
+      prevMonth: () => this.shiftMonth('avail', -1),
+      nextMonth: () => this.shiftMonth('avail', 1),
+      onAvailOnly: e => this.setState({ availOnly: e.target.checked }),
+      clearAvail: () => this.setState({ availFrom: '', availTo: '', availOnly: false }),
+      availOnlyWrapStyle: 'display:flex;align-items:center;gap:12px;flex-wrap:wrap;' + (isMobile ? 'width:100%' : ''),
+      availOnlyDisabled: !datesChosen,
+      availOnlyLabelStyle: 'display:flex;align-items:center;gap:8px;' + (datesChosen ? 'cursor:pointer' : 'cursor:not-allowed;opacity:.5'),
+      availOnlyTextStyle: 'font-size:13px;font-weight:600;color:#1B1712',
+      availCountLabel: datesChosen
+        ? availCount + ' of ' + filtered.length + ' available'
+        : 'Pick dates to see what\u2019s free',
+      availCountStyle: 'font-weight:700;font-size:12.5px;color:' + (datesChosen ? (availCount ? '#0F5C4A' : '#B25E12') : '#8A8175'),
+      selected: selectedVals,
+      notDone: !!selected && step === 'form',
+      isDone: !!selected && step === 'done',
+      pickup, dropoff,
+      modalCalOpen,
+      mCalTitle: mcal.title,
+      mCalDays: mcal.cells,
+      mRangeLabel: (pickup && dropoff) ? (this.fmtDate(pickup) + ' \u2013 ' + this.fmtDate(dropoff)) : (pickup ? (this.fmtDate(pickup) + ' \u2013 \u2026') : 'Select your dates'),
+      mRangeLabelStyle: 'flex:1;text-align:left;font-size:14.5px;font-weight:600;color:' + (pickup ? '#1B1712' : '#8A8175'),
+      modalCalFieldStyle: 'width:100%;height:46px;display:flex;align-items:center;gap:10px;border:1.5px solid ' + (modalCalOpen ? '#E4761B' : 'rgba(27,23,18,.14)') + ';border-radius:11px;padding:0 14px;background:#fff;cursor:pointer',
+      toggleModalCal: () => this.setState(s => ({ modalCalOpen: !s.modalCalOpen })),
+      closeModalCal: () => this.setState({ modalCalOpen: false }),
+      mPrevMonth: () => this.shiftMonth('modal', -1),
+      mNextMonth: () => this.shiftMonth('modal', 1),
+      booking: {
+        daysLabel: d > 0 ? (d + (d === 1 ? ' day' : ' days')) : 'Select dates',
+        subtotalStr: this.peso(q.subtotal),
+        hasDiscount: q.pct > 0,
+        discountLabel: q.pct > 0 ? ((q.pct * 100).toFixed(0) + '% long-stay discount') : '',
+        discountStr: q.pct > 0 ? ('−' + this.peso(q.discount)) : '',
+        totalStr: this.peso(q.total),
+      },
+      onPickup: e => this.setState({ pickup: e.target.value }),
+      onDropoff: e => this.setState({ dropoff: e.target.value }),
+
+      // --- Delivery, priced by the shop ---
+      hasZones,
+      zoneId,
+      zoneOpts: [{ value: '', label: 'Pick up at the shop — free' }].concat(
+        (zones || []).map(z => ({ value: String(z.id), label: z.name + ' — ' + this.peso(z.price) }))),
+      onZone: e => this.setState({ zoneId: e.target.value, hint: '' }),
+      hasZone: !!q.zone,
+      deliveryLabel: q.zone ? ('Delivery to ' + q.zone.name) : '',
+      deliveryFeeStr: this.peso(q.delivery),
+      address,
+      onAddress: e => this.setState({ address: e.target.value, hint: '' }),
+
+      // --- The two contact fields the visitor fills in ---
+      phone,
+      onPhone: e => this.setState({ phone: e.target.value, hint: '' }),
+      note,
+      onNote: e => this.setState({ note: e.target.value }),
+
+      // --- The two exits ---
+      // Google's script never arrived, so the button that needs it is not shown
+      // at all. Somebody on a network that blocks Google sees one exit, it
+      // works, and they never learn there was meant to be another.
+      showRequest: !googleFailed,
+      onRequest: () => this.requestBooking(),
+      requestLabel: sending ? 'Sending…' : (canBook ? 'Request booking' : 'Select your dates'),
+      requestStyle: 'width:100%;margin-top:20px;border:none;border-radius:12px;padding:16px;font-weight:700;font-size:16px;cursor:' + ((canBook && !sending) ? 'pointer' : 'not-allowed') + ';color:#fff;background:' + ((canBook && !sending) ? '#E4761B' : '#C9BFAE') + ';box-shadow:' + ((canBook && !sending) ? '0 8px 20px rgba(228,118,27,.28)' : 'none'),
+      onWhatsApp: () => this.openWhatsApp(),
+      whatsAppLabel: googleFailed ? 'Book on WhatsApp' : 'Book on WhatsApp instead',
+      whatsAppStyle: googleFailed
+        ? 'width:100%;margin-top:20px;border:none;border-radius:12px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;color:#fff;background:#0F5C4A;box-shadow:0 8px 20px rgba(15,92,74,.24)'
+        : 'width:100%;margin-top:10px;background:transparent;border:1.5px solid rgba(15,92,74,.35);color:#0F5C4A;border-radius:12px;padding:13px;font-weight:700;font-size:14.5px;cursor:pointer',
+
+      // --- What went wrong, if anything ---
+      hasHint: !!hint,
+      hint,
+      hintStyle: 'text-align:center;font-size:13px;font-weight:600;color:#B25E12;margin:10px 0 0',
+      hasWaNote: !!waReason,
+      waNote: {
+        nogoogle: 'Sign-in isn’t available on this connection. Send it on WhatsApp instead — the booking is already written out.',
+        signin: 'Sign-in didn’t finish. You can send the booking on WhatsApp instead — it is already written out.',
+        refused: 'We couldn’t send that just now. WhatsApp reaches the shop directly, with the booking already written out.',
+        unavailable: 'That bike was just taken for those dates. Ask on WhatsApp what else is free, or pick other dates.',
+      }[waReason] || '',
+      waNoteStyle: 'margin:14px 0 0;padding:12px 14px;background:#E5F0EC;border-radius:11px;font-size:13.5px;line-height:1.5;color:#0F5C4A',
+
+      // --- The confirmation ---
+      hasAccount: !!account,
+      accountLine: account ? ('Booked as ' + [account.name, account.email].filter(Boolean).join(' · ')) : '',
+      // The shop's own number, from the catalog when it answered and the
+      // bundled one otherwise.
+      shopWaHref: 'https://wa.me/' + this.waNumber(),
+      closeBike: () => this.setState({ selected: null, waReason: '', hint: '', account: null, sending: false }),
+      prevPhoto: () => this.cyclePhoto(-1),
+      nextPhoto: () => this.cyclePhoto(1),
+      stop: e => e.stopPropagation(),
+      steps: [
+        { n: '1', title: 'Choose your bike', body: 'Browse the fleet — scooters for the city, adventure bikes for the mountains and coast.' },
+        { n: '2', title: 'Pick your dates', body: 'Tell us pick-up and drop-off. Want it at your hotel? Add delivery in one tap.' },
+        { n: '3', title: 'Ride free', body: 'No documents held, no distance limit, no surprises. Pick up, gear up, and go explore.' },
+      ],
+      promises: ['No document holding', 'Refundable deposit', 'Fully equipped bikes', 'Unlimited distance'],
+      toTop: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+      toFleet: () => this.scrollTo('fleet'),
+      toHow: () => this.scrollTo('how'),
+      toStory: () => this.scrollTo('story'),
+      toContact: () => this.scrollTo('contact'),
+      fakeSend: () => this.setState({ sent: true }),
+      sendLabel: sent ? 'Sent — thanks! ✓' : 'Send message',
+    };
+  }
+}
+</script>
+</body>
+</html>
