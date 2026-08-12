@@ -34,14 +34,23 @@ const BIKE_IMG = {
   rouser160: 'images/bike-rouser160.png',
 };
 
+// Served from localhost this page is the development copy and talks to the Odoo
+// at 8069; served from anywhere else it talks to production. One committed file
+// works on both sides, so merging dev into main can never repoint the live site.
+const IS_LOCAL_DEV = ['localhost', '127.0.0.1'].includes(location.hostname);
+
 // The key is deliberately committed and NOT a secret: a static page has no server
 // to hide it behind, and the endpoint only serves already-public catalog data. It
 // is a speed-bump against scrapers, paired with the endpoint's CORS origin check.
-// Keep it in sync with Odoo's `qa_catalog.api_key` (do not regenerate it).
-const CATALOG_API_URL = 'https://api.cebuscooterrental.com/qa/catalog';
+// Keep it in sync with Odoo's `qa_catalog.api_key` (do not regenerate it). The
+// development database carries the same key on purpose, so one constant serves
+// both sides of the URL switch.
+const CATALOG_API_URL = IS_LOCAL_DEV
+  ? 'http://localhost:8069/qa/catalog'
+  : 'https://api.cebuscooterrental.com/qa/catalog';
 const CATALOG_API_KEY = '_BurZesjjrL4IJjSV9VV_Hd_7ZvdOqXz_CLIPBW7Elw';
 
-// Derived rather than written out again, so the deploy still repoints one constant.
+// Derived rather than written out again, so repointing is still one constant.
 const BOOK_API_URL = CATALOG_API_URL.replace(/\/qa\/catalog\/?$/, '') + '/qa/book';
 
 // The offline copy, refreshed daily by a GitHub schedule (plan 0007). Same shape
@@ -51,8 +60,12 @@ const FALLBACK_JSON_URL = 'catalog.json';
 
 // Client ids are public by design. What is NOT interchangeable is the origin: the
 // address this page is served from must be a registered JavaScript origin on that
-// client, or the popup refuses with origin_mismatch and nothing reports why.
-const GOOGLE_CLIENT_ID = '355149033113-cn6ovfas06u8to1n8gnoe945f67pcti5.apps.googleusercontent.com';
+// client, or the popup refuses with origin_mismatch and nothing reports why. The
+// localhost origins are registered only on the development project, so the id
+// switches together with the API URL; production is Derek's project.
+const GOOGLE_CLIENT_ID = IS_LOCAL_DEV
+  ? '754460266117-11d4750piukfr2831t5ermlj86qn0k0q.apps.googleusercontent.com'
+  : '355149033113-cn6ovfas06u8to1n8gnoe945f67pcti5.apps.googleusercontent.com';
 const GOOGLE_SCRIPT_URL = 'https://accounts.google.com/gsi/client';
 // How long to wait for Google's script before deciding it will never arrive — an ad
 // blocker, a privacy browser, hotel Wi-Fi. A visitor in that position must never be
