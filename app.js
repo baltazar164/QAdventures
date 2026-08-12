@@ -99,6 +99,11 @@ const S = {
   // how a site ends up promising a number the counter will not honour.
   discounts: null, zones: null, whatsapp: '',
   zoneId: '', address: '', phone: '', note: '',
+  // Off until the live catalog says otherwise. Only Odoo's own answer can turn
+  // the direct-booking button on: a booking needs Odoo reachable to land, so a
+  // stale offline copy claiming "on" would offer a path that ends in a refusal.
+  // While it is off the endpoint refuses too — the shop is WhatsApp-only.
+  directBooking: false,
   sending: false, googleReady: false, googleFailed: false, account: null,
   waReason: '', hint: '',
 };
@@ -238,6 +243,11 @@ function applyCatalog(data, source) {
     ? data.discounts.slice().sort((a, b) => a.min_days - b.min_days) : null;
   S.zones = Array.isArray(data.delivery_zones) ? data.delivery_zones : null;
   S.whatsapp = (typeof data.whatsapp === 'string' && data.whatsapp) ? data.whatsapp : '';
+  // Strictly `=== true`, and strictly from the live endpoint. Absent (an older
+  // server, the offline copy — the robot strips it anyway) counts as off, and
+  // Google's script is only fetched once something can be booked through it.
+  S.directBooking = source === 'odoo' && data.direct_booking === true;
+  if (S.directBooking) loadGoogle();
   return true;
 }
 
@@ -503,9 +513,13 @@ function renderCal(ctx) {
 
 // --- Google sign-in ---------------------------------------------------------
 
-let googleSettled = false, googleTimer = null;
+let googleSettled = false, googleStarted = false, googleTimer = null;
 
+// Called from applyCatalog, and only when the payload allows direct booking —
+// there is no reason to hand Google a visit that can only end in WhatsApp.
 function loadGoogle() {
+  if (googleStarted) return;
+  googleStarted = true;
   const settle = ok => {
     if (googleSettled) return;
     googleSettled = true;
@@ -897,15 +911,17 @@ function updateActions() {
     unavailable: 'That bike was just taken for those dates. Ask on WhatsApp what else is free, or pick other dates.',
   }[S.waReason] || '';
 
+  // One exit, not two, in either of two cases: the shop is WhatsApp-only (the
+  // Direct Booking switch in Odoo is off, or the catalog never answered), or
+  // Google's script never arrived. Somebody on a network that blocks Google
+  // sees one exit, it works, and they never learn there was meant to be another.
+  const waOnly = !S.directBooking || S.googleFailed;
   host.innerHTML =
-    // Google's script never arrived, so the button that needs it is not shown at
-    // all. Somebody on a network that blocks Google sees one exit, it works, and
-    // they never learn there was meant to be another.
-    (S.googleFailed ? '' :
+    (waOnly ? '' :
       '<button class="req' + ((canBook && !busy) ? '' : ' is-off') + '" id="m-req">' +
       (busy ? 'Sending…' : (canBook ? 'Request booking' : 'Select your dates')) + '</button>') +
-    '<button class="wabtn' + (S.googleFailed ? ' wabtn--solo' : '') + '" id="m-wa">' +
-      (S.googleFailed ? 'Book on WhatsApp' : 'Book on WhatsApp instead') + '</button>' +
+    '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
+      (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead') + '</button>' +
     (S.hint ? '<p class="mhint">' + esc(S.hint) + '</p>' : '') +
     (waNote ? '<p class="wanote">' + esc(waNote) + '</p>' : '') +
     '<p class="fineprint">Nothing to pay now · deposit on pick-up, refunded on return · free cancellation</p>';
@@ -1019,8 +1035,9 @@ function init() {
   fillCurrencySelects();
   wireContactForm();
   renderCatalog();
+  // loadGoogle() is not called here: applyCatalog calls it if and only if the
+  // live payload allows direct booking. Until then the modal is WhatsApp-only.
   loadCatalog();
-  loadGoogle();
 }
 
 function toggleMobileMenu() {

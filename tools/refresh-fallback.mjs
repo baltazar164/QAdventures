@@ -153,6 +153,9 @@ async function main() {
     discounts: data.discounts,
     delivery_zones: data.delivery_zones,
     whatsapp: data.whatsapp,
+    // `direct_booking` is deliberately NOT copied, same reasoning as `units`
+    // above: this copy is shown exactly when Odoo is unreachable, and then a
+    // booking cannot land anyway — the page must offer WhatsApp alone.
     models,
   };
 
