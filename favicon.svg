@@ -1,0 +1,8 @@
+<!-- The brand mark from the header, drawn rather than typed: a favicon is rendered
+     without the page's webfont, so a text Q would come out in whatever the browser
+     had to hand. Colours are the ink and amber of styles.css. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="17" fill="#1B1712"/>
+  <circle cx="31" cy="29" r="13" fill="none" stroke="#FFA648" stroke-width="7"/>
+  <path d="M36 36 L46 48" fill="none" stroke="#FFA648" stroke-width="7" stroke-linecap="round"/>
+</svg>
