@@ -171,7 +171,14 @@ input, button, select, textarea { font-family: inherit; }
 .card.is-booked { cursor: default; }
 .card.is-booked:hover { transform: none; box-shadow: 0 2px 10px rgba(27,23,18,.04); }
 .card__media { position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--sand); }
-.card__media img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* The grid fills its frame rather than fitting the photo inside it. A row of
+   cards has to line up, and photos of ten different shapes letterboxed against
+   the sand background is exactly what made it look ragged. The first photo of a
+   card is meant to be a horizontal 4:3 frame with air around the bike — for one
+   of those nothing is cropped at all; a wrongly shaped one loses its edges,
+   which is the trade that keeps the grid even. The detail sheet below is the
+   opposite case (2026-08-13). */
+.card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card__noimg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); font-weight: 600; font-size: 13px; text-align: center; padding: 12px; }
 .card__badge { position: absolute; top: 12px; left: 12px; z-index: 2; pointer-events: none; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--orange); padding: 5px 10px; border-radius: 100px; }
 .card__chip { position: absolute; top: 12px; right: 12px; z-index: 2; pointer-events: none; font-size: 11px; font-weight: 800; letter-spacing: .02em; color: #fff; padding: 5px 10px; border-radius: 100px; }
@@ -218,7 +225,12 @@ input, button, select, textarea { font-family: inherit; }
 
 .ovl { position: fixed; inset: 0; z-index: 80; background: rgba(20,17,12,.55); backdrop-filter: blur(3px); display: flex; align-items: flex-start; justify-content: center; padding: 28px 16px; overflow-y: auto; animation: overlayIn .2s ease; }
 .sheet { width: 100%; max-width: 520px; background: var(--bg); border-radius: 22px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.4); animation: sheetIn .28s cubic-bezier(.2,.8,.2,1); }
-.sheet__media { position: relative; aspect-ratio: 16/9; overflow: hidden; background: var(--sand); }
+/* Same 4:3 frame as the card, so one photo serves both places: the picture the
+   visitor clicked keeps its shape when it opens, and a phone photo (4:3 by
+   default, held sideways) fits either without bars. Here it is *fitted*, not
+   filled — this is where the bike is examined, and the gallery holds shots of
+   every shape, which cropping would cut in half (2026-08-13). */
+.sheet__media { position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--sand); }
 .sheet__media img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .sheet__x { position: absolute; top: 14px; right: 14px; z-index: 3; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(27,23,18,.9); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .sheet__arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 38px; height: 38px; border-radius: 50%; border: none; background: rgba(27,23,18,.55); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
