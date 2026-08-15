@@ -103,7 +103,7 @@ const FALLBACK_MODELS = [
 const S = {
   models: null, categories: null, catalogError: false, filter: 'all',
   selected: null, photoIndex: 0,
-  pickup: '', dropoff: '', step: 'form',
+  pickup: '', dropoff: '', step: 'form', color: '',
   availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '',
   modalCalOpen: false, modalCursor: '',
   currency: 'PHP', mobileMenuOpen: false,
@@ -198,7 +198,7 @@ function normalizeModel(m, captions) {
     catLabel: (captions && captions[m.cat]) || catCaption(m.cat),
     price: m.price, weekly: m.weekly, monthly: m.monthly,
     tag: m.tag || '', badge: m.badge || '', specs: m.specs || [],
-    photos: m.photos || [], units: m.units || [],
+    colors: m.colors || [], photos: m.photos || [], units: m.units || [],
     desc: hasDesc ? { overview: m.overview || '', pros: m.pros || [], cons: m.cons || [] } : null,
   };
 }
@@ -295,6 +295,18 @@ function loadOfflineCopy() {
     });
 }
 
+// One tag per offered colour — the dot plus its name, in the same sand pill the
+// specs use. Named on the tile itself and not only under a mouse: a phone has no
+// hover, and an unlabelled dot is unlabelled for ever there. Purely what the card
+// offers — in Brochure nothing here says whether that colour is in the yard today.
+function colorTags(colors) {
+  if (!colors || !colors.length) return '';
+  return '<span class="card__colors">' + colors.map(c =>
+    '<span class="colortag"><span class="dot" style="background:' + esc(c.hex || '#ccc') + '"></span>' +
+    esc(c.name) + '</span>'
+  ).join('') + '</span>';
+}
+
 // --- The fleet grid ---------------------------------------------------------
 
 function renderTabs() {
@@ -345,6 +357,7 @@ function renderFleet() {
           '<div class="card__meta">' +
             '<span class="card__cat">' + esc(b.catLabel) + '</span>' +
             '<span class="card__cc">' + esc(b.cc) + '</span>' +
+            colorTags(b.colors) +
           '</div>' +
           '<h3 class="card__name">' + esc(b.name) + '</h3>' +
           '<div class="card__tag">' + esc(b.tag) + '</div>' +
@@ -569,7 +582,8 @@ function waMessage() {
       ' Sent from the website.';
   }
 
-  let text = 'Hi! I’d like to book the *' + name + '*, ' + dates +
+  let text = 'Hi! I’d like to book the *' + name + '*' +
+    (S.color ? ' in ' + S.color : '') + ', ' + dates +
     ' (' + q.days + (q.days === 1 ? ' day' : ' days') + ')';
   if (q.zone && S.address.trim()) text += ', delivery to ' + q.zone.name + ' — ' + S.address.trim();
   else if (q.zone) text += ', delivery to ' + q.zone.name;
@@ -697,6 +711,9 @@ function openModal(bike) {
   S.selected = bike;
   S.photoIndex = 0;
   S.step = 'form';
+  // Colours belong to a card; the last bike's choice must not ride along.
+  // One offered colour is not a choice — it is a fact, stated pre-picked.
+  S.color = (bike.colors && bike.colors.length === 1) ? bike.colors[0].name : '';
   S.pickup = S.availFrom || S.pickup;
   S.dropoff = S.availTo || S.dropoff;
   S.waReason = ''; S.hint = ''; S.account = null; S.sending = false;
@@ -799,6 +816,21 @@ function formHTML() {
         '<div class="caldrop caldrop--modal" id="modal-cal" hidden></div>' +
       '</div>' +
     '</div>' +
+    // A wish, not a condition (brd/d2): the choice goes into the message and
+    // nothing checks it against the yard. Clicking the chosen chip unpicks it.
+    // A single offered colour is shown as a fact — pre-picked, not clickable.
+    (sel.colors && sel.colors.length ?
+    '<div class="fld">' +
+      '<label class="fld__l">COLOR' +
+        (sel.colors.length > 1 ? ' <span class="fld__opt">· optional</span>' : '') + '</label>' +
+      '<div class="colorpick">' + sel.colors.map(c =>
+        '<button type="button" class="colorchip' + (S.color === c.name ? ' is-on' : '') + '"' +
+        (sel.colors.length === 1 ? ' disabled' : '') +
+        ' data-color="' + esc(c.name) + '">' +
+        '<span class="dot" style="background:' + esc(c.hex || '#ccc') + '"></span>' +
+        esc(c.name) + '</button>').join('') +
+      '</div>' +
+    '</div>' : '') +
     (hasZones ?
     '<div class="fld">' +
       '<label class="fld__l">DELIVERY</label>' +
@@ -872,6 +904,13 @@ function wireForm() {
     renderCal('modal');
     field.classList.toggle('is-open', S.modalCalOpen);
   });
+
+  $$('.colorchip').forEach(chip => chip.addEventListener('click', () => {
+    const name = chip.getAttribute('data-color');
+    S.color = S.color === name ? '' : name;
+    // Buttons, not inputs — a rebuild loses no caret here.
+    renderModalBody();
+  }));
 
   const z = $('#m-zone');
   if (z) z.addEventListener('change', () => {
