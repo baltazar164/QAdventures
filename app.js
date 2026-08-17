@@ -1008,10 +1008,9 @@ function wireContactForm() {
   if (!btn) return;
   btn.addEventListener('click', () => {
     const name = $('#dl-name').value.trim();
-    const email = $('#dl-email').value.trim();
     const msg = $('#dl-msg').value.trim();
     const hint = $('#dl-hint');
-    if (!msg && !name && !email) {
+    if (!msg && !name) {
       hint.textContent = 'Write a couple of words first — this opens WhatsApp with your message.';
       hint.hidden = false;
       return;
@@ -1020,7 +1019,6 @@ function wireContactForm() {
     let text = 'Hi!';
     if (msg) text += ' ' + msg.replace(/([^.!?])$/, '$1.');
     if (name) text += ' — ' + name;
-    if (email) text += ' (' + email + ')';
     window.open('https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(text + ' Sent from the website.'),
                 '_blank', 'noopener');
   });

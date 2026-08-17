@@ -384,7 +384,11 @@ a.citem:hover { color: inherit; }
   .hdr__bar { padding: 12px 18px; gap: 10px; }
   .nav { display: none; }
   .burger { display: flex; }
-  .cur--hdr { height: 44px; border-radius: 11px; }
+  /* The currency picker leaves the header here and lives in the filter card alone.
+     With it, the bar needs 396px for brand + burger + picker + call button, none of
+     which may shrink, so on any phone under that the call button was pushed past the
+     right edge and clipped — with no sideways scroll to recover it. */
+  .cur--hdr { display: none; }
   .callbtn { width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 11px; }
   .callbtn__label { display: none; }
 
@@ -409,4 +413,20 @@ a.citem:hover { color: inherit; }
   .contact { padding: 40px 20px; }
   .contact__grid { grid-template-columns: 1fr; gap: 32px; }
   .contact__btns .btn { flex: 1 1 auto; justify-content: center; text-align: center; }
+}
+
+/* Two separators that only make sense while their row is one line. Each row wraps at a
+   measured width, and the breakpoints below are those widths — past them the separator
+   stops standing between two things and strands itself at the end of a line. Each item
+   of the trust strip already opens with its own ✦, so nothing is lost by dropping the
+   dots; the stats read as three blocks on their own once they stack. */
+
+/* the trust strip needs 1026px to stay on one line */
+@media (max-width: 1030px) {
+  .trust__d { display: none; }
+}
+
+/* the three hero stats need 380px plus the hero's own 20px padding either side */
+@media (max-width: 420px) {
+  .stat__div { display: none; }
 }
