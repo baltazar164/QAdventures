@@ -737,7 +737,10 @@ function openModal(bike) {
   renderModalBody();
 }
 
-function onEsc(e) { if (e.key === 'Escape') closeModal(); }
+// Escape belongs to the topmost window. Without this guard one press closed the
+// hand-over *and* the booking form under it, which is the one thing that window
+// exists to protect.
+function onEsc(e) { if (e.key === 'Escape' && !$('#over-root').firstChild) closeModal(); }
 
 function closeModal() {
   S.selected = null; S.waReason = ''; S.hint = ''; S.account = null; S.sending = false;
@@ -1141,7 +1144,11 @@ function legacyCopy(text) {
 function openHandover(el) {
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
   const label = el.getAttribute('aria-label') || 'the app';
-  const link = el.getAttribute('data-qr-link') || el.getAttribute('href') || '';
+  // Facebook's mark points at the page, which is right in the contact block and
+  // wrong here: this window exists to get a booking into a chat, so it takes the
+  // Messenger address when the mark carries one.
+  const link = el.getAttribute('data-msg-link') || el.getAttribute('data-qr-link') ||
+    el.getAttribute('href') || '';
   const qr = el.getAttribute('data-qr') || '';
   const text = bookingText();
 

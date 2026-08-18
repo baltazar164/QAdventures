@@ -274,7 +274,7 @@ input, button, select, textarea { font-family: inherit; }
 .ho__text { text-align: left; font-size: 13.5px; line-height: 1.6; color: var(--body); background: var(--field); border: 1px solid var(--line-2); border-radius: 12px; padding: 14px 15px; margin-top: 16px; max-height: 200px; overflow-y: auto; }
 .ho__copy { margin-top: 10px; padding: 11px 20px; font-size: 14px; }
 .ho__qr { max-width: 190px; margin-top: 16px; }
-.ho__go { max-width: 320px; margin: 12px auto 0; }
+.ho__go { display: flex; max-width: 320px; margin: 12px auto 0; }
 .ho__go:hover { color: #fff; }
 .ho__p { font-size: 13.5px; line-height: 1.6; color: var(--muted); max-width: 340px; margin: 12px auto 0; }
 
