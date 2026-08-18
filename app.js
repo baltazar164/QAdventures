@@ -8,16 +8,12 @@
 
 // --- Constants, carried over unchanged --------------------------------------
 
-const CURRENCIES = {
-  PHP: { symbol: '₱',   rate: 1,     label: '₱ PHP' },
-  USD: { symbol: '$',   rate: 0.017, label: '$ USD' },
-  EUR: { symbol: '€',   rate: 0.016, label: '€ EUR' },
-  AUD: { symbol: 'A$',  rate: 0.026, label: 'A$ AUD' },
-  SGD: { symbol: 'S$',  rate: 0.023, label: 'S$ SGD' },
-  KRW: { symbol: '₩',   rate: 23.5,  label: '₩ KRW' },
-  JPY: { symbol: '¥',   rate: 2.6,   label: '¥ JPY' },
-  CNY: { symbol: 'CN¥', rate: 0.12,  label: 'CN¥ CNY' },
-};
+// The peso is not fetched: prices are quoted in it, so it needs no rate and is
+// always offered. Every other currency arrives from Odoo with the catalog —
+// its rate already moved to what a money changer in Cebu pays. What stood here
+// until 2026-08-18 was a table of eight rates typed by hand, with no source and
+// no date, which had been drifting since the day it was written.
+const PESO = { code: 'PHP', symbol: '₱', rate: 1 };
 
 // Fallback picture per card, by site_id. Filename including extension, because
 // one of them is a .webp and the rest are .png.
@@ -107,6 +103,11 @@ const S = {
   availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '',
   modalCalOpen: false, modalCursor: '',
   currency: 'PHP', mobileMenuOpen: false,
+  // Offered currencies and the day their rates were quoted, both from Odoo.
+  // `null` means the catalog never answered, and then the peso is the only
+  // choice — showing a converted price from an unknown rate is how the site
+  // used to promise numbers nobody had checked.
+  currencies: null, ratesDate: '',
   // Priced by the shop, not by this file. `null` means the catalog never answered,
   // and then the form quotes the day rate only — inventing a discount tier here is
   // how a site ends up promising a number the counter will not honour.
@@ -133,8 +134,16 @@ function esc(s) {
 
 // --- Money, dates, the quote ------------------------------------------------
 
+function currencyList() {
+  return [PESO].concat(S.currencies || []);
+}
+
+function currentCurrency() {
+  return currencyList().find(c => c.code === S.currency) || PESO;
+}
+
 function peso(n) {
-  const c = CURRENCIES[S.currency] || CURRENCIES.PHP;
+  const c = currentCurrency();
   return c.symbol + Math.round(n * c.rate).toLocaleString('en-US');
 }
 
@@ -256,6 +265,18 @@ function applyCatalog(data, source) {
     ? data.discounts.slice().sort((a, b) => a.min_days - b.min_days) : null;
   S.zones = Array.isArray(data.delivery_zones) ? data.delivery_zones : null;
   S.whatsapp = (typeof data.whatsapp === 'string' && data.whatsapp) ? data.whatsapp : '';
+  // A currency without a usable rate is dropped rather than offered: the
+  // selector must not hold a choice that cannot convert anything.
+  const offered = Array.isArray(data.currencies) ? data.currencies.filter(
+    c => c && c.code && typeof c.rate === 'number' && c.rate > 0) : [];
+  S.currencies = offered.length ? offered : null;
+  S.ratesDate = typeof data.rates_date === 'string' ? data.rates_date : '';
+  // The currency in hand may have just left the list — the shop stopped
+  // offering it, or this answer came from the offline copy, which carries
+  // none. Prices fall back to pesos rather than to a rate that is no longer
+  // published.
+  if (!currencyList().some(c => c.code === S.currency)) S.currency = 'PHP';
+  fillCurrencySelects();
   // Strictly `=== true`, and strictly from the live endpoint. Absent (an older
   // server, the offline copy — the robot strips it anyway) counts as off, and
   // Google's script is only fetched once something can be booked through it.
@@ -419,8 +440,12 @@ function renderCatalog() {
   if (S.selected) updateModal();
   $$('[data-wa]').forEach(wa => { wa.href = 'https://wa.me/' + waNumber(); });
   const from = $('#hero-from');
-  // The hero's "bikes from" figure follows the currency selector, as it did.
-  if (from) from.textContent = peso(600);
+  // The hero's "bikes from" figure is read off the catalog, not typed beside it: a
+  // price changed in Odoo moves it here too. Taken across every model, not just the
+  // scooters, because the caption under it says "Bikes from". peso() keeps it on the
+  // currency selector, as it always was.
+  const prices = fleet().map(b => b.price).filter(p => typeof p === 'number' && p > 0);
+  if (from && prices.length) from.textContent = peso(Math.min.apply(null, prices));
 }
 
 // --- Calendars --------------------------------------------------------------
@@ -1219,20 +1244,23 @@ function scrollToId(id) {
   if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 68, behavior: 'smooth' });
 }
 
+// Called once at startup and again whenever a catalog answer arrives, so the
+// list is rebuilt rather than added to; the handler is assigned, not added, for
+// the same reason.
 function fillCurrencySelects() {
-  const html = Object.keys(CURRENCIES).map(code =>
-    '<option value="' + code + '">' + esc(CURRENCIES[code].label) + '</option>').join('');
+  const html = currencyList().map(c =>
+    '<option value="' + esc(c.code) + '">' + esc(c.symbol + ' ' + c.code) + '</option>').join('');
   ['#cur-hdr', '#cur-filter'].forEach(sel => {
     const el = $(sel);
     if (!el) return;
     el.innerHTML = html;
     el.value = S.currency;
-    el.addEventListener('change', () => {
+    el.onchange = () => {
       S.currency = el.value;
       // Both selectors show the same currency, so they move together.
       ['#cur-hdr', '#cur-filter'].forEach(other => { const o = $(other); if (o) o.value = S.currency; });
       renderCatalog();
-    });
+    };
   });
 }
 

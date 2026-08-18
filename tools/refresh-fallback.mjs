@@ -153,6 +153,14 @@ async function main() {
     discounts: data.discounts,
     delivery_zones: data.delivery_zones,
     whatsapp: data.whatsapp,
+    // The offered currencies and the day their rates were quoted. Copied,
+    // unlike `direct_booking`: a converted price still works with Odoo down,
+    // and this copy is refreshed daily, which is exactly how often the rates
+    // move. `rates_date` travels with them so nothing here is dateless — the
+    // hand-typed table this replaced had no date, which is how it managed to
+    // be wrong for a year without anybody noticing.
+    currencies: data.currencies,
+    rates_date: data.rates_date,
     // `direct_booking` is deliberately NOT copied, same reasoning as `units`
     // above: this copy is shown exactly when Odoo is unreachable, and then a
     // booking cannot land anyway — the page must offer WhatsApp alone.
