@@ -420,7 +420,7 @@ function renderCatalog() {
   const wa = $('#shop-wa');
   if (wa) wa.href = 'https://wa.me/' + waNumber();
   const from = $('#hero-from');
-  // The hero's "scooters from" figure follows the currency selector, as it did.
+  // The hero's "bikes from" figure follows the currency selector, as it did.
   if (from) from.textContent = peso(600);
 }
 
@@ -975,8 +975,7 @@ function updateActions() {
     '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
       (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead') + '</button>' +
     (S.hint ? '<p class="mhint">' + esc(S.hint) + '</p>' : '') +
-    (waNote ? '<p class="wanote">' + esc(waNote) + '</p>' : '') +
-    '<p class="fineprint">Nothing to pay now · deposit on pick-up, refunded on return · free cancellation</p>';
+    (waNote ? '<p class="wanote">' + esc(waNote) + '</p>' : '');
 
   const req = $('#m-req');
   if (req) req.addEventListener('click', requestBooking);
