@@ -370,8 +370,10 @@ a.citem:hover { color: inherit; }
 .ftr__name { font-family: var(--display); font-weight: 700; font-size: 15px; color: #fff; }
 /* The name is Q Adventures; what follows says what it sells. On one line and in one
    weight the two read as a single four-word name, which is how the footer came to
-   disagree with the header, where they already sit on separate lines. */
-.ftr__what { font-family: 'Manrope', system-ui, sans-serif; font-weight: 600; font-size: 12.5px; color: #B7AF9F; margin-left: 7px; }
+   disagree with the header, where they already sit on separate lines. The space
+   between them is a real one in the markup, not this margin: a browser holding a
+   stale styles.css against a fresh index.html rendered them glued into one word. */
+.ftr__what { font-family: 'Manrope', system-ui, sans-serif; font-weight: 600; font-size: 12.5px; color: #B7AF9F; margin-left: 3px; }
 .ftr__sub { font-size: 12px; }
 .ftr__links { display: flex; gap: 22px; font-size: 13.5px; font-weight: 600; align-items: center; }
 .ftr__link { cursor: pointer; color: #B7AF9F; display: inline-flex; align-items: center; gap: 7px; }
