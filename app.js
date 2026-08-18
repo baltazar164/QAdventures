@@ -70,34 +70,19 @@ const GOOGLE_LOAD_TIMEOUT = 4000;
 
 // The number the WhatsApp buttons write to until the catalog answers with the real
 // one. It cannot be dropped in favour of the payload: an unreachable Odoo is exactly
-// when this number matters most.
-const WHATSAPP_DEFAULT = '16266266347';
-
-// Last-known catalog, in the endpoint's shape. The third and last level: used when
-// neither Odoo nor catalog.json answered. Photos fall back to the bundled images/.
-const FALLBACK_MODELS = [
-  { id:'pcx160', name:'Honda PCX160', cc:'160cc', cat:'scooter', price:700, weekly:4410, monthly:16800, tag:'Best-selling premium scooter', badge:'Best Seller', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.pcx160], units:[],
-    overview:'The Honda PCX160 is a comfort-focused premium scooter that balances a refined ride with strong performance — well suited to both urban commutes and longer suburban trips.',
-    pros:['Comfort-focused ride — wide seat, spacious legroom, and superior suspension for longer trips.','Strong engine performance — the 157cc engine delivers smooth acceleration and excellent power for urban and suburban riding.','Premium design — stylish, modern body with LED lights and an upscale aesthetic.','Excellent fuel efficiency — great mileage despite the higher displacement.','Large under-seat storage — fits a helmet and additional items with ease.','Enhanced safety features — ABS and traction improvements (depending on model/year).'],
-    cons:['Wider body — less agile in heavy traffic than slimmer scooters like the Click 125i or Mio.','Heavier build — requires more effort to maneuver in tight spaces or when parking.','Higher price point — more costly than other 150cc-class scooters.'] },
-  { id:'aerox155', name:'Yamaha Aerox 155', cc:'155cc', cat:'scooter', price:700, weekly:4410, monthly:16800, tag:'Sporty and quick around town', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.aerox155], units:[] },
-  { id:'burgman', name:'Suzuki Burgman 125 EX', cc:'125cc', cat:'scooter', price:650, weekly:4095, monthly:15600, tag:'Comfortable maxi-style ride', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.burgman], units:[] },
-  { id:'gravis125', name:'Yamaha Gravis 125', cc:'125cc', cat:'scooter', price:600, weekly:3780, monthly:14400, tag:'Easy, economical everyday runabout', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.gravis125], units:[] },
-  { id:'click125i', name:'Honda Click 125i', cc:'125cc', cat:'scooter', price:600, weekly:3780, monthly:14400, tag:'The reliable all-rounder', badge:'', specs:['Automatic','Top box','2 helmets'], photos:[BIKE_IMG.click125i], units:[],
-    overview:'The Honda Click 125i is an excellent choice for city riding. Its slim, agile design makes it perfect for navigating heavy traffic and tight urban spaces.',
-    pros:['Lightweight & easy to handle — ideal for new riders or busy city environments.','Punchy performance — despite being a 125cc, it feels closer to a 150cc in acceleration.','Narrow body — lets you slip smoothly through congested roads and tight gaps.'],
-    cons:['Single rear shock — may feel uncomfortable on the back after long rides (40+ minutes).','Narrow seat — less comfortable for wider builds or long-distance travel.','Limited under-seat storage — enough for essentials, but not much more.'] },
-  { id:'pcx160abs', name:'Honda PCX160 ABS', cc:'160cc', cat:'scooter', price:850, weekly:5355, monthly:20400, tag:'PCX comfort with ABS safety', badge:'', specs:['Automatic','ABS','Top box'], photos:[BIKE_IMG.pcx160abs], units:[] },
-  { id:'adv160', name:'Honda ADV160 ABS', cc:'160cc', cat:'adventure', price:900, weekly:5670, monthly:21600, tag:'Adventure-styled and rugged', badge:'', specs:['Automatic','ABS','Big storage'], photos:[BIKE_IMG.adv160], units:[] },
-  { id:'adv350', name:'Honda ADV350', cc:'350cc', cat:'adventure', price:1900, weekly:11970, monthly:45600, tag:'The flagship — highway ready', badge:'Top spec', specs:['Automatic','ABS','Traction control'], photos:[BIKE_IMG.adv350], units:[] },
-  { id:'vstrom250', name:'Suzuki V-Strom 250', cc:'250cc', cat:'adventure', price:1300, weekly:8190, monthly:31200, tag:'Go anywhere, ride all day', badge:'Featured', specs:['Manual','Touring','Long range'], photos:[BIKE_IMG.vstrom250], units:[] },
-  { id:'rouser160', name:'Kawasaki Rouser 160', cc:'160cc', cat:'adventure', price:800, weekly:5040, monthly:19200, tag:'Punchy naked street bike', badge:'', specs:['Manual','Nimble','Fuel-efficient'], photos:[BIKE_IMG.rouser160], units:[] },
-];
+// when this number matters most — which is why it must be the shop's own number and
+// not, as it was until 2026-08-18, the American one left in the template. Same number
+// as the Call and Viber buttons in the contact block, and as what the catalog sends.
+const WHATSAPP_DEFAULT = '639432458562';
 
 // --- State ------------------------------------------------------------------
 
 const S = {
-  models: null, categories: null, catalogError: false, filter: 'all',
+  models: null, categories: null, filter: 'all',
+  // Which level the prices on screen came from — 'odoo' live, 'offline' the daily
+  // copy, 'down' neither — and the day that copy was written. Read by the note above
+  // the grid: figures nobody can date are not shown without saying so.
+  catalogSource: '', refreshedAt: '',
   selected: null, photoIndex: 0,
   pickup: '', dropoff: '', step: 'form', color: '',
   availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '',
@@ -251,16 +236,18 @@ function availInfo() {
   return { chosen, isAvailable };
 }
 
-// Three levels, in order: live Odoo, then the offline copy served from this same
-// origin, then the list compiled into this file. "Reachable but empty" counts as a
-// failure at every level — a wrong key answers {"models": []}, and an answer with no
+// Two levels, in order: live Odoo, then the offline copy served from this same origin.
+// There is no third — a list compiled into this file stood here until 2026-08-18 and
+// could only ever go stale, since nothing updates it. "Reachable but empty" counts as a
+// failure at both levels — a wrong key answers {"models": []}, and an answer with no
 // models makes its other fields no more trustworthy than its empty list.
 function applyCatalog(data, source) {
   const models = (data && Array.isArray(data.models)) ? data.models : [];
   if (!models.length) return false;
   S.models = models;
   S.categories = (data && Array.isArray(data.categories)) ? data.categories : null;
-  S.catalogError = source !== 'odoo';
+  S.catalogSource = source;
+  S.refreshedAt = typeof data.refreshed_at === 'string' ? data.refreshed_at : '';
   S.discounts = Array.isArray(data.discounts)
     ? data.discounts.slice().sort((a, b) => a.min_days - b.min_days) : null;
   S.zones = Array.isArray(data.delivery_zones) ? data.delivery_zones : null;
@@ -307,11 +294,14 @@ function loadOfflineCopy() {
       throw new Error('offline copy is empty');
     })
     .catch(err => {
-      console.warn('[catalog] offline copy unusable; using the compiled list', err);
-      applyCatalog({ models: FALLBACK_MODELS }, 'compiled');
-      S.models = FALLBACK_MODELS;
+      // Nothing left to fall back to, and that is deliberate: the grid empties rather
+      // than filling with prices no one can date. `[]` and not `null` — the difference
+      // between "still loading" and "there is nothing", which the grid reads.
+      console.warn('[catalog] offline copy unusable; the fleet cannot be shown', err);
+      S.models = [];
       S.categories = null;
-      S.catalogError = true;
+      S.catalogSource = 'down';
+      S.refreshedAt = '';
       renderCatalog();
     });
 }
@@ -433,10 +423,52 @@ function renderAvailBar() {
   }
 }
 
+// The page says out loud where its prices came from. Saying nothing is only right when
+// they are live: the offline copy can be any age, and when neither level answered there
+// is no grid at all, so the block has to stand in for it and hand over the messengers.
+function renderCatalogNote() {
+  const host = $('#fleet-note');
+  if (!host) return;
+  const src = S.catalogSource;
+  host.hidden = src !== 'offline' && src !== 'down';
+  host.className = 'fleet__note' + (src === 'down' ? ' fleet__note--down' : '');
+  host.innerHTML = '';
+  if (host.hidden) return;
+
+  if (src === 'offline') {
+    // The day is worth more than the warning: "may be out of date" reads the same for a
+    // copy written last night and one written in March. Without it — an older robot, a
+    // hand-written file — the sentence still has to work, so it loses only the date.
+    const day = S.refreshedAt ? fmtDate(S.refreshedAt.slice(0, 10)) : '';
+    host.textContent = day
+      ? 'Prices last updated ' + day + ' — we’ll confirm the final price when you message us.'
+      : 'These prices may be out of date — we’ll confirm the final price when you message us.';
+    return;
+  }
+
+  const t = document.createElement('div');
+  t.className = 'fleet__note-t';
+  t.textContent = 'We can’t load the fleet right now.';
+  const p = document.createElement('div');
+  p.className = 'fleet__note-p';
+  p.textContent = 'Message us and we’ll send you the bikes and today’s prices.';
+  host.appendChild(t);
+  host.appendChild(p);
+  // Every channel Derek answers on, not WhatsApp alone (owner, 2026-08-18): whoever
+  // got here has one messenger open already and no fleet to look at meanwhile.
+  const row = chansRow('all');
+  if (row) host.appendChild(row);
+}
+
 function renderCatalog() {
   renderTabs();
   renderAvailBar();
   renderFleet();
+  renderCatalogNote();
+  // With no catalog there is nothing to filter: dates, a currency and a count over an
+  // empty grid are furniture pretending the page still works.
+  const filter = $('#fleet-filter');
+  if (filter) filter.hidden = S.catalogSource === 'down';
   if (S.selected) updateModal();
   $$('[data-wa]').forEach(wa => { wa.href = 'https://wa.me/' + waNumber(); });
   const from = $('#hero-from');
@@ -1042,10 +1074,11 @@ function chansRow(mode) {
   row.className = 'chans chans--modal';
   row.removeAttribute('aria-label');
   $$('.chan', row).forEach(el => {
-    // WhatsApp is dropped from the copy: both places this row appears already
-    // carry a WhatsApp button of their own, and it is the only channel a link can
-    // hand the written-out booking to, so it is not one of the alternatives here.
-    if (el.hasAttribute('data-wa')) { el.remove(); return; }
+    // WhatsApp is dropped from the copy wherever the host carries a WhatsApp button
+    // of its own, and it is the only channel a link can hand the written-out booking
+    // to, so it is not one of the alternatives there. In 'all' the row IS the whole
+    // list — the block over an empty fleet grid has no button but these.
+    if (el.hasAttribute('data-wa') && mode !== 'all') { el.remove(); return; }
     if (mode === 'booking') {
       el.addEventListener('click', e => { e.preventDefault(); openHandover(el); });
       return;

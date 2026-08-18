@@ -171,6 +171,14 @@ input, button, select, textarea { font-family: inherit; }
 .availcount.is-none { color: #B25E12; }
 
 .fleet__loading { margin-top: 28px; text-align: center; color: var(--muted); font-weight: 600; font-size: 14.5px; }
+/* Said out loud rather than left to the figures: a strip above the grid when the
+   prices came from the daily copy, and a block in place of the grid when nothing
+   answered at all. */
+.fleet__note { margin-top: 22px; border: 1px solid var(--line-2); background: var(--sand); border-radius: 14px; padding: 12px 18px; text-align: center; color: var(--body); font-size: 14px; font-weight: 600; }
+.fleet__note--down { margin-top: 26px; padding: 36px 24px 30px; background: var(--field); }
+.fleet__note-t { font-family: var(--display); font-weight: 700; font-size: clamp(19px,2.4vw,24px); letter-spacing: -.01em; color: var(--ink); }
+.fleet__note-p { margin-top: 9px; font-size: 14.5px; font-weight: 600; color: var(--body); }
+.fleet__note .chans { margin-top: 18px; }
 .fleet__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; margin-top: 22px; }
 
 /* category tabs — the list comes from Odoo, see backlog 11 */

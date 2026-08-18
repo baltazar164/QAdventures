@@ -136,7 +136,7 @@
 <section class="fleet" id="fleet">
   <div class="tabs" id="fleet-tabs" hidden></div>
 
-  <div class="filter">
+  <div class="filter" id="fleet-filter">
     <div class="filter__row">
       <div class="filter__title">Check your travel dates</div>
       <div class="filter__dates" id="avail-wrap">
@@ -159,6 +159,11 @@
       </div>
     </div>
   </div>
+
+  <!-- Filled by app.js only when the prices did not come from live Odoo: the daily
+       copy's age, or — with nothing reachable at all — the block that stands where the
+       grid would have been, since there is no compiled list behind it any more. -->
+  <div class="fleet__note" id="fleet-note" hidden></div>
 
   <div class="fleet__loading" id="fleet-loading">Loading the fleet…</div>
   <div class="fleet__grid" id="fleet-grid"></div>
@@ -234,7 +239,7 @@
            writes where they already are instead of installing something first.
            WhatsApp sits in the row rather than above it (owner, 2026-08-18). -->
       <div class="chans" aria-label="Message the shop">
-        <a class="chan chan--whatsapp" data-wa href="https://wa.me/16266266347" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
+        <a class="chan chan--whatsapp" data-wa href="https://wa.me/639432458562" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
         <a class="chan chan--facebook" href="https://www.facebook.com/profile.php?id=100087573997431" data-msg-link="https://m.me/100087573997431" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg aria-hidden="true"><use href="#i-facebook"/></svg></a>
         <a class="chan chan--viber" href="viber://add?number=639432458562" title="Viber" aria-label="Viber"><svg aria-hidden="true"><use href="#i-viber"/></svg></a>
         <a class="chan chan--line" href="https://line.me/ti/p/5w8pHzkZkV" target="_blank" rel="noopener" title="LINE" aria-label="LINE"><svg aria-hidden="true"><use href="#i-line"/></svg></a>
@@ -275,7 +280,7 @@
       <span class="ftr__link" data-scroll="fleet">Fleet</span>
       <span class="ftr__link" data-scroll="contact">Contact</span>
       <div class="ftr__chans">
-        <a class="chan chan--whatsapp" data-wa href="https://wa.me/16266266347" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
+        <a class="chan chan--whatsapp" data-wa href="https://wa.me/639432458562" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
         <a class="chan chan--facebook" href="https://www.facebook.com/profile.php?id=100087573997431" data-msg-link="https://m.me/100087573997431" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg aria-hidden="true"><use href="#i-facebook"/></svg></a>
         <a class="chan chan--viber" href="viber://add?number=639432458562" title="Viber" aria-label="Viber"><svg aria-hidden="true"><use href="#i-viber"/></svg></a>
         <a class="chan chan--line" href="https://line.me/ti/p/5w8pHzkZkV" target="_blank" rel="noopener" title="LINE" aria-label="LINE"><svg aria-hidden="true"><use href="#i-line"/></svg></a>
