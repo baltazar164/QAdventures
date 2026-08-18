@@ -417,8 +417,7 @@ function renderCatalog() {
   renderAvailBar();
   renderFleet();
   if (S.selected) updateModal();
-  const wa = $('#shop-wa');
-  if (wa) wa.href = 'https://wa.me/' + waNumber();
+  $$('[data-wa]').forEach(wa => { wa.href = 'https://wa.me/' + waNumber(); });
   const from = $('#hero-from');
   // The hero's "bikes from" figure follows the currency selector, as it did.
   if (from) from.textContent = peso(600);
@@ -889,11 +888,15 @@ function doneHTML() {
         '<button class="btn done__ok" data-close>Done</button>' +
         '<a class="btn done__wa" href="https://wa.me/' + esc(waNumber()) + '" target="_blank" rel="noopener">Message us on WhatsApp</a>' +
       '</div>' +
+      '<div id="done-chans"></div>' +
     '</div>';
 }
 
 function wireDone() {
   $$('[data-close]', $('#sheet-body')).forEach(b => b.addEventListener('click', closeModal));
+  // Here the booking is already sent, so these are plain ways to reach the shop.
+  const host = $('#done-chans');
+  if (host) chansBlock(host, 'plain');
 }
 
 function wireForm() {
@@ -980,6 +983,10 @@ function updateActions() {
   const req = $('#m-req');
   if (req) req.addEventListener('click', requestBooking);
   $('#m-wa').addEventListener('click', openWhatsApp);
+
+  // Derek answers on all of these, and the visitor who has no WhatsApp is exactly
+  // the one this form would otherwise lose at the last step.
+  chansBlock(host, 'booking');
 }
 
 function updateModal() {
@@ -995,6 +1002,181 @@ function updateModal() {
   updateQuote();
   updateActions();
 }
+
+// --- The channel row --------------------------------------------------------
+// The row in the contact block is the list. Everywhere else it is copied from
+// there rather than written out again, so the next channel is added in one place.
+
+function chansRow(mode) {
+  const src = $('.chans');
+  if (!src) return null;
+  const row = src.cloneNode(true);
+  row.className = 'chans chans--modal';
+  row.removeAttribute('aria-label');
+  $$('.chan', row).forEach(el => {
+    // WhatsApp is dropped from the copy: both places this row appears already
+    // carry a WhatsApp button of their own, and it is the only channel a link can
+    // hand the written-out booking to, so it is not one of the alternatives here.
+    if (el.hasAttribute('data-wa')) { el.remove(); return; }
+    if (mode === 'booking') {
+      el.addEventListener('click', e => { e.preventDefault(); openHandover(el); });
+      return;
+    }
+    if (el.hasAttribute('data-qr')) el.addEventListener('click', () => openQr(el));
+  });
+  return row;
+}
+
+function chansBlock(host, mode) {
+  const row = chansRow(mode);
+  if (!row) return;
+  const cap = document.createElement('div');
+  cap.className = 'chans__cap';
+  cap.textContent = 'or message us on';
+  host.appendChild(cap);
+  host.appendChild(row);
+}
+
+// --- The layer above the booking form ---------------------------------------
+// Both windows below open over the form rather than in place of it: they render
+// into their own root, so whatever was typed is still there when they close.
+
+function openOver(html) {
+  const root = $('#over-root');
+  root.innerHTML = '<div class="ovl ovl--top" id="ov-ovl"><div class="sheet" id="ov-sheet">' + html + '</div></div>';
+  $('#ov-ovl').addEventListener('click', closeOver);
+  $('#ov-sheet').addEventListener('click', e => e.stopPropagation());
+  $$('[data-ov-close]').forEach(b => b.addEventListener('click', closeOver));
+  document.addEventListener('keydown', onOverEsc);
+  document.body.style.overflow = 'hidden';
+}
+
+function onOverEsc(e) { if (e.key === 'Escape') closeOver(); }
+
+function closeOver() {
+  const root = $('#over-root');
+  if (root) root.innerHTML = '';
+  document.removeEventListener('keydown', onOverEsc);
+  // The booking form may still be open underneath, and it wants the page held.
+  document.body.style.overflow = S.selected ? 'hidden' : '';
+}
+
+// --- Channels reached by a QR code ------------------------------------------
+// Most messengers open from a link. WeChat does not: an account there is added by
+// scanning a code inside the app, so its mark opens the picture instead of a URL,
+// with the id underneath for anyone who would rather type it. Any other channel
+// that arrives without a link can use the same data- attributes.
+
+function wireQrChannels() {
+  $$('[data-qr]').forEach(btn => btn.addEventListener('click', () => openQr(btn)));
+}
+
+function openQr(btn) {
+  const label = btn.getAttribute('data-qr-label') || '';
+  const id = btn.getAttribute('data-qr-id') || '';
+  const src = btn.getAttribute('data-qr');
+  // WeChat's own code carries a u.wechat.com address, which the app opens directly.
+  // That is the whole answer on a phone, where a code on the same screen cannot be
+  // scanned; the picture is still there for anyone reading this on a computer.
+  const link = btn.getAttribute('data-qr-link') || '';
+  openOver(
+    '<div class="qr">' +
+      '<button class="qr__x" data-ov-close aria-label="Close">\u00d7</button>' +
+      '<div class="qr__h">' + esc(label) + '</div>' +
+      '<img class="qr__img" src="' + esc(src) + '" alt="' + esc(label) + ' QR code">' +
+      (id ? '<div class="qr__id">' + esc(id) + '</div>' : '') +
+      '<p class="qr__p">' +
+        (link
+          ? 'Scan the code in ' + esc(label) + ', or open it straight away if the app is on this device.'
+          : 'Scan it in ' + esc(label) + ' to add us. On the phone you are reading this on, ' +
+            'save the picture first \u2014 ' + esc(label) + '\u2019s scanner opens it from the gallery.') +
+      '</p>' +
+      (link
+        ? '<a class="btn btn--primary btn--block qr__go" href="' + esc(link) + '" target="_blank" rel="noopener">Open in ' + esc(label) + '</a>'
+        : '') +
+    '</div>');
+}
+
+// --- Handing the booking to a channel that cannot carry it ------------------
+// Only WhatsApp takes a written-out message from a link. On every other channel
+// the visitor would land in an empty box, with everything they just chose left
+// behind on the site. So the booking is copied on the very tap that opens the
+// channel \u2014 while the click is still ours to spend on the clipboard \u2014 and shown
+// here as well, because a line of small print under a button is read by nobody
+// who is already on their way into another app.
+
+function bookingText() {
+  // waMessage() writes the bike's name in WhatsApp's own bold. Anywhere else the
+  // asterisks are litter.
+  return waMessage().replace(/\*/g, '');
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text).then(() => true, () => legacyCopy(text));
+  }
+  return Promise.resolve(legacyCopy(text));
+}
+
+// Deprecated everywhere and still the only thing that works in the places where
+// the modern API is refused.
+function legacyCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function openHandover(el) {
+  if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
+  const label = el.getAttribute('aria-label') || 'the app';
+  const link = el.getAttribute('data-qr-link') || el.getAttribute('href') || '';
+  const qr = el.getAttribute('data-qr') || '';
+  const text = bookingText();
+
+  copyText(text).then(ok => {
+    if (ok) return;
+    // Nothing reached the clipboard. Say so, and ask for the one thing still open.
+    const note = $('#ho-note');
+    const btn = $('#ho-copy');
+    if (btn) btn.textContent = 'Copy';
+    if (note) note.textContent = 'Select the text above and copy it, then paste it in the chat.';
+  });
+
+  openOver(
+    '<div class="ho">' +
+      '<button class="qr__x" data-ov-close aria-label="Close">\u00d7</button>' +
+      '<div class="qr__h">Send it on ' + esc(label) + '</div>' +
+      '<div class="ho__text" id="ho-text">' + esc(text) + '</div>' +
+      '<button class="btn btn--ghost ho__copy" id="ho-copy">Copy again</button>' +
+      (qr ? '<img class="qr__img ho__qr" src="' + esc(qr) + '" alt="' + esc(label) + ' QR code">' : '') +
+      (link ? '<a class="btn btn--primary btn--block ho__go" href="' + esc(link) + '"' +
+        (/^https?:/.test(link) ? ' target="_blank" rel="noopener"' : '') +
+        '>Open ' + esc(label) + '</a>' : '') +
+      '<p class="ho__p" id="ho-note">Your booking is copied. Open the chat and paste it \u2014 ' +
+        'press and hold in the message box.</p>' +
+    '</div>');
+
+  const copy = $('#ho-copy');
+  copy.addEventListener('click', () => {
+    copyText(text).then(ok => {
+      copy.textContent = ok ? 'Copied \u2713' : 'Press and hold the text to copy it';
+      if (ok) setTimeout(() => { if ($('#ho-copy') === copy) copy.textContent = 'Copy again'; }, 1600);
+    });
+  });
+}
+
 
 // --- The contact form -------------------------------------------------------
 // It used to relabel its own button "Sent — thanks! ✓" and send nothing at all.
@@ -1083,6 +1265,7 @@ function init() {
 
   fillCurrencySelects();
   wireContactForm();
+  wireQrChannels();
   renderCatalog();
   // loadGoogle() is not called here: applyCatalog calls it if and only if the
   // live payload allows direct booking. Until then the modal is WhatsApp-only.

@@ -38,6 +38,7 @@ input, button, select, textarea { font-family: inherit; }
 @keyframes sheetIn  { from { opacity:0; transform:translateY(24px) scale(.98); } to { opacity:1; transform:none; } }
 
 .page { max-width: 100%; overflow-x: hidden; }
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 /* shared -------------------------------------------------------------- */
 
@@ -252,6 +253,34 @@ input, button, select, textarea { font-family: inherit; }
 .thumb { width: 54px; height: 40px; object-fit: cover; border-radius: 7px; cursor: pointer; flex: none; border: 2px solid transparent; opacity: .6; }
 .thumb.is-on { border-color: var(--orange); opacity: 1; }
 .sheet__body { padding: 24px; }
+
+/* the QR popup -------------------------------------------------------------
+   For a channel that has no address a browser can open — WeChat is reached by
+   scanning a code inside the app, not by a link. */
+.qr { padding: 26px 24px 28px; text-align: center; position: relative; }
+.qr__x { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--sand); color: var(--ink); font-size: 18px; line-height: 1; cursor: pointer; }
+.qr__h { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -.02em; }
+.qr__img { display: block; width: 100%; max-width: 250px; margin: 16px auto 0; border-radius: 14px; background: #fff; }
+.qr__id { margin-top: 14px; font-weight: 800; font-size: 15px; }
+.qr__p { font-size: 13.5px; line-height: 1.6; color: var(--muted); max-width: 320px; margin: 8px auto 0; }
+.qr__go { max-width: 320px; margin: 14px auto 0; }
+.qr__go:hover { color: #fff; }
+
+/* the hand-over window -----------------------------------------------------
+   It opens on top of the booking form, never in place of it, so the form is
+   still filled in when it closes. */
+.ovl--top { z-index: 90; }
+.ho { padding: 26px 24px 28px; position: relative; text-align: center; }
+.ho__text { text-align: left; font-size: 13.5px; line-height: 1.6; color: var(--body); background: var(--field); border: 1px solid var(--line-2); border-radius: 12px; padding: 14px 15px; margin-top: 16px; max-height: 200px; overflow-y: auto; }
+.ho__copy { margin-top: 10px; padding: 11px 20px; font-size: 14px; }
+.ho__qr { max-width: 190px; margin-top: 16px; }
+.ho__go { max-width: 320px; margin: 12px auto 0; }
+.ho__go:hover { color: #fff; }
+.ho__p { font-size: 13.5px; line-height: 1.6; color: var(--muted); max-width: 340px; margin: 12px auto 0; }
+
+/* the same row, copied into the booking form and the screen after it --------- */
+.chans__cap { margin-top: 20px; text-align: center; font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.chans--modal { justify-content: center; margin-top: 10px; }
 .sheet__meta { display: flex; align-items: center; gap: 8px; }
 .sheet__cc { font-size: 12px; font-weight: 600; color: var(--muted); }
 .sheet__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 10px; }
@@ -352,6 +381,31 @@ a.citem:hover { color: inherit; }
 
 .contact__btns { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
 
+/* the channel row ----------------------------------------------------------
+   Eight messengers as eight round marks, because eight buttons the size of the
+   old WhatsApp one would bury the block they sit in. Brand colour on each: it is
+   what a visitor scans for, faster than any label. */
+.chans { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.chan {
+  width: 46px; height: 46px; border-radius: 50%; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--chan); color: #fff; border: none; padding: 0; cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.chan:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(27,23,18,.22); }
+.chan svg { width: 21px; height: 21px; fill: currentColor; display: block; }
+
+.chan--whatsapp  { --chan: #25D366; }
+.chan--facebook  { --chan: #0866FF; }
+.chan--instagram { --chan: #C13584; }
+.chan--telegram  { --chan: #26A5E4; }
+.chan--viber     { --chan: #7360F2; }
+/* Kakao's yellow with a white mark is unreadable — its own brown is the mark's colour. */
+.chan--kakaotalk { --chan: #FFCD00; color: #3C1E1E; }
+.chan--kakaotalk:hover { color: #3C1E1E; }
+.chan--line      { --chan: #00C300; }
+.chan--wechat    { --chan: #07C160; }
+
 .dropcard { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 26px; box-shadow: 0 10px 30px rgba(27,23,18,.06); }
 .dropcard__h3 { font-family: var(--display); font-weight: 600; font-size: 20px; margin: 0 0 4px; }
 .dropcard__p  { font-size: 13.5px; color: var(--muted); margin: 0 0 18px; }
@@ -381,6 +435,13 @@ a.citem:hover { color: inherit; }
 @media (max-width: 300px) { .ftr__what { white-space: normal; } }
 .ftr__sub { font-size: 12px; }
 .ftr__links { display: flex; gap: 22px; font-size: 13.5px; font-weight: 600; align-items: center; }
+/* Down here the marks stay grey and light up on hover: eight brand colours in the
+   footer would out-shout the footer. */
+.ftr__chans { display: flex; gap: 8px; flex-wrap: wrap; }
+.ftr__chans .chan { width: 34px; height: 34px; background: rgba(255,255,255,.07); color: #B7AF9F; }
+.ftr__chans .chan svg { width: 16px; height: 16px; }
+.ftr__chans .chan:hover { background: var(--chan); color: #fff; transform: none; box-shadow: none; }
+.ftr__chans .chan--kakaotalk:hover { color: #3C1E1E; }
 .ftr__link { cursor: pointer; color: #B7AF9F; display: inline-flex; align-items: center; gap: 7px; }
 .ftr__link:hover { color: #B7AF9F; }
 .ftr__legal { border-top: 1px solid rgba(255,255,255,.08); padding: 16px 24px; text-align: center; font-size: 12.5px; color: #8C846F; }
