@@ -367,13 +367,18 @@ a.citem:hover { color: inherit; }
 .ftr__row { max-width: 1200px; margin: 0 auto; padding: 36px 24px 26px; display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; }
 .ftr__brand { display: flex; align-items: center; gap: 11px; }
 .ftr__mark { width: 38px; height: 38px; background: var(--amber); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--ink); font-family: var(--display); font-weight: 700; font-size: 20px; }
-.ftr__name { font-family: var(--display); font-weight: 700; font-size: 15px; color: #fff; }
-/* The name is Q Adventures; what follows says what it sells. On one line and in one
-   weight the two read as a single four-word name, which is how the footer came to
-   disagree with the header, where they already sit on separate lines. The space
-   between them is a real one in the markup, not this margin: a browser holding a
-   stale styles.css against a fresh index.html rendered them glued into one word. */
-.ftr__what { font-family: 'Manrope', system-ui, sans-serif; font-weight: 600; font-size: 12.5px; color: #B7AF9F; margin-left: 3px; }
+.ftr__name { font-family: var(--display); font-weight: 700; font-size: 15px; color: #fff; line-height: 1.3; }
+/* The name is Q Adventures; what follows says what it sells. It keeps the name's side
+   while there is room and drops whole to the next line when there is not — never
+   breaking mid-phrase, which is what left "Rental" stranded on a line of its own.
+   That is all `nowrap` does here: an unbreakable inline box moves down entire. It
+   needs about 175px, so it travels alone from roughly 272px of viewport and the
+   guard below catches anything narrower — a small screen, or ordinary text scaling.
+   The space between the two is a real one in the markup and there is no margin at all:
+   a margin would indent the phrase whenever it dropped to its own line, and a browser
+   holding a stale styles.css against a fresh index.html glued them into one word. */
+.ftr__what { white-space: nowrap; font-family: 'Manrope', system-ui, sans-serif; font-weight: 600; font-size: 12.5px; color: #B7AF9F; }
+@media (max-width: 300px) { .ftr__what { white-space: normal; } }
 .ftr__sub { font-size: 12px; }
 .ftr__links { display: flex; gap: 22px; font-size: 13.5px; font-weight: 600; align-items: center; }
 .ftr__link { cursor: pointer; color: #B7AF9F; display: inline-flex; align-items: center; gap: 7px; }
