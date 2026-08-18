@@ -430,3 +430,13 @@ a.citem:hover { color: inherit; }
 @media (max-width: 420px) {
   .stat__div { display: none; }
 }
+
+/* Narrower than this the strip's widest pair (147 + 144 + a 34 gap = 325, plus the row's
+   48px of padding) stops fitting, but the shorter pairs still do — so it broke up into a
+   ragged one-one-one-two instead of a grid. One claim per line below it, marks aligned
+   in a column: it reads as a list of promises and has no width left to break at. The
+   number is 400 rather than the measured 373 so the pair above it has real clearance
+   instead of two pixels. */
+@media (max-width: 400px) {
+  .trust__row { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
