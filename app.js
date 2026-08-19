@@ -30,21 +30,15 @@ const BIKE_IMG = {
   rouser160: 'images/bike-rouser160.png',
 };
 
-// Served from localhost this page is the development copy and talks to the Odoo
-// at 8069; served from anywhere else it talks to production. One committed file
-// works on both sides, so merging dev into main can never repoint the live site.
+// The endpoint, its key and the request for the catalog all live in index.html's
+// <head> now (b83): the page has to ask for the fleet before this file has even
+// been downloaded, so the origin switch — localhost talks to the Odoo at 8069,
+// anywhere else to production — had to move there with it. One committed file
+// still works on both sides, so merging dev into main can never repoint the live
+// site. Read here rather than repeated, so the two can never drift apart.
+const CATALOG_API_URL = window.QA_API.url;
+const CATALOG_API_KEY = window.QA_API.key;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1'].includes(location.hostname);
-
-// The key is deliberately committed and NOT a secret: a static page has no server
-// to hide it behind, and the endpoint only serves already-public catalog data. It
-// is a speed-bump against scrapers, paired with the endpoint's CORS origin check.
-// Keep it in sync with Odoo's `qa_catalog.api_key` (do not regenerate it). The
-// development database carries the same key on purpose, so one constant serves
-// both sides of the URL switch.
-const CATALOG_API_URL = IS_LOCAL_DEV
-  ? 'http://localhost:8069/qa/catalog'
-  : 'https://api.cebuscooterrental.com/qa/catalog';
-const CATALOG_API_KEY = '_BurZesjjrL4IJjSV9VV_Hd_7ZvdOqXz_CLIPBW7Elw';
 
 // Derived rather than written out again, so repointing is still one constant.
 const BOOK_API_URL = CATALOG_API_URL.replace(/\/qa\/catalog\/?$/, '') + '/qa/book';
@@ -200,6 +194,12 @@ function normalizeModel(m, captions) {
     price: m.price, weekly: m.weekly, monthly: m.monthly,
     tag: m.tag || '', badge: m.badge || '', specs: m.specs || [],
     colors: m.colors || [], photos: m.photos || [], units: m.units || [],
+    // The grid's picture, sent in the size the card actually shows it at; the
+    // full-size `photos` are for the sheet, which opens one card at a time. An
+    // older server, or the offline copy, sends no `card_photo` — then the grid
+    // falls back to the first gallery photo, as it always did.
+    cardPhoto: m.card_photo || '',
+
     desc: hasDesc ? { overview: m.overview || '', pros: m.pros || [], cons: m.cons || [] } : null,
   };
 }
@@ -280,9 +280,12 @@ function applyCatalog(data, source) {
   return true;
 }
 
+// The request itself was made in <head>, long before this file arrived; what is
+// left here is what to do with the answer. Anything that goes wrong on the way —
+// unreachable, not JSON, an empty list — lands in the same two fallbacks it
+// always did.
 function loadCatalog() {
-  fetch(CATALOG_API_URL + '?key=' + encodeURIComponent(CATALOG_API_KEY))
-    .then(r => r.json())
+  window.QA_API.catalog
     .then(data => {
       if (applyCatalog(data, 'odoo')) { renderCatalog(); return; }
       console.warn('[catalog] endpoint returned no models; trying the offline copy');
@@ -353,14 +356,16 @@ function visibleFleet() {
 
 function renderFleet() {
   const grid = $('#fleet-grid');
-  const loading = $('#fleet-loading');
-  if (loading) loading.hidden = S.models !== null;
+  // The grey tiles stand until there is something to put in their place —
+  // including "nothing at all", which is `[]` and not `null`.
+  const skel = $('#fleet-skel');
+  if (skel) skel.hidden = S.models !== null;
   if (!grid) return;
 
   const { chosen, isAvailable } = availInfo();
   grid.innerHTML = visibleFleet().map(b => {
     const avail = isAvailable(b);
-    const img = (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '';
+    const img = b.cardPhoto || (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '';
     const booked = chosen && !avail;
     return '' +
       '<article class="card' + (booked ? ' is-booked' : '') + '" data-bike="' + esc(b.id) + '">' +
