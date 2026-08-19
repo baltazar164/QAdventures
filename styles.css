@@ -170,7 +170,24 @@ input, button, select, textarea { font-family: inherit; }
 .availcount.is-some { color: var(--green); }
 .availcount.is-none { color: #B25E12; }
 
-.fleet__loading { margin-top: 28px; text-align: center; color: var(--muted); font-weight: 600; font-size: 14.5px; }
+/* The grey tiles that hold the grid's place while the catalog is on its way. Cards
+   in outline rather than a spinner or a line of text: the section keeps its shape,
+   so nothing on the page jumps when the real cards land (b83). */
+.fleet__skel { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; margin-top: 22px; }
+/* `display: grid` above beats the browser's own rule for [hidden], so without
+   this line the tiles stay on screen above the real cards for ever. */
+.fleet__skel[hidden] { display: none; }
+.skel-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 2px 10px rgba(27,23,18,.04); }
+.skel-card__media { aspect-ratio: 4/3; background: var(--sand); }
+.skel-card__body { padding: 15px 18px 18px; }
+.skel-line { display: block; height: 11px; border-radius: 6px; background: var(--sand); }
+.skel-line--meta { width: 46%; }
+.skel-line--name { width: 72%; height: 17px; margin-top: 13px; }
+.skel-line--tag  { width: 58%; margin-top: 11px; }
+.skel-line--foot { width: 84%; height: 30px; border-radius: 10px; margin-top: 20px; }
+.skel-card__media, .skel-line { animation: skelPulse 1.6s ease-in-out infinite; }
+@keyframes skelPulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+@media (prefers-reduced-motion: reduce) { .skel-card__media, .skel-line { animation: none; } }
 /* Said out loud rather than left to the figures: a strip above the grid when the
    prices came from the daily copy, and a block in place of the grid when nothing
    answered at all. */
@@ -499,6 +516,10 @@ a.citem:hover { color: inherit; }
   .cur--filter { flex: 1; }
   .filter__only { width: 100%; }
   .fleet__grid { grid-template-columns: 1fr; gap: 16px; }
+  /* One column, so two tiles are a screenful and four are a scroll through
+     grey. */
+  .fleet__skel { grid-template-columns: 1fr; gap: 16px; }
+  .skel-card:nth-child(n+3) { display: none; }
   .caldrop { top: 52px; left: 0; right: 0; width: auto; }
 
   .how { padding: 40px 20px; }

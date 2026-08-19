@@ -132,8 +132,13 @@ async function main() {
     // shows no availability — yesterday's "free" is worse than no answer — and
     // this repository is public, so per-bike booking ranges have no business
     // being committed to it.
-    const { units, ...rest } = m;
-    models.push({ ...rest, photos });
+    // `card_photo` is dropped and rebuilt, not copied: the endpoint sends an
+    // absolute Odoo URL, and this copy is shown exactly when Odoo cannot be
+    // reached — a card would be left pointing at a picture nobody can fetch.
+    const { units, card_photo, ...rest } = m;
+    const card = { ...rest, photos };
+    if (photos.length) card.card_photo = photos[0];
+    models.push(card);
   }
 
   if (!models.length) refuse('every model was dropped while processing');

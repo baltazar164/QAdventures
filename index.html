@@ -15,6 +15,33 @@
      — which is why the console carried a 404 for favicon.ico on every visit. -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
+<!-- The catalog is asked for here, in <head>, before styles.css, the fonts and
+     app.js. It used to be asked for from init() on DOMContentLoaded, which meant
+     the page waited for all three to arrive before it even started asking, and the
+     grid stood empty for a second and a half on a fast connection (b83). The answer
+     is parked in a promise; app.js picks it up whenever it loads.
+
+     The endpoint and its key live here and nowhere else now — app.js reads them off
+     this object, so the two cannot drift apart. The key is deliberately committed
+     and not a secret: a static page has no server to hide it behind, and the
+     endpoint only serves already-public catalog data. Keep it in sync with Odoo's
+     `qa_catalog.api_key`; the development database carries the same one on purpose,
+     which is why one constant serves both sides of the origin switch. -->
+<link rel="preconnect" href="https://api.cebuscooterrental.com" crossorigin>
+<script>
+window.QA_API = (function () {
+  var local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  var url = local ? 'http://localhost:8069/qa/catalog'
+                  : 'https://api.cebuscooterrental.com/qa/catalog';
+  var key = '_BurZesjjrL4IJjSV9VV_Hd_7ZvdOqXz_CLIPBW7Elw';
+  var catalog = fetch(url + '?key=' + encodeURIComponent(key)).then(function (r) { return r.json(); });
+  // The handling proper is in app.js, which is not loaded yet. This only stops a
+  // failure in the meantime from being reported as an unhandled rejection.
+  catalog.catch(function () {});
+  return { url: url, key: key, catalog: catalog };
+})();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -165,7 +192,70 @@
        grid would have been, since there is no compiled list behind it any more. -->
   <div class="fleet__note" id="fleet-note" hidden></div>
 
-  <div class="fleet__loading" id="fleet-loading">Loading the fleet…</div>
+  <!-- Cards in outline, holding the grid's place until the catalog answers. Written
+       into the HTML and not drawn by app.js on purpose: this is exactly the stretch
+       of time before app.js exists, so anything the script drew would arrive too
+       late. Six of them because the grid is three cards wide at most and two at
+       middling widths, so six always comes out as whole rows; on a phone, where
+       the grid is one card wide, all but the first two are hidden. app.js hides the block the moment the real
+       cards are rendered (b83). -->
+  <div class="fleet__skel" id="fleet-skel" role="status" aria-label="Loading the fleet">
+    <div class="skel-card">
+      <div class="skel-card__media"></div>
+      <div class="skel-card__body">
+        <span class="skel-line skel-line--meta"></span>
+        <span class="skel-line skel-line--name"></span>
+        <span class="skel-line skel-line--tag"></span>
+        <span class="skel-line skel-line--foot"></span>
+      </div>
+    </div>
+    <div class="skel-card">
+      <div class="skel-card__media"></div>
+      <div class="skel-card__body">
+        <span class="skel-line skel-line--meta"></span>
+        <span class="skel-line skel-line--name"></span>
+        <span class="skel-line skel-line--tag"></span>
+        <span class="skel-line skel-line--foot"></span>
+      </div>
+    </div>
+    <div class="skel-card">
+      <div class="skel-card__media"></div>
+      <div class="skel-card__body">
+        <span class="skel-line skel-line--meta"></span>
+        <span class="skel-line skel-line--name"></span>
+        <span class="skel-line skel-line--tag"></span>
+        <span class="skel-line skel-line--foot"></span>
+      </div>
+    </div>
+    <div class="skel-card">
+      <div class="skel-card__media"></div>
+      <div class="skel-card__body">
+        <span class="skel-line skel-line--meta"></span>
+        <span class="skel-line skel-line--name"></span>
+        <span class="skel-line skel-line--tag"></span>
+        <span class="skel-line skel-line--foot"></span>
+      </div>
+    </div>
+    <div class="skel-card">
+      <div class="skel-card__media"></div>
+      <div class="skel-card__body">
+        <span class="skel-line skel-line--meta"></span>
+        <span class="skel-line skel-line--name"></span>
+        <span class="skel-line skel-line--tag"></span>
+        <span class="skel-line skel-line--foot"></span>
+      </div>
+    </div>
+    <div class="skel-card">
+      <div class="skel-card__media"></div>
+      <div class="skel-card__body">
+        <span class="skel-line skel-line--meta"></span>
+        <span class="skel-line skel-line--name"></span>
+        <span class="skel-line skel-line--tag"></span>
+        <span class="skel-line skel-line--foot"></span>
+      </div>
+    </div>
+  </div>
+
   <div class="fleet__grid" id="fleet-grid"></div>
 </section>
 
