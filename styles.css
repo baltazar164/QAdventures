@@ -465,6 +465,9 @@ a.citem:hover { color: inherit; }
 .ftr__link { cursor: pointer; color: #B7AF9F; display: inline-flex; align-items: center; gap: 7px; }
 .ftr__link:hover { color: #B7AF9F; }
 .ftr__legal { border-top: 1px solid rgba(255,255,255,.08); padding: 16px 24px; text-align: center; font-size: 12.5px; color: #8C846F; }
+/* Empty until the rates arrive, and then a line of its own above the copyright. */
+.ftr__rates:not(:empty) { display: block; margin-bottom: 6px; }
+.ftr__rates a { color: inherit; text-decoration: underline; }
 
 /* narrow screens ------------------------------------------------------
    720px is not a round number picked here: it is the exact width the old

@@ -132,6 +132,17 @@ function peso(n) {
   return c.symbol + Math.round(n * c.rate).toLocaleString('en-US');
 }
 
+// The same amount, to the cent (owner, 2026-08-19). A card advertises and reads
+// better as a round number; the quote binds us — the converted total the visitor
+// was shown is written on his order and he may hold us to it — so it is stated
+// exactly. In pesos there is nothing to state: prices are whole there.
+function pesoExact(n) {
+  const c = currentCurrency();
+  if (c.code === PESO.code) return peso(n);
+  return c.symbol + (n * c.rate).toLocaleString(
+    'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function fmtDate(s) {
   if (!s) return '';
   const d = new Date(s + 'T00:00:00');
@@ -264,6 +275,7 @@ function applyCatalog(data, source) {
   // published.
   if (!currencyList().some(c => c.code === S.currency)) S.currency = 'PHP';
   fillCurrencySelects();
+  renderRatesNote();
   // Strictly `=== true`, and strictly from the live endpoint. Absent (an older
   // server, the offline copy — the robot strips it anyway) counts as off, and
   // Google's script is only fetched once something can be booked through it.
@@ -648,7 +660,7 @@ function waMessage() {
   // A WhatsApp booking leaves no record, so the message has to be one — and a figure
   // that has drifted from the shop's own shows up here, read at the keyboard rather
   // than argued about at the counter.
-  if (q.total > 0) text += ' The site showed ' + peso(q.total) + '.';
+  if (q.total > 0) text += ' The site showed ' + pesoExact(q.total) + '.';
   if (S.phone.trim()) text += ' My number: ' + S.phone.trim() + '.';
   if (S.note.trim()) text += ' ' + S.note.trim().replace(/([^.!?])$/, '$1.');
   return text + ' Sent from the website.';
@@ -897,7 +909,7 @@ function formHTML() {
         '<option value="">Pick up at the shop — free</option>' +
         (S.zones || []).map(z => '<option value="' + esc(z.id) + '"' +
           (String(z.id) === String(S.zoneId) ? ' selected' : '') + '>' +
-          esc(z.name + ' — ' + peso(z.price)) + '</option>').join('') +
+          esc(z.name + ' — ' + pesoExact(z.price)) + '</option>').join('') +
       '</select>' +
     '</div>' : '') +
     (zone() ?
@@ -943,7 +955,7 @@ function doneHTML() {
         '. We\'ll confirm by WhatsApp shortly — nothing to pay until pick-up.</p>' +
       (S.account ? '<p class="done__acct">Booked as ' +
         esc([S.account.name, S.account.email].filter(Boolean).join(' · ')) + '</p>' : '') +
-      '<div class="done__total"><span>Estimated total</span><span class="done__num">' + esc(peso(q.total)) + '</span></div>' +
+      '<div class="done__total"><span>Estimated total</span><span class="done__num">' + esc(pesoExact(q.total)) + '</span></div>' +
       '<div class="done__btns">' +
         '<button class="btn done__ok" data-close>Done</button>' +
         '<a class="btn done__wa" href="https://wa.me/' + esc(waNumber()) + '" target="_blank" rel="noopener">Message us on WhatsApp</a>' +
@@ -1004,14 +1016,14 @@ function updateQuote() {
   host.innerHTML =
     '<div class="quote__line"><span>' +
       esc(q.days > 0 ? (q.days + (q.days === 1 ? ' day' : ' days')) : 'Select dates') +
-      ' × ' + esc(peso(S.selected.price)) + '</span><span class="quote__v">' + esc(peso(q.subtotal)) + '</span></div>' +
+      ' × ' + esc(pesoExact(S.selected.price)) + '</span><span class="quote__v">' + esc(pesoExact(q.subtotal)) + '</span></div>' +
     (q.pct > 0 ? '<div class="quote__line quote__line--disc"><span>' +
       esc((q.pct * 100).toFixed(0)) + '% long-stay discount</span><span class="quote__v quote__v--disc">−' +
-      esc(peso(q.discount)) + '</span></div>' : '') +
+      esc(pesoExact(q.discount)) + '</span></div>' : '') +
     (q.zone ? '<div class="quote__line"><span>Delivery to ' + esc(q.zone.name) +
-      '</span><span class="quote__v">' + esc(peso(q.delivery)) + '</span></div>' : '') +
+      '</span><span class="quote__v">' + esc(pesoExact(q.delivery)) + '</span></div>' : '') +
     '<div class="quote__rule"></div>' +
-    '<div class="quote__total"><span>Total</span><span class="quote__num">' + esc(peso(q.total)) + '</span></div>';
+    '<div class="quote__total"><span>Total</span><span class="quote__num">' + esc(pesoExact(q.total)) + '</span></div>';
 }
 
 function updateActions() {
@@ -1280,6 +1292,23 @@ function scrollToId(id) {
 // Called once at startup and again whenever a catalog answer arrives, so the
 // list is rebuilt rather than added to; the handler is assigned, not added, for
 // the same reason.
+// Says whose rate this is, and when it was taken. The service's own wording —
+// "Rates by Exchange Rate API" — is not used, and deliberately: the numbers on
+// this page are not theirs. Theirs is the market rate; what a visitor sees is
+// that rate moved to what a money changer in Cebu pays, which is the whole point
+// of the exercise. Crediting them for our figure would misstate it in both
+// directions (owner, 2026-08-19). The link is there because their free tier asks
+// for one, and because a visitor doubting the rate deserves somewhere to check.
+function renderRatesNote() {
+  const el = $('#ftr-rates');
+  if (!el) return;
+  if (!S.currencies) { el.innerHTML = ''; return; }
+  const when = fmtDate(S.ratesDate);
+  el.innerHTML = 'Prices converted at our exchange desk rate · market data by ' +
+    '<a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Exchange Rate API</a>' +
+    (when ? ' · ' + esc(when) : '');
+}
+
 function fillCurrencySelects() {
   const html = currencyList().map(c =>
     '<option value="' + esc(c.code) + '">' + esc(c.symbol + ' ' + c.code) + '</option>').join('');
