@@ -105,16 +105,19 @@ window.QA_API = (function () {
   <div class="hero__grid">
     <div class="hero__copy">
       <!-- Derek's point 20.2: five stars over the discount strip, linking to the
-           Google Maps profile. The score is typed here, not fetched: Google gives
-           its rating only through a paid Places key, so this figure is changed by
-           hand when the owner says it moved. -->
-      <a class="rev" href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener" aria-label="Rated 5.0 on Google — read the reviews">
-        <span class="rev__n">5.0</span>
+           Google Maps profile. The figures are Odoo's, fetched from Google once a
+           day (b54) — the site cannot ask Google itself, since any key in this
+           bundle would be public. What stands written here is what shows when Odoo
+           is unreachable, so it must be a real score somebody put in by hand.
+           Until the first fetch there is none, and `hidden` keeps a made-up rating
+           off the page: renderGoogleRating() reveals the card. -->
+      <a class="rev" id="rev" hidden href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener">
+        <span class="rev__n" id="rev-score">—</span>
         <span class="rev__div"></span>
         <span class="rev__txt">
           <span class="rev__stars" aria-hidden="true">★★★★★</span>
           <span class="rev__t">Very happy customers</span>
-          <span class="rev__s">Read our Google reviews →</span>
+          <span class="rev__s" id="rev-count">Read our Google reviews →</span>
         </span>
       </a>
       <div class="pill">☀ 10% off for 7+ days · 20% off for 28+ days</div>

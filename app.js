@@ -87,6 +87,10 @@ const S = {
   // choice — showing a converted price from an unknown rate is how the site
   // used to promise numbers nobody had checked.
   currencies: null, ratesDate: '',
+  // The shop's Google score, as Odoo last heard it (b54). `null` means nobody
+  // told us one, and then the card keeps whatever is written into index.html —
+  // or stays hidden, if that is nothing yet.
+  googleRating: null,
   // Priced by the shop, not by this file. `null` means the catalog never answered,
   // and then the form quotes the day rate only — inventing a discount tier here is
   // how a site ends up promising a number the counter will not honour.
@@ -265,6 +269,14 @@ function applyCatalog(data, source) {
     c => c && c.code && typeof c.rate === 'number' && c.rate > 0) : [];
   S.currencies = offered.length ? offered : null;
   S.ratesDate = typeof data.rates_date === 'string' ? data.rates_date : '';
+  // Live Odoo only. The offline copy deliberately carries no score: Google lets
+  // its data be held for thirty days, and a copy that stopped refreshing has no
+  // way of knowing how long it has been sitting there. With Odoo down the card
+  // falls back to the figure in the markup, which is a person's doing and ages
+  // under a person's eye.
+  S.googleRating = (source === 'odoo' && data.google_rating
+    && typeof data.google_rating.rating === 'number'
+    && data.google_rating.rating > 0) ? data.google_rating : null;
   // The currency in hand may have just left the list — the shop stopped
   // offering it, or this answer came from the offline copy, which carries
   // none. Prices fall back to pesos rather than to a rate that is no longer
@@ -473,6 +485,27 @@ function renderCatalogNote() {
   if (row) host.appendChild(row);
 }
 
+// The rating card over the discount strip (b54). Google's own figures, so its name
+// and a way through to the profile travel with them — which is also what Google's
+// terms ask of anyone showing a score.
+function renderGoogleRating() {
+  const card = $('#rev');
+  if (!card || !S.googleRating) return;
+  const score = S.googleRating.rating;
+  const count = S.googleRating.count;
+  const scoreEl = $('#rev-score');
+  if (scoreEl) scoreEl.textContent = score.toFixed(1);
+  const countEl = $('#rev-count');
+  if (countEl) {
+    countEl.textContent = count
+      ? (count + (count === 1 ? ' review' : ' reviews') + ' on Google →')
+      : 'Read our Google reviews →';
+  }
+  card.setAttribute('aria-label',
+    'Rated ' + score.toFixed(1) + ' out of 5 on Google — read the reviews');
+  card.hidden = false;
+}
+
 function renderCatalog() {
   renderTabs();
   renderAvailBar();
@@ -484,6 +517,7 @@ function renderCatalog() {
   if (filter) filter.hidden = S.catalogSource === 'down';
   if (S.selected) updateModal();
   $$('[data-wa]').forEach(wa => { wa.href = 'https://wa.me/' + waNumber(); });
+  renderGoogleRating();
   const from = $('#hero-from');
   // The hero's "bikes from" figure is read off the catalog, not typed beside it: a
   // price changed in Odoo moves it here too. Taken across every model, not just the
