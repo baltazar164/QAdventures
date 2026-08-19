@@ -127,18 +127,14 @@ function currentCurrency() {
   return currencyList().find(c => c.code === S.currency) || PESO;
 }
 
+// To the cent in every currency the shop converts into (owner, 2026-08-19), on a
+// card as much as in the quote: a rounded price tag is a price we did not mean,
+// and the converted figure the visitor saw is written on his order and binds us.
+// Pesos stay whole — prices are set in whole pesos, and ".00" on every tag is
+// noise.
 function peso(n) {
   const c = currentCurrency();
-  return c.symbol + Math.round(n * c.rate).toLocaleString('en-US');
-}
-
-// The same amount, to the cent (owner, 2026-08-19). A card advertises and reads
-// better as a round number; the quote binds us — the converted total the visitor
-// was shown is written on his order and he may hold us to it — so it is stated
-// exactly. In pesos there is nothing to state: prices are whole there.
-function pesoExact(n) {
-  const c = currentCurrency();
-  if (c.code === PESO.code) return peso(n);
+  if (c.code === PESO.code) return c.symbol + Math.round(n).toLocaleString('en-US');
   return c.symbol + (n * c.rate).toLocaleString(
     'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -660,7 +656,7 @@ function waMessage() {
   // A WhatsApp booking leaves no record, so the message has to be one — and a figure
   // that has drifted from the shop's own shows up here, read at the keyboard rather
   // than argued about at the counter.
-  if (q.total > 0) text += ' The site showed ' + pesoExact(q.total) + '.';
+  if (q.total > 0) text += ' The site showed ' + peso(q.total) + '.';
   if (S.phone.trim()) text += ' My number: ' + S.phone.trim() + '.';
   if (S.note.trim()) text += ' ' + S.note.trim().replace(/([^.!?])$/, '$1.');
   return text + ' Sent from the website.';
@@ -909,7 +905,7 @@ function formHTML() {
         '<option value="">Pick up at the shop — free</option>' +
         (S.zones || []).map(z => '<option value="' + esc(z.id) + '"' +
           (String(z.id) === String(S.zoneId) ? ' selected' : '') + '>' +
-          esc(z.name + ' — ' + pesoExact(z.price)) + '</option>').join('') +
+          esc(z.name + ' — ' + peso(z.price)) + '</option>').join('') +
       '</select>' +
     '</div>' : '') +
     (zone() ?
@@ -955,7 +951,7 @@ function doneHTML() {
         '. We\'ll confirm by WhatsApp shortly — nothing to pay until pick-up.</p>' +
       (S.account ? '<p class="done__acct">Booked as ' +
         esc([S.account.name, S.account.email].filter(Boolean).join(' · ')) + '</p>' : '') +
-      '<div class="done__total"><span>Estimated total</span><span class="done__num">' + esc(pesoExact(q.total)) + '</span></div>' +
+      '<div class="done__total"><span>Estimated total</span><span class="done__num">' + esc(peso(q.total)) + '</span></div>' +
       '<div class="done__btns">' +
         '<button class="btn done__ok" data-close>Done</button>' +
         '<a class="btn done__wa" href="https://wa.me/' + esc(waNumber()) + '" target="_blank" rel="noopener">Message us on WhatsApp</a>' +
@@ -1016,14 +1012,14 @@ function updateQuote() {
   host.innerHTML =
     '<div class="quote__line"><span>' +
       esc(q.days > 0 ? (q.days + (q.days === 1 ? ' day' : ' days')) : 'Select dates') +
-      ' × ' + esc(pesoExact(S.selected.price)) + '</span><span class="quote__v">' + esc(pesoExact(q.subtotal)) + '</span></div>' +
+      ' × ' + esc(peso(S.selected.price)) + '</span><span class="quote__v">' + esc(peso(q.subtotal)) + '</span></div>' +
     (q.pct > 0 ? '<div class="quote__line quote__line--disc"><span>' +
       esc((q.pct * 100).toFixed(0)) + '% long-stay discount</span><span class="quote__v quote__v--disc">−' +
-      esc(pesoExact(q.discount)) + '</span></div>' : '') +
+      esc(peso(q.discount)) + '</span></div>' : '') +
     (q.zone ? '<div class="quote__line"><span>Delivery to ' + esc(q.zone.name) +
-      '</span><span class="quote__v">' + esc(pesoExact(q.delivery)) + '</span></div>' : '') +
+      '</span><span class="quote__v">' + esc(peso(q.delivery)) + '</span></div>' : '') +
     '<div class="quote__rule"></div>' +
-    '<div class="quote__total"><span>Total</span><span class="quote__num">' + esc(pesoExact(q.total)) + '</span></div>';
+    '<div class="quote__total"><span>Total</span><span class="quote__num">' + esc(peso(q.total)) + '</span></div>';
 }
 
 function updateActions() {
