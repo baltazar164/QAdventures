@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-08-18T02:29:55Z",
+  "refreshed_at": "2026-08-20T03:13:50Z",
   "currency": "PHP",
   "categories": [
     {
@@ -47,32 +47,35 @@
     }
   ],
   "whatsapp": "639432458562",
-  "models": [
+  "currencies": [
     {
-      "id": "adv160",
-      "name": "Honda ADV160 ABS",
-      "cc": "160cc",
-      "cat": "adventure",
-      "price": 900,
-      "weekly": 5670,
-      "monthly": 20160,
-      "tag": "Adventure-styled and rugged",
-      "badge": "",
-      "specs": [
-        "Automatic",
-        "ABS",
-        "Big storage"
-      ],
-      "colors": [],
-      "overview": "",
-      "pros": [],
-      "cons": [],
-      "photos": [
-        "images/catalog/bike-adv160-1.jpg",
-        "images/catalog/bike-adv160-2.jpg",
-        "images/catalog/bike-adv160-3.jpg"
-      ]
+      "code": "USD",
+      "symbol": "$",
+      "rate": 0.016261306532663316
     },
+    {
+      "code": "AUD",
+      "symbol": "A$",
+      "rate": 0.023235714285714287
+    },
+    {
+      "code": "CAD",
+      "symbol": "C$",
+      "rate": 0.022634343434343434
+    },
+    {
+      "code": "EUR",
+      "symbol": "€",
+      "rate": 0.01419591836734694
+    },
+    {
+      "code": "GBP",
+      "symbol": "£",
+      "rate": 0.012160204081632655
+    }
+  ],
+  "rates_date": "2026-08-20",
+  "models": [
     {
       "id": "adv350",
       "name": "Honda ADV350",
@@ -88,7 +91,12 @@
         "ABS",
         "Traction control"
       ],
-      "colors": [],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#1F1B18"
+        }
+      ],
       "overview": "",
       "pros": [],
       "cons": [],
@@ -96,7 +104,8 @@
         "images/catalog/bike-adv350-1.jpg",
         "images/catalog/bike-adv350-2.jpg",
         "images/catalog/bike-adv350-3.jpg"
-      ]
+      ],
+      "card_photo": "images/catalog/bike-adv350-1.jpg"
     },
     {
       "id": "aerox155",
@@ -113,14 +122,20 @@
         "Top box",
         "2 helmets"
       ],
-      "colors": [],
+      "colors": [
+        {
+          "name": "Grey",
+          "hex": "#7C7F82"
+        }
+      ],
       "overview": "",
       "pros": [],
       "cons": [],
       "photos": [
         "images/catalog/bike-aerox155-1.jpg",
         "images/catalog/bike-aerox155-2.jpg"
-      ]
+      ],
+      "card_photo": "images/catalog/bike-aerox155-1.jpg"
     },
     {
       "id": "burgman",
@@ -137,7 +152,12 @@
         "Top box",
         "2 helmets"
       ],
-      "colors": [],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#1F1B18"
+        }
+      ],
       "overview": "",
       "pros": [],
       "cons": [],
@@ -158,7 +178,20 @@
         "Top box",
         "2 helmets"
       ],
-      "colors": [],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#1F1B18"
+        },
+        {
+          "name": "White",
+          "hex": "#F2EFE9"
+        },
+        {
+          "name": "White/Blue",
+          "hex": "#888888"
+        }
+      ],
       "overview": "The Honda Click 125i is an excellent choice for city riding. Its slim, agile design makes it perfect for navigating heavy traffic and tight urban spaces.",
       "pros": [
         "Lightweight & easy to handle — ideal for new riders or busy city environments.",
@@ -173,7 +206,8 @@
       "photos": [
         "images/catalog/bike-click125i-1.jpg",
         "images/catalog/bike-click125i-2.jpg"
-      ]
+      ],
+      "card_photo": "images/catalog/bike-click125i-1.jpg"
     },
     {
       "id": "gravis125",
@@ -190,7 +224,16 @@
         "Top box",
         "2 helmets"
       ],
-      "colors": [],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#1F1B18"
+        },
+        {
+          "name": "Green",
+          "hex": "#3E7A5E"
+        }
+      ],
       "overview": "",
       "pros": [],
       "cons": [],
@@ -199,79 +242,8 @@
         "images/catalog/bike-gravis125-2.jpg",
         "images/catalog/bike-gravis125-3.jpg",
         "images/catalog/bike-gravis125-4.jpg"
-      ]
-    },
-    {
-      "id": "pcx160",
-      "name": "Honda PCX160 Black",
-      "cc": "160cc",
-      "cat": "scooter",
-      "price": 700,
-      "weekly": 4410,
-      "monthly": 15680,
-      "tag": "Best-selling premium scooter",
-      "badge": "Best Seller",
-      "specs": [
-        "Automatic",
-        "Top box",
-        "2 helmets"
       ],
-      "colors": [],
-      "overview": "The Honda PCX160 is a comfort-focused premium scooter that balances a refined ride with strong performance — well suited to both urban commutes and longer suburban trips.",
-      "pros": [
-        "Comfort-focused ride — wide seat, spacious legroom, and superior suspension for longer trips.",
-        "Strong engine performance — the 157cc engine delivers smooth acceleration and excellent power for urban and suburban riding.",
-        "Premium design — stylish, modern body with LED lights and an upscale aesthetic.",
-        "Excellent fuel efficiency — great mileage despite the higher displacement.",
-        "Large under-seat storage — fits a helmet and additional items with ease."
-      ],
-      "cons": [
-        "Wider body — less agile in heavy traffic than slimmer scooters like the Click 125i or Mio.",
-        "Heavier build — requires more effort to maneuver in tight spaces or when parking.",
-        "Higher price point — more costly than other 150cc-class scooters."
-      ],
-      "photos": [
-        "images/catalog/bike-pcx160-1.jpg",
-        "images/catalog/bike-pcx160-2.jpg",
-        "images/catalog/bike-pcx160-3.jpg",
-        "images/catalog/bike-pcx160-4.jpg"
-      ]
-    },
-    {
-      "id": "pcx160white",
-      "name": "Honda PCX160 White",
-      "cc": "160cc",
-      "cat": "scooter",
-      "price": 700,
-      "weekly": 4410,
-      "monthly": 15680,
-      "tag": "Best-selling premium scooter",
-      "badge": "",
-      "specs": [
-        "Automatic",
-        "Top box",
-        "2 helmets"
-      ],
-      "colors": [],
-      "overview": "The Honda PCX160 is a comfort-focused premium scooter that balances a refined ride with strong performance — well suited to both urban commutes and longer suburban trips.",
-      "pros": [
-        "Comfort-focused ride — wide seat, spacious legroom, and superior suspension for longer trips.",
-        "Strong engine performance — the 157cc engine delivers smooth acceleration and excellent power for urban and suburban riding.",
-        "Premium design — stylish, modern body with LED lights and an upscale aesthetic.",
-        "Excellent fuel efficiency — great mileage despite the higher displacement.",
-        "Large under-seat storage — fits a helmet and additional items with ease."
-      ],
-      "cons": [
-        "Wider body — less agile in heavy traffic than slimmer scooters like the Click 125i or Mio.",
-        "Heavier build — requires more effort to maneuver in tight spaces or when parking.",
-        "Higher price point — more costly than other 150cc-class scooters."
-      ],
-      "photos": [
-        "images/catalog/bike-pcx160white-1.jpg",
-        "images/catalog/bike-pcx160white-2.jpg",
-        "images/catalog/bike-pcx160white-3.jpg",
-        "images/catalog/bike-pcx160white-4.jpg"
-      ]
+      "card_photo": "images/catalog/bike-gravis125-1.jpg"
     },
     {
       "id": "rouser160",
@@ -288,13 +260,19 @@
         "Nimble",
         "Fuel-efficient"
       ],
-      "colors": [],
+      "colors": [
+        {
+          "name": "Red",
+          "hex": "#C0392B"
+        }
+      ],
       "overview": "",
       "pros": [],
       "cons": [],
       "photos": [
         "images/catalog/bike-rouser160-1.jpg"
-      ]
+      ],
+      "card_photo": "images/catalog/bike-rouser160-1.jpg"
     },
     {
       "id": "vstrom250",
@@ -311,7 +289,12 @@
         "Touring",
         "Long range"
       ],
-      "colors": [],
+      "colors": [
+        {
+          "name": "Yellow",
+          "hex": "#E8B93C"
+        }
+      ],
       "overview": "",
       "pros": [],
       "cons": [],
@@ -320,7 +303,8 @@
         "images/catalog/bike-vstrom250-2.jpg",
         "images/catalog/bike-vstrom250-3.jpg",
         "images/catalog/bike-vstrom250-4.jpg"
-      ]
+      ],
+      "card_photo": "images/catalog/bike-vstrom250-1.jpg"
     }
   ]
 }
