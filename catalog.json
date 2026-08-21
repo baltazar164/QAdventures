@@ -1,14 +1,10 @@
 {
-  "refreshed_at": "2026-08-20T03:13:50Z",
+  "refreshed_at": "2026-08-21T03:25:59Z",
   "currency": "PHP",
   "categories": [
     {
       "slug": "scooter",
       "label": "Scooter"
-    },
-    {
-      "slug": "bigbike",
-      "label": "Big Bike"
     },
     {
       "slug": "streetbikemanual",
@@ -76,37 +72,6 @@
   ],
   "rates_date": "2026-08-20",
   "models": [
-    {
-      "id": "adv350",
-      "name": "Honda ADV350",
-      "cc": "350cc",
-      "cat": "bigbike",
-      "price": 1900,
-      "weekly": 11970,
-      "monthly": 42560,
-      "tag": "The flagship — highway ready",
-      "badge": "Top spec",
-      "specs": [
-        "Automatic",
-        "ABS",
-        "Traction control"
-      ],
-      "colors": [
-        {
-          "name": "Black",
-          "hex": "#1F1B18"
-        }
-      ],
-      "overview": "",
-      "pros": [],
-      "cons": [],
-      "photos": [
-        "images/catalog/bike-adv350-1.jpg",
-        "images/catalog/bike-adv350-2.jpg",
-        "images/catalog/bike-adv350-3.jpg"
-      ],
-      "card_photo": "images/catalog/bike-adv350-1.jpg"
-    },
     {
       "id": "aerox155",
       "name": "Yamaha Aerox 155",
@@ -246,6 +211,34 @@
       "card_photo": "images/catalog/bike-gravis125-1.jpg"
     },
     {
+      "id": "pcx160abs",
+      "name": "Honda PCX160 ABS",
+      "cc": "160cc",
+      "cat": "scooter",
+      "price": 850,
+      "weekly": 5355,
+      "monthly": 19040,
+      "tag": "PCX comfort with ABS safety",
+      "badge": "",
+      "specs": [
+        "Automatic",
+        "ABS",
+        "Top box"
+      ],
+      "colors": [
+        {
+          "name": "White",
+          "hex": "#F2EFE9"
+        }
+      ],
+      "overview": "",
+      "pros": [
+        "Enhanced safety features — ABS and traction improvements (depending on model/year)."
+      ],
+      "cons": [],
+      "photos": []
+    },
+    {
       "id": "rouser160",
       "name": "Kawasaki Rouser 160",
       "cc": "160cc",
@@ -305,6 +298,32 @@
         "images/catalog/bike-vstrom250-4.jpg"
       ],
       "card_photo": "images/catalog/bike-vstrom250-1.jpg"
+    },
+    {
+      "id": "pcx160",
+      "name": "Honda PCX160",
+      "cc": "160cc",
+      "cat": "scooter",
+      "price": 700,
+      "weekly": 4410,
+      "monthly": 15680,
+      "tag": "",
+      "badge": "",
+      "specs": [],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#1F1B18"
+        },
+        {
+          "name": "White",
+          "hex": "#F2EFE9"
+        }
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": []
     }
   ]
 }
