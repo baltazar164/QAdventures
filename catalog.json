@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-08-28T14:25:11Z",
+  "refreshed_at": "2026-08-29T09:09:57Z",
   "currency": "PHP",
   "categories": [
     {
@@ -47,30 +47,30 @@
     {
       "code": "USD",
       "symbol": "$",
-      "rate": 0.0162964824120603
+      "rate": 0.016393176279447603
     },
     {
       "code": "AUD",
       "symbol": "A$",
-      "rate": 0.023040816326530614
+      "rate": 0.02290204081632653
     },
     {
       "code": "CAD",
       "symbol": "C$",
-      "rate": 0.02273838383838384
+      "rate": 0.022635353535353533
     },
     {
       "code": "EUR",
       "symbol": "€",
-      "rate": 0.014202040816326532
+      "rate": 0.014159183673469387
     },
     {
       "code": "GBP",
       "symbol": "£",
-      "rate": 0.012169387755102042
+      "rate": 0.012137755102040815
     }
   ],
-  "rates_date": "2026-08-27",
+  "rates_date": "2026-08-28",
   "models": [
     {
       "id": "aerox155",
@@ -126,7 +126,13 @@
       "overview": "",
       "pros": [],
       "cons": [],
-      "photos": []
+      "photos": [
+        "images/catalog/bike-burgman-1.jpg",
+        "images/catalog/bike-burgman-2.jpg",
+        "images/catalog/bike-burgman-3.jpg",
+        "images/catalog/bike-burgman-4.jpg"
+      ],
+      "card_photo": "images/catalog/bike-burgman-1.jpg"
     },
     {
       "id": "click125i",
@@ -170,7 +176,9 @@
       ],
       "photos": [
         "images/catalog/bike-click125i-1.jpg",
-        "images/catalog/bike-click125i-2.jpg"
+        "images/catalog/bike-click125i-2.jpg",
+        "images/catalog/bike-click125i-3.jpg",
+        "images/catalog/bike-click125i-4.jpg"
       ],
       "card_photo": "images/catalog/bike-click125i-1.jpg"
     },
