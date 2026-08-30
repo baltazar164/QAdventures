@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-08-29T09:09:57Z",
+  "refreshed_at": "2026-08-30T08:23:39Z",
   "currency": "PHP",
   "categories": [
     {
@@ -98,7 +98,9 @@
       "cons": [],
       "photos": [
         "images/catalog/bike-aerox155-1.jpg",
-        "images/catalog/bike-aerox155-2.jpg"
+        "images/catalog/bike-aerox155-2.jpg",
+        "images/catalog/bike-aerox155-3.jpg",
+        "images/catalog/bike-aerox155-4.jpg"
       ],
       "card_photo": "images/catalog/bike-aerox155-1.jpg"
     },
@@ -244,7 +246,13 @@
         "Enhanced safety features — ABS and traction improvements (depending on model/year)."
       ],
       "cons": [],
-      "photos": []
+      "photos": [
+        "images/catalog/bike-pcx160abs-1.jpg",
+        "images/catalog/bike-pcx160abs-2.jpg",
+        "images/catalog/bike-pcx160abs-3.jpg",
+        "images/catalog/bike-pcx160abs-4.jpg"
+      ],
+      "card_photo": "images/catalog/bike-pcx160abs-1.jpg"
     },
     {
       "id": "rouser160",
@@ -271,7 +279,10 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-rouser160-1.jpg"
+        "images/catalog/bike-rouser160-1.jpg",
+        "images/catalog/bike-rouser160-2.jpg",
+        "images/catalog/bike-rouser160-3.jpg",
+        "images/catalog/bike-rouser160-4.jpg"
       ],
       "card_photo": "images/catalog/bike-rouser160-1.jpg"
     },
@@ -331,7 +342,13 @@
       "overview": "",
       "pros": [],
       "cons": [],
-      "photos": []
+      "photos": [
+        "images/catalog/bike-pcx160-1.jpg",
+        "images/catalog/bike-pcx160-2.jpg",
+        "images/catalog/bike-pcx160-3.jpg",
+        "images/catalog/bike-pcx160-4.jpg"
+      ],
+      "card_photo": "images/catalog/bike-pcx160-1.jpg"
     }
   ]
 }
