@@ -42,6 +42,38 @@ window.QA_API = (function () {
 })();
 </script>
 
+<!-- The visitor counter (b59). Umami on our own server, so nothing about our
+     visitors leaves it, no cookie is set and no consent banner is owed.
+
+     The file is called qa.js and not the counter's own umami.js on purpose: both
+     the default script name and its default /api/send are literal strings in every
+     ad-blocker list, and a blocked counter reports nothing while looking perfectly
+     healthy. It is served from api.cebuscooterrental.com — the address the page
+     already talks to for the catalog, so once the domain moves this is a first-party
+     request and the lists do not apply to it at all.
+
+     Which counter gets the visit is decided the same way the catalog endpoint is,
+     by the page's own origin: opened from localhost it counts into the developer's
+     own copy, so forty test presses in a row never land in Derek's numbers. The
+     website id is one constant for both, exactly like the catalog key — the two
+     counters are separate databases that happen to agree on the name of this site.
+
+     Injected rather than written as a plain <script defer>: the src has to be chosen
+     at run time, and document.currentScript still points at the element while it
+     runs, which is how the counter reads the two data- attributes. -->
+<script>
+(function () {
+  var local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  var host = local ? 'http://localhost:3000' : 'https://api.cebuscooterrental.com';
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = host + '/qa.js';
+  s.setAttribute('data-website-id', 'cdccaf7b-4c3e-4919-97b3-c7402051696c');
+  s.setAttribute('data-host-url', host);
+  document.head.appendChild(s);
+})();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">

@@ -115,6 +115,14 @@ function esc(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// One line to the visitor counter (b59). Everything about it is optional on
+// purpose: the counter is a file from another origin, an ad blocker may well eat
+// it, and nothing the visitor came here to do may depend on it having arrived.
+// window.umami appears only once that file has loaded, hence the guard.
+function track(event) {
+  try { if (window.umami) window.umami.track(event); } catch (e) { /* never the visitor's problem */ }
+}
+
 // --- Money, dates, the quote ------------------------------------------------
 
 function currencyList() {
@@ -706,6 +714,9 @@ function openWhatsApp() {
   // of the message — demanding a phone number before someone may open a messenger
   // asks for a fact the messenger is about to supply.
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
+  // Counted here rather than on the button itself: above this line the press did
+  // not open anything, and a funnel that counts refusals as exits is a lie.
+  track('book-whatsapp');
   window.open('https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(waMessage()),
               '_blank', 'noopener');
 }
@@ -779,6 +790,10 @@ function postBooking(token) {
     .then(r => r.json())
     .then(answer => {
       if (answer && answer.ok) {
+        // The other end of the funnel, for the day Live mode is switched on: in
+        // Brochure mode this button is not rendered at all, so the count is zero
+        // by construction rather than by an omission somebody has to remember.
+        track('booking-request');
         namedAccount(token);
         S.sending = false; S.step = 'done'; S.waReason = ''; S.hint = '';
         renderModalBody();
@@ -1309,6 +1324,7 @@ function wireContactForm() {
       return;
     }
     hint.hidden = true;
+    track('contact-send');
     let text = 'Hi!';
     if (msg) text += ' ' + msg.replace(/([^.!?])$/, '$1.');
     if (name) text += ' — ' + name;
