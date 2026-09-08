@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-07T07:24:07Z",
+  "refreshed_at": "2026-09-08T07:18:25Z",
   "currency": "PHP",
   "categories": [
     {
@@ -70,7 +70,7 @@
       "rate": 0.01205
     }
   ],
-  "rates_date": "2026-09-07",
+  "rates_date": "2026-09-08",
   "models": [
     {
       "id": "aerox155",
