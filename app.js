@@ -119,8 +119,20 @@ function esc(s) {
 // purpose: the counter is a file from another origin, an ad blocker may well eat
 // it, and nothing the visitor came here to do may depend on it having arrived.
 // window.umami appears only once that file has loaded, hence the guard.
-function track(event) {
-  try { if (window.umami) window.umami.track(event); } catch (e) { /* never the visitor's problem */ }
+//
+// What the action was about — the bike's name, the channel's name — is written
+// into the event's own name (b110), because that is the only place Umami's panel
+// shows it: event properties are counted there but their values are never listed,
+// not on the Events page and not in an Insights report (checked on 2026-09-08,
+// version 2.19). The name is all Derek's read-only view has to work with.
+//
+// The bike and the channel are the only things that may be written in. No message
+// text, no visitor's name — that restraint is the whole reason this counter needs
+// no consent banner. Umami stores 50 characters of a name, so a long one is cut
+// rather than dropped by the server.
+function track(event, about) {
+  const name = about ? (event + ': ' + about).slice(0, 50) : event;
+  try { if (window.umami) window.umami.track(name); } catch (e) { /* never the visitor's problem */ }
 }
 
 // --- Money, dates, the quote ------------------------------------------------
@@ -824,6 +836,9 @@ function modalPhotos() {
 }
 
 function openModal(bike) {
+  // Counted in Brochure mode too - there the form opening is the only thing left
+  // to count, since nothing on it can be sent.
+  track('bike-open', bike.name);
   // A fresh modal: whatever the last attempt ended in must not greet the next bike
   // with somebody else's error.
   S.selected = bike;
@@ -1147,7 +1162,23 @@ function chansRow(mode) {
     }
     if (el.hasAttribute('data-qr')) el.addEventListener('click', () => openQr(el));
   });
+  // cloneNode carries no listeners, so the copy is counted here and the originals
+  // in init(); neither can double up on the other.
+  wireChanTracking(row);
   return row;
+}
+
+// Every channel mark on the page counts, wherever it stands - the contact block,
+// the footer, the booking form, the block that stands in for an empty fleet grid.
+// Which of the four was pressed is deliberately not recorded (owner, 2026-09-08,
+// "2.Б"): the name of the channel is the whole of it.
+function chanName(el) {
+  return el.getAttribute('aria-label') || el.getAttribute('title') || 'unknown';
+}
+
+function wireChanTracking(root) {
+  $$('.chan', root).forEach(el =>
+    el.addEventListener('click', () => track('msg', chanName(el))));
 }
 
 function chansBlock(host, mode) {
@@ -1411,9 +1442,20 @@ function init() {
     }
   });
 
+  // The two ways out to Google (b110). Two event names rather than one with a
+  // property: reading the reviews and finding the shop on the map are two different
+  // intentions, and a property says what one action was about, not which it was.
+  // Both links open in a tab of their own, so the page outlives the press and the
+  // counter's request goes out.
+  const rev = $('#rev');
+  if (rev) rev.addEventListener('click', () => track('google-reviews'));
+  const map = $('#citem-map');
+  if (map) map.addEventListener('click', () => track('google-map'));
+
   fillCurrencySelects();
   wireContactForm();
   wireQrChannels();
+  wireChanTracking(document);
   renderCatalog();
   // loadGoogle() is not called here: applyCatalog calls it if and only if the
   // live payload allows direct booking. Until then the modal is WhatsApp-only.
