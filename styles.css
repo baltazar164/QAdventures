@@ -361,6 +361,7 @@ textarea.inp { padding: 11px 14px; font-family: inherit; resize: vertical; }
 .req.is-off { cursor: not-allowed; background: #C9BFAE; box-shadow: none; }
 .wabtn { width: 100%; margin-top: 10px; background: transparent; border: 1.5px solid rgba(15,92,74,.35); color: var(--green); border-radius: 12px; padding: 13px; font-weight: 700; font-size: 14.5px; cursor: pointer; }
 .wabtn--solo { margin-top: 20px; border: none; padding: 16px; font-size: 16px; color: #fff; background: var(--green); box-shadow: 0 8px 20px rgba(15,92,74,.24); }
+.wareply { text-align: center; font-size: 13.5px; color: var(--body); margin: 12px 0 0; }
 .mhint { text-align: center; font-size: 13px; font-weight: 600; color: #B25E12; margin: 10px 0 0; }
 .wanote { margin: 14px 0 0; padding: 12px 14px; background: #E5F0EC; border-radius: 11px; font-size: 13.5px; line-height: 1.5; color: var(--green); }
 
