@@ -393,6 +393,25 @@ window.QA_API = (function () {
              a QR-only one as a <button> like WeChat's, with its picture in images/. -->
       </div>
     </div>
+    <!-- The right half was the "Drop us a line" card until 2026-09-08; a map took
+         its place because a visitor's question about a shop in a place they have
+         never been is where, not what to type (owner, 2026-09-09).
+
+         Google's rather than OpenStreetMap's, chosen knowing the cost: this frame
+         is the only thing on the page that talks to Google about the visitor. It is
+         loaded lazily, so a visitor who never scrolls this far never makes that
+         request. The pin is the shop's own coordinates, not a search for its name —
+         a search can drift to another business the day Google reshuffles its index.
+         The heading beside it links to the same place for anyone who wants a route. -->
+    <div>
+      <div class="cmap">
+        <iframe
+          src="https://www.google.com/maps?q=10.276493,123.9783612&amp;z=16&amp;hl=en&amp;output=embed"
+          title="Q Adventures Motorbike Rental on the map"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
   </div>
 </section>
 
