@@ -1314,31 +1314,21 @@ function openHandover(el) {
 }
 
 
-// --- The contact form -------------------------------------------------------
-// It used to relabel its own button "Sent — thanks! ✓" and send nothing at all.
-// Now it hands the typed text to WhatsApp, the same exit the booking form uses.
-// It still cannot promise delivery — once the tab is handed over, this page has
-// no idea what happened — so it does not claim to.
+// --- Copying a phone number -------------------------------------------------
+// Replaced the contact form, which only ever handed its text to WhatsApp — the
+// same exit the channel row offers one click away (owner, 2026-09-08).
 
-function wireContactForm() {
-  const btn = $('#dl-send');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
-    const name = $('#dl-name').value.trim();
-    const msg = $('#dl-msg').value.trim();
-    const hint = $('#dl-hint');
-    if (!msg && !name) {
-      hint.textContent = 'Write a couple of words first — this opens WhatsApp with your message.';
-      hint.hidden = false;
-      return;
-    }
-    hint.hidden = true;
-    track('contact-send');
-    let text = 'Hi!';
-    if (msg) text += ' ' + msg.replace(/([^.!?])$/, '$1.');
-    if (name) text += ' — ' + name;
-    window.open('https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(text + ' Sent from the website.'),
-                '_blank', 'noopener');
+function wireCopyButtons() {
+  $$('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const label = btn.textContent;
+      copyText(btn.dataset.copy).then(ok => {
+        btn.textContent = ok ? 'Copied ✓' : 'Copy failed';
+        btn.classList.toggle('is-done', ok);
+        setTimeout(() => { btn.textContent = label; btn.classList.remove('is-done'); }, 1600);
+      });
+      track('copy-phone');
+    });
   });
 }
 
@@ -1421,7 +1411,7 @@ function init() {
   });
 
   fillCurrencySelects();
-  wireContactForm();
+  wireCopyButtons();
   wireQrChannels();
   renderCatalog();
   // loadGoogle() is not called here: applyCatalog calls it if and only if the

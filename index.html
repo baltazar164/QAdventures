@@ -351,9 +351,26 @@ window.QA_API = (function () {
           <div class="citem__i">📍</div>
           <div><div class="citem__t">Q Adventures Motorbike Rental</div><div class="citem__s">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines <span class="citem__link">· View on map →</span></div></div>
         </a>
+        <!-- Two numbers, each its own line: tapping the number dials it, the button
+             beside it copies it. The copied form carries no spaces — it is pasted into
+             a dialer or a messenger's "new contact" field as often as it is read
+             (owner, 2026-09-08). This replaced the single "Call now" button, which
+             could only ever reach the first of the two. -->
         <div class="citem">
           <div class="citem__i">✆</div>
-          <div><div class="citem__t">+63 943 245 8562 · +63 919 551 7812</div><div class="citem__s">Call or WhatsApp, after hours too</div></div>
+          <div>
+            <div class="phones">
+              <div class="phone">
+                <a class="phone__n" href="tel:+639432458562">+63 943 245 8562</a>
+                <button class="phone__copy" type="button" data-copy="+639432458562" aria-label="Copy +63 943 245 8562">Copy</button>
+              </div>
+              <div class="phone">
+                <a class="phone__n" href="tel:+639195517812">+63 919 551 7812</a>
+                <button class="phone__copy" type="button" data-copy="+639195517812" aria-label="Copy +63 919 551 7812">Copy</button>
+              </div>
+            </div>
+            <div class="citem__s">Call or WhatsApp, after hours too</div>
+          </div>
         </div>
         <div class="citem">
           <div class="citem__i">🕗</div>
@@ -374,21 +391,6 @@ window.QA_API = (function () {
              QR carries dies the day he regenerates it (owner, 2026-08-18). Then:
              https://t.me/<username>. A link channel goes here as an <a> like the others,
              a QR-only one as a <button> like WeChat's, with its picture in images/. -->
-      </div>
-      <div class="contact__btns">
-        <a class="btn btn--outline" href="tel:+639432458562">Call now</a>
-      </div>
-    </div>
-    <div>
-      <div class="dropcard">
-        <h3 class="dropcard__h3">Drop us a line</h3>
-        <p class="dropcard__p">We'll get back within a few hours.</p>
-        <div class="dropcard__fields">
-          <input id="dl-name" placeholder="Your name">
-          <textarea id="dl-msg" placeholder="Which bike and dates are you thinking about?" rows="4"></textarea>
-          <button class="btn btn--primary btn--block" id="dl-send">Send on WhatsApp</button>
-          <p class="dropcard__hint" id="dl-hint" hidden></p>
-        </div>
       </div>
     </div>
   </div>
