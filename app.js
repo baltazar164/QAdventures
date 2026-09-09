@@ -726,7 +726,12 @@ function openWhatsApp() {
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
   // Counted here rather than on the button itself: above this line the press did
   // not open anything, and a funnel that counts refusals as exits is a lie.
-  track('book-whatsapp');
+  //
+  // The same event as the channel marks beside it (owner, 2026-09-09): this button
+  // is WhatsApp's mark in the row, only drawn large because the booking can be
+  // written out for that one channel. What it is, is a booking leaving for a
+  // messenger — which is what `book-msg` counts.
+  track('msg-booking', { channel: 'WhatsApp' });
   window.open('https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(waMessage()),
               '_blank', 'noopener');
 }
@@ -1162,21 +1167,25 @@ function chansRow(mode) {
   });
   // cloneNode carries no listeners, so the copy is counted here and the originals
   // in init(); neither can double up on the other.
-  wireChanTracking(row);
+  // Inside the booking form the counting happens in openHandover() instead, past
+  // the date check: below it the press opens nothing and only asks for the dates,
+  // and a funnel that counts refusals as exits is a lie.
+  if (mode !== 'booking') wireChanTracking(row, 'msg-page');
   return row;
 }
 
-// Every channel mark on the page counts, wherever it stands - the contact block,
-// the footer, the booking form, the block that stands in for an empty fleet grid.
-// Which of the four was pressed is deliberately not recorded (owner, 2026-09-08,
-// "2.Б"): the name of the channel is the whole of it.
+// Two events, not one (owner, 2026-09-09). A mark inside the booking form leaves
+// with the booking — the bike, the dates and the price are copied to the clipboard
+// on the very tap — while a mark in the contact block or the footer opens an empty
+// chat. Same channels, different people: one is confirmed, the other is answered
+// from scratch. Which channel it was rides along as a property either way.
 function chanName(el) {
   return el.getAttribute('aria-label') || el.getAttribute('title') || 'unknown';
 }
 
-function wireChanTracking(root) {
+function wireChanTracking(root, event) {
   $$('.chan', root).forEach(el =>
-    el.addEventListener('click', () => track('msg', { channel: chanName(el) })));
+    el.addEventListener('click', () => track(event, { channel: chanName(el) })));
 }
 
 function chansBlock(host, mode) {
@@ -1293,6 +1302,10 @@ function legacyCopy(text) {
 function openHandover(el) {
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
   const label = el.getAttribute('aria-label') || 'the app';
+  // A booking leaving for a messenger, counted apart from a mark pressed on the
+  // page itself (owner, 2026-09-09): the bike, the dates and the price go with
+  // this one, and the shop confirms it rather than answering from scratch.
+  track('msg-booking', { channel: label });
   // Facebook's mark points at the page, which is right in the contact block and
   // wrong here: this window exists to get a booking into a chat, so it takes the
   // Messenger address when the mark carries one.
@@ -1453,7 +1466,7 @@ function init() {
   fillCurrencySelects();
   wireContactForm();
   wireQrChannels();
-  wireChanTracking(document);
+  wireChanTracking(document, 'msg-page');
   renderCatalog();
   // loadGoogle() is not called here: applyCatalog calls it if and only if the
   // live payload allows direct booking. Until then the modal is WhatsApp-only.
