@@ -120,19 +120,17 @@ function esc(s) {
 // it, and nothing the visitor came here to do may depend on it having arrived.
 // window.umami appears only once that file has loaded, hence the guard.
 //
-// What the action was about — the bike's name, the channel's name — is written
-// into the event's own name (b110), because that is the only place Umami's panel
-// shows it: event properties are counted there but their values are never listed,
-// not on the Events page and not in an Insights report (checked on 2026-09-08,
-// version 2.19). The name is all Derek's read-only view has to work with.
+// The second argument is the event's properties (b110) — what the action was
+// about: the bike's name, the channel's name. The event's own name stays the name
+// of the action, so the list of them is the list of things a visitor does here and
+// does not grow by one every time the shop buys a scooter. The panel breaks the
+// values down on the Events page: Properties, then the row for that property.
 //
 // The bike and the channel are the only things that may be written in. No message
 // text, no visitor's name — that restraint is the whole reason this counter needs
-// no consent banner. Umami stores 50 characters of a name, so a long one is cut
-// rather than dropped by the server.
-function track(event, about) {
-  const name = about ? (event + ': ' + about).slice(0, 50) : event;
-  try { if (window.umami) window.umami.track(name); } catch (e) { /* never the visitor's problem */ }
+// no consent banner.
+function track(event, data) {
+  try { if (window.umami) window.umami.track(event, data); } catch (e) { /* never the visitor's problem */ }
 }
 
 // --- Money, dates, the quote ------------------------------------------------
@@ -838,7 +836,7 @@ function modalPhotos() {
 function openModal(bike) {
   // Counted in Brochure mode too - there the form opening is the only thing left
   // to count, since nothing on it can be sent.
-  track('bike-open', bike.name);
+  track('bike-open', { bike: bike.name });
   // A fresh modal: whatever the last attempt ended in must not greet the next bike
   // with somebody else's error.
   S.selected = bike;
@@ -1178,7 +1176,7 @@ function chanName(el) {
 
 function wireChanTracking(root) {
   $$('.chan', root).forEach(el =>
-    el.addEventListener('click', () => track('msg', chanName(el))));
+    el.addEventListener('click', () => track('msg', { channel: chanName(el) })));
 }
 
 function chansBlock(host, mode) {
