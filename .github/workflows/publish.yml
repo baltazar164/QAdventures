@@ -1,0 +1,56 @@
+# Publishes the site, stamping the commit's number onto the files the page loads.
+#
+# Why a workflow at all, when GitHub Pages can serve a branch by itself: it could,
+# and did until 2026-09-10 — but then index.html asks for `app.js` under the same
+# address it has had for months, and a browser that has been here before is free to
+# answer that request out of its own cache. The visitor gets today's page running
+# last month's script. The fix is to make the address change with the code, and
+# something has to do the changing; a branch served as-is has nobody to do it.
+#
+# The working files keep `?v=dev`, so the site opens straight from the repository
+# with no build step, exactly as before. Only what is published carries a number.
+
+name: Publish the site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# The deploy signs itself with a short-lived token (id-token) rather than writing to
+# the repository, so nothing here can commit — the published copy is built, sent and
+# forgotten, and the branch stays exactly as the merge left it.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One publish at a time, and a queued one waits rather than cancelling the one in
+# flight: a half-sent site is worse than a late one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stamp the version onto the files the page loads
+        # The commit's own number, so every publish carries a different one and no
+        # publish invents a number that could repeat.
+        run: |
+          v="${GITHUB_SHA::7}"
+          sed -i "s/?v=dev/?v=$v/g" index.html
+          grep -n "?v=" index.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

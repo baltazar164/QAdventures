@@ -77,7 +77,12 @@ window.QA_API = (function () {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<!-- The ?v= is rewritten to the commit's own number when the site is published,
+     and left as "dev" everywhere else. Without it a browser that has been here
+     before is free to serve its own months-old copy of these two files while
+     holding a freshly fetched index.html — a new page running old code, which is
+     exactly what happened on 2026-09-10 and read as a bug in the page itself. -->
+<link rel="stylesheet" href="styles.css?v=dev">
 </head>
 <body>
 
@@ -347,13 +352,30 @@ window.QA_API = (function () {
       <h2 class="contact__h2">Come say hi</h2>
       <p class="contact__p">Drop by during business hours — we also serve authentic <strong>Vietnamese food and coffee</strong>. Our guide Visaya can help plan your route through the Central Visayas.</p>
       <div class="contact__items">
-        <a class="citem" href="https://maps.app.goo.gl/cFdqnN46fKbPEFAk7" target="_blank" rel="noopener">
+        <a class="citem" id="citem-map" href="https://maps.app.goo.gl/cFdqnN46fKbPEFAk7" target="_blank" rel="noopener">
           <div class="citem__i">📍</div>
           <div><div class="citem__t">Q Adventures Motorbike Rental</div><div class="citem__s">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines <span class="citem__link">· View on map →</span></div></div>
         </a>
+        <!-- Two numbers, each its own line: tapping the number dials it, the button
+             beside it copies it. The copied form carries no spaces — it is pasted into
+             a dialer or a messenger's "new contact" field as often as it is read
+             (owner, 2026-09-08). This replaced the single "Call now" button, which
+             could only ever reach the first of the two. -->
         <div class="citem">
           <div class="citem__i">✆</div>
-          <div><div class="citem__t">+63 943 245 8562 · +63 919 551 7812</div><div class="citem__s">Call or WhatsApp, after hours too</div></div>
+          <div>
+            <div class="phones">
+              <div class="phone">
+                <a class="phone__n" href="tel:+639432458562">+63 943 245 8562</a>
+                <button class="phone__copy" type="button" data-copy="+639432458562" aria-label="Copy +63 943 245 8562"></button>
+              </div>
+              <div class="phone">
+                <a class="phone__n" href="tel:+639195517812">+63 919 551 7812</a>
+                <button class="phone__copy" type="button" data-copy="+639195517812" aria-label="Copy +63 919 551 7812"></button>
+              </div>
+            </div>
+            <div class="citem__s">Call or WhatsApp, after hours too</div>
+          </div>
         </div>
         <div class="citem">
           <div class="citem__i">🕗</div>
@@ -375,20 +397,24 @@ window.QA_API = (function () {
              https://t.me/<username>. A link channel goes here as an <a> like the others,
              a QR-only one as a <button> like WeChat's, with its picture in images/. -->
       </div>
-      <div class="contact__btns">
-        <a class="btn btn--outline" href="tel:+639432458562">Call now</a>
-      </div>
     </div>
+    <!-- The right half was the "Drop us a line" card until 2026-09-08; a map took
+         its place because a visitor's question about a shop in a place they have
+         never been is where, not what to type (owner, 2026-09-09).
+
+         Google's rather than OpenStreetMap's, chosen knowing the cost: this frame
+         is the only thing on the page that talks to Google about the visitor. It is
+         loaded lazily, so a visitor who never scrolls this far never makes that
+         request. The pin is the shop's own coordinates, not a search for its name —
+         a search can drift to another business the day Google reshuffles its index.
+         The heading beside it links to the same place for anyone who wants a route. -->
     <div>
-      <div class="dropcard">
-        <h3 class="dropcard__h3">Drop us a line</h3>
-        <p class="dropcard__p">We'll get back within a few hours.</p>
-        <div class="dropcard__fields">
-          <input id="dl-name" placeholder="Your name">
-          <textarea id="dl-msg" placeholder="Which bike and dates are you thinking about?" rows="4"></textarea>
-          <button class="btn btn--primary btn--block" id="dl-send">Send on WhatsApp</button>
-          <p class="dropcard__hint" id="dl-hint" hidden></p>
-        </div>
+      <div class="cmap">
+        <iframe
+          src="https://www.google.com/maps?q=10.276493,123.9783612&amp;z=16&amp;hl=en&amp;output=embed"
+          title="Q Adventures Motorbike Rental on the map"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
       </div>
     </div>
   </div>
@@ -424,6 +450,6 @@ window.QA_API = (function () {
 <div id="over-root"></div>
 
 </div>
-<script src="app.js" defer></script>
+<script src="app.js?v=dev" defer></script>
 </body>
 </html>

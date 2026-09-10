@@ -119,8 +119,18 @@ function esc(s) {
 // purpose: the counter is a file from another origin, an ad blocker may well eat
 // it, and nothing the visitor came here to do may depend on it having arrived.
 // window.umami appears only once that file has loaded, hence the guard.
-function track(event) {
-  try { if (window.umami) window.umami.track(event); } catch (e) { /* never the visitor's problem */ }
+//
+// The second argument is the event's properties (b110) — what the action was
+// about: the bike's name, the channel's name. The event's own name stays the name
+// of the action, so the list of them is the list of things a visitor does here and
+// does not grow by one every time the shop buys a scooter. The panel breaks the
+// values down on the Events page: Properties, then the row for that property.
+//
+// The bike and the channel are the only things that may be written in. No message
+// text, no visitor's name — that restraint is the whole reason this counter needs
+// no consent banner.
+function track(event, data) {
+  try { if (window.umami) window.umami.track(event, data); } catch (e) { /* never the visitor's problem */ }
 }
 
 // --- Money, dates, the quote ------------------------------------------------
@@ -716,7 +726,12 @@ function openWhatsApp() {
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
   // Counted here rather than on the button itself: above this line the press did
   // not open anything, and a funnel that counts refusals as exits is a lie.
-  track('book-whatsapp');
+  //
+  // The same event as the channel marks beside it (owner, 2026-09-09): this button
+  // is WhatsApp's mark in the row, only drawn large because the booking can be
+  // written out for that one channel. What it is, is a booking leaving for a
+  // messenger — which is what `book-msg` counts.
+  track('msg-booking', { channel: 'WhatsApp' });
   window.open('https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(waMessage()),
               '_blank', 'noopener');
 }
@@ -824,6 +839,9 @@ function modalPhotos() {
 }
 
 function openModal(bike) {
+  // Counted in Brochure mode too - there the form opening is the only thing left
+  // to count, since nothing on it can be sent.
+  track('bike-open', { bike: bike.name });
   // A fresh modal: whatever the last attempt ended in must not greet the next bike
   // with somebody else's error.
   S.selected = bike;
@@ -1093,12 +1111,22 @@ function updateActions() {
   // Google's script never arrived. Somebody on a network that blocks Google
   // sees one exit, it works, and they never learn there was meant to be another.
   const waOnly = !S.directBooking || S.googleFailed;
+  // Brochure is the shop with no booking behind it: the message goes to a person and
+  // an answer comes back in the chat. So the button asks rather than books — and it
+  // says where it goes, because nothing else on it does. The answer coming back in the
+  // chat is left to the channel row below rather than written out again (owner,
+  // 2026-09-10: two lines of small print under the button said one thing twice). When
+  // it is Google that failed
+  // in Live mode the button is alone for a different reason, and the booking it
+  // promises is real, so it keeps the word 'book'.
+  const brochure = !S.directBooking;
   host.innerHTML =
     (waOnly ? '' :
       '<button class="req' + ((canBook && !busy) ? '' : ' is-off') + '" id="m-req">' +
       (busy ? 'Sending…' : (canBook ? 'Request booking' : 'Select your dates')) + '</button>') +
     '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
-      (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead') + '</button>' +
+      (brochure ? 'Send request on WhatsApp'
+                : (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead')) + '</button>' +
     (S.hint ? '<p class="mhint">' + esc(S.hint) + '</p>' : '') +
     (waNote ? '<p class="wanote">' + esc(waNote) + '</p>' : '');
 
@@ -1147,7 +1175,27 @@ function chansRow(mode) {
     }
     if (el.hasAttribute('data-qr')) el.addEventListener('click', () => openQr(el));
   });
+  // cloneNode carries no listeners, so the copy is counted here and the originals
+  // in init(); neither can double up on the other.
+  // Inside the booking form the counting happens in openHandover() instead, past
+  // the date check: below it the press opens nothing and only asks for the dates,
+  // and a funnel that counts refusals as exits is a lie.
+  if (mode !== 'booking') wireChanTracking(row, 'msg-page');
   return row;
+}
+
+// Two events, not one (owner, 2026-09-09). A mark inside the booking form leaves
+// with the booking — the bike, the dates and the price are copied to the clipboard
+// on the very tap — while a mark in the contact block or the footer opens an empty
+// chat. Same channels, different people: one is confirmed, the other is answered
+// from scratch. Which channel it was rides along as a property either way.
+function chanName(el) {
+  return el.getAttribute('aria-label') || el.getAttribute('title') || 'unknown';
+}
+
+function wireChanTracking(root, event) {
+  $$('.chan', root).forEach(el =>
+    el.addEventListener('click', () => track(event, { channel: chanName(el) })));
 }
 
 function chansBlock(host, mode) {
@@ -1264,6 +1312,10 @@ function legacyCopy(text) {
 function openHandover(el) {
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
   const label = el.getAttribute('aria-label') || 'the app';
+  // A booking leaving for a messenger, counted apart from a mark pressed on the
+  // page itself (owner, 2026-09-09): the bike, the dates and the price go with
+  // this one, and the shop confirms it rather than answering from scratch.
+  track('msg-booking', { channel: label });
   // Facebook's mark points at the page, which is right in the contact block and
   // wrong here: this window exists to get a booking into a chat, so it takes the
   // Messenger address when the mark carries one.
@@ -1305,31 +1357,24 @@ function openHandover(el) {
 }
 
 
-// --- The contact form -------------------------------------------------------
-// It used to relabel its own button "Sent — thanks! ✓" and send nothing at all.
-// Now it hands the typed text to WhatsApp, the same exit the booking form uses.
-// It still cannot promise delivery — once the tab is handed over, this page has
-// no idea what happened — so it does not claim to.
+// --- Copying a phone number -------------------------------------------------
+// Replaced the contact form, which only ever handed its text to WhatsApp — the
+// same exit the channel row offers one click away (owner, 2026-09-08).
 
-function wireContactForm() {
-  const btn = $('#dl-send');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
-    const name = $('#dl-name').value.trim();
-    const msg = $('#dl-msg').value.trim();
-    const hint = $('#dl-hint');
-    if (!msg && !name) {
-      hint.textContent = 'Write a couple of words first — this opens WhatsApp with your message.';
-      hint.hidden = false;
-      return;
-    }
-    hint.hidden = true;
-    track('contact-send');
-    let text = 'Hi!';
-    if (msg) text += ' ' + msg.replace(/([^.!?])$/, '$1.');
-    if (name) text += ' — ' + name;
-    window.open('https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(text + ' Sent from the website.'),
-                '_blank', 'noopener');
+function wireCopyButtons() {
+  $$('[data-copy]').forEach(btn => {
+    let back = null;
+    btn.addEventListener('click', () => {
+      copyText(btn.dataset.copy).then(ok => {
+        btn.classList.toggle('is-done', ok);
+        btn.classList.toggle('is-failed', !ok);
+        // A press while the last one is still showing restarts the wait rather than
+        // adding a second one behind it.
+        clearTimeout(back);
+        back = setTimeout(() => btn.classList.remove('is-done', 'is-failed'), 1600);
+      });
+      track('copy-phone');
+    });
   });
 }
 
@@ -1411,9 +1456,20 @@ function init() {
     }
   });
 
+  // The two ways out to Google (b110). Two event names rather than one with a
+  // property: reading the reviews and finding the shop on the map are two different
+  // intentions, and a property says what one action was about, not which it was.
+  // Both links open in a tab of their own, so the page outlives the press and the
+  // counter's request goes out.
+  const rev = $('#rev');
+  if (rev) rev.addEventListener('click', () => track('google-reviews'));
+  const map = $('#citem-map');
+  if (map) map.addEventListener('click', () => track('google-map'));
+
   fillCurrencySelects();
-  wireContactForm();
+  wireCopyButtons();
   wireQrChannels();
+  wireChanTracking(document, 'msg-page');
   renderCatalog();
   // loadGoogle() is not called here: applyCatalog calls it if and only if the
   // live payload allows direct booking. Until then the modal is WhatsApp-only.

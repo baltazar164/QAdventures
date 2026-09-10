@@ -416,7 +416,30 @@ a.citem:hover { color: inherit; }
 .citem__s { font-size: 13.5px; color: var(--muted); }
 .citem__link { color: var(--orange); font-weight: 700; }
 
-.contact__btns { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+/* the two numbers -----------------------------------------------------------
+   The number itself dials; the button beside it copies. Both are needed: tel:
+   is the whole point on a phone and does nothing on a desktop, where copying is
+   the only useful move. The button is quiet until hovered so the row still reads
+   as a line of contact details rather than a pair of controls. */
+.phones { display: flex; flex-direction: column; gap: 4px; }
+.phone { display: flex; align-items: center; gap: 8px; }
+.phone__n { font-weight: 800; font-size: 14.5px; color: inherit; text-decoration: none; }
+.phone__n:hover { color: var(--orange); }
+.phone__copy {
+  border: 1px solid var(--line-2); background: transparent; color: var(--muted);
+  border-radius: 7px; padding: 2px 8px; font: inherit; font-size: 11.5px; font-weight: 700;
+  cursor: pointer; flex: none; transition: color .15s ease, border-color .15s ease;
+}
+.phone__copy:hover { color: var(--orange); border-color: var(--orange); }
+/* The word lives here rather than in the button's own text, and the script only
+   switches a class. Written into the element, the word after a press had to be put
+   back afterwards — and a second press in a row read 'Copied' as the word to put
+   back, leaving it there for good (owner, 2026-09-10). Nothing to put back now. */
+.phone__copy::after { content: 'Copy'; }
+.phone__copy.is-done { color: var(--orange); border-color: var(--orange); }
+.phone__copy.is-done::after { content: 'Copied ✓'; }
+.phone__copy.is-failed { color: #B25E12; border-color: #B25E12; }
+.phone__copy.is-failed::after { content: 'Press and hold to copy'; }
 
 /* the channel row ----------------------------------------------------------
    Eight messengers as eight round marks, because eight buttons the size of the
@@ -443,14 +466,17 @@ a.citem:hover { color: inherit; }
 .chan--line      { --chan: #00C300; }
 .chan--wechat    { --chan: #07C160; }
 
-.dropcard { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 26px; box-shadow: 0 10px 30px rgba(27,23,18,.06); }
-.dropcard__h3 { font-family: var(--display); font-weight: 600; font-size: 20px; margin: 0 0 4px; }
-.dropcard__p  { font-size: 13.5px; color: var(--muted); margin: 0 0 18px; }
-.dropcard__fields { display: flex; flex-direction: column; gap: 13px; }
-.dropcard__fields input,
-.dropcard__fields textarea { border: 1.5px solid var(--line-2); border-radius: 11px; padding: 13px 15px; font-size: 14.5px; background: var(--field); }
-.dropcard__fields textarea { resize: vertical; }
-.dropcard__hint { text-align: center; font-size: 13px; font-weight: 600; color: #B25E12; margin: 0; }
+/* the map ------------------------------------------------------------------
+   It fills its half of the block whatever the left column grows to, and never
+   collapses below the height where a map stops being readable. The frame carries
+   the card's own border and shadow, so the Google tile inside sits in this page
+   rather than on top of it. */
+.cmap {
+  height: 100%; min-height: 420px; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 18px; background: var(--field);
+  box-shadow: 0 10px 30px rgba(27,23,18,.06);
+}
+.cmap iframe { display: block; width: 100%; height: 100%; min-height: 420px; border: 0; }
 
 /* footer -------------------------------------------------------------- */
 
@@ -529,7 +555,8 @@ a.citem:hover { color: inherit; }
 
   .contact { padding: 40px 20px; }
   .contact__grid { grid-template-columns: 1fr; gap: 32px; }
-  .contact__btns .btn { flex: 1 1 auto; justify-content: center; text-align: center; }
+  /* Stacked, the map is a picture under the text, not a panel beside it. */
+  .cmap, .cmap iframe { min-height: 260px; }
 }
 
 /* Two separators that only make sense while their row is one line. Each row wraps at a
