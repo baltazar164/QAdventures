@@ -1113,7 +1113,10 @@ function updateActions() {
   const waOnly = !S.directBooking || S.googleFailed;
   // Brochure is the shop with no booking behind it: the message goes to a person and
   // an answer comes back in the chat. So the button asks rather than books — and it
-  // says where it goes, because nothing else on it does. When it is Google that failed
+  // says where it goes, because nothing else on it does. The answer coming back in the
+  // chat is left to the channel row below rather than written out again (owner,
+  // 2026-09-10: two lines of small print under the button said one thing twice). When
+  // it is Google that failed
   // in Live mode the button is alone for a different reason, and the booking it
   // promises is real, so it keeps the word 'book'.
   const brochure = !S.directBooking;
@@ -1124,8 +1127,6 @@ function updateActions() {
     '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
       (brochure ? 'Send request on WhatsApp'
                 : (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead')) + '</button>' +
-    // Read before the press, not after: once the messenger opens, this page is behind it.
-    (brochure ? '<p class="wareply">We’ll answer you in the same chat.</p>' : '') +
     (S.hint ? '<p class="mhint">' + esc(S.hint) + '</p>' : '') +
     (waNote ? '<p class="wanote">' + esc(waNote) + '</p>' : '');
 
