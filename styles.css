@@ -432,7 +432,15 @@ a.citem:hover { color: inherit; }
   cursor: pointer; flex: none; transition: color .15s ease, border-color .15s ease;
 }
 .phone__copy:hover { color: var(--orange); border-color: var(--orange); }
+/* The word lives here rather than in the button's own text, and the script only
+   switches a class. Written into the element, the word after a press had to be put
+   back afterwards — and a second press in a row read 'Copied' as the word to put
+   back, leaving it there for good (owner, 2026-09-10). Nothing to put back now. */
+.phone__copy::after { content: 'Copy'; }
 .phone__copy.is-done { color: var(--orange); border-color: var(--orange); }
+.phone__copy.is-done::after { content: 'Copied ✓'; }
+.phone__copy.is-failed { color: #B25E12; border-color: #B25E12; }
+.phone__copy.is-failed::after { content: 'Press and hold to copy'; }
 
 /* the channel row ----------------------------------------------------------
    Eight messengers as eight round marks, because eight buttons the size of the

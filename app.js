@@ -1362,19 +1362,15 @@ function openHandover(el) {
 
 function wireCopyButtons() {
   $$('[data-copy]').forEach(btn => {
-    // The word to come back to is read once, before any press, and the pending
-    // timer is cancelled before a new one is set. Read inside the handler it was
-    // 'Copied ✓' on the second press in a row, and the second timer then put
-    // that word back after the first had cleared it — the button said 'Copied' for
-    // good (owner, 2026-09-10).
-    const label = btn.textContent;
     let back = null;
     btn.addEventListener('click', () => {
       copyText(btn.dataset.copy).then(ok => {
-        btn.textContent = ok ? 'Copied ✓' : 'Copy failed';
         btn.classList.toggle('is-done', ok);
+        btn.classList.toggle('is-failed', !ok);
+        // A press while the last one is still showing restarts the wait rather than
+        // adding a second one behind it.
         clearTimeout(back);
-        back = setTimeout(() => { btn.textContent = label; btn.classList.remove('is-done'); }, 1600);
+        back = setTimeout(() => btn.classList.remove('is-done', 'is-failed'), 1600);
       });
       track('copy-phone');
     });
