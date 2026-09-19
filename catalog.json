@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-18T07:28:25Z",
+  "refreshed_at": "2026-09-19T07:24:24Z",
   "currency": "PHP",
   "categories": [
     {
@@ -9,6 +9,10 @@
     {
       "slug": "streetbikemanual",
       "label": "Street Bike (Manual)"
+    },
+    {
+      "slug": "car",
+      "label": "Car"
     },
     {
       "slug": "adventure",
@@ -47,30 +51,30 @@
     {
       "code": "USD",
       "symbol": "$",
-      "rate": 0.016174857839155156
+      "rate": 0.016148456539398864
     },
     {
       "code": "AUD",
       "symbol": "A$",
-      "rate": 0.022859183673469386
+      "rate": 0.022784693877551023
     },
     {
       "code": "CAD",
       "symbol": "C$",
-      "rate": 0.022537373737373734
+      "rate": 0.022533333333333336
     },
     {
       "code": "EUR",
       "symbol": "€",
-      "rate": 0.014176530612244899
+      "rate": 0.014172448979591837
     },
     {
       "code": "GBP",
       "symbol": "£",
-      "rate": 0.012178571428571427
+      "rate": 0.01216326530612245
     }
   ],
-  "rates_date": "2026-09-18",
+  "rates_date": "2026-09-19",
   "models": [
     {
       "id": "aerox155",
@@ -349,6 +353,33 @@
         "images/catalog/bike-pcx160-4.jpg"
       ],
       "card_photo": "images/catalog/bike-pcx160-1.jpg"
+    },
+    {
+      "id": "toyotavios",
+      "name": "Toyota Toyota Vios",
+      "cc": "1329cc",
+      "cat": "car",
+      "price": 1600,
+      "weekly": 10080,
+      "monthly": 35840,
+      "tag": "",
+      "badge": "",
+      "specs": [],
+      "colors": [
+        {
+          "name": "Metalic Blue",
+          "hex": "#888888"
+        }
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-toyotavios-1.jpg",
+        "images/catalog/bike-toyotavios-2.jpg",
+        "images/catalog/bike-toyotavios-3.jpg"
+      ],
+      "card_photo": "images/catalog/bike-toyotavios-1.jpg"
     }
   ]
 }
