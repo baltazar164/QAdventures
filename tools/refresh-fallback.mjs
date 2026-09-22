@@ -92,18 +92,24 @@ async function grabPhoto(url, slug, index) {
 
   const name = 'bike-' + slug + '-' + (index + 1) + extFor(res.headers.get('content-type'), url);
   const path = join(OUT_IMG_DIR, name);
+  const digest = createHash('sha256').update(buf).digest('hex');
+
+  // The file keeps its name, but the address the page loads carries the bytes'
+  // fingerprint: a browser that cached last month's bike-pcx160-1.jpg would
+  // otherwise keep showing it under the same name (found 2026-09-22 with the hero
+  // photo, whose fix is the ?v=dev stamp in index.html; the same idea here).
+  const rel = OUT_IMG_REL + '/' + name + '?v=' + digest.slice(0, 7);
 
   // Written only when the bytes actually differ. Without this every run commits
   // ten binaries, and a git history carries them for ever.
   if (existsSync(path)) {
     const old = await readFile(path);
-    if (createHash('sha256').update(old).digest('hex') ===
-        createHash('sha256').update(buf).digest('hex')) {
-      return { rel: OUT_IMG_REL + '/' + name, changed: false };
+    if (createHash('sha256').update(old).digest('hex') === digest) {
+      return { rel, changed: false };
     }
   }
   await writeFile(path, buf);
-  return { rel: OUT_IMG_REL + '/' + name, changed: true };
+  return { rel, changed: true };
 }
 
 async function main() {
