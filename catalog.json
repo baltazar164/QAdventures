@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-22T07:47:12Z",
+  "refreshed_at": "2026-09-23T07:50:12Z",
   "currency": "PHP",
   "categories": [
     {
@@ -51,30 +51,30 @@
     {
       "code": "USD",
       "symbol": "$",
-      "rate": 0.01614642567018684
+      "rate": 0.016163688058489036
     },
     {
       "code": "AUD",
       "symbol": "A$",
-      "rate": 0.022781632653061223
+      "rate": 0.0228
     },
     {
       "code": "CAD",
       "symbol": "C$",
-      "rate": 0.02250808080808081
+      "rate": 0.022556565656565657
     },
     {
       "code": "EUR",
       "symbol": "€",
-      "rate": 0.014157142857142856
+      "rate": 0.014172448979591837
     },
     {
       "code": "GBP",
       "symbol": "£",
-      "rate": 0.012148979591836735
+      "rate": 0.012155102040816327
     }
   ],
-  "rates_date": "2026-09-22",
+  "rates_date": "2026-09-23",
   "models": [
     {
       "id": "aerox155",
@@ -101,12 +101,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-aerox155-1.jpg",
-        "images/catalog/bike-aerox155-2.jpg",
-        "images/catalog/bike-aerox155-3.jpg",
-        "images/catalog/bike-aerox155-4.jpg"
+        "images/catalog/bike-aerox155-1.jpg?v=d9ede9d",
+        "images/catalog/bike-aerox155-2.jpg?v=9238adc",
+        "images/catalog/bike-aerox155-3.jpg?v=ff6a890",
+        "images/catalog/bike-aerox155-4.jpg?v=40c7c73"
       ],
-      "card_photo": "images/catalog/bike-aerox155-1.jpg"
+      "card_photo": "images/catalog/bike-aerox155-1.jpg?v=d9ede9d"
     },
     {
       "id": "burgman",
@@ -133,12 +133,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-burgman-1.jpg",
-        "images/catalog/bike-burgman-2.jpg",
-        "images/catalog/bike-burgman-3.jpg",
-        "images/catalog/bike-burgman-4.jpg"
+        "images/catalog/bike-burgman-1.jpg?v=0c9908d",
+        "images/catalog/bike-burgman-2.jpg?v=c1f2784",
+        "images/catalog/bike-burgman-3.jpg?v=6ea8d16",
+        "images/catalog/bike-burgman-4.jpg?v=b5eaec2"
       ],
-      "card_photo": "images/catalog/bike-burgman-1.jpg"
+      "card_photo": "images/catalog/bike-burgman-1.jpg?v=0c9908d"
     },
     {
       "id": "click125i",
@@ -181,12 +181,12 @@
         "Limited under-seat storage — enough for essentials, but not much more."
       ],
       "photos": [
-        "images/catalog/bike-click125i-1.jpg",
-        "images/catalog/bike-click125i-2.jpg",
-        "images/catalog/bike-click125i-3.jpg",
-        "images/catalog/bike-click125i-4.jpg"
+        "images/catalog/bike-click125i-1.jpg?v=6cbdfce",
+        "images/catalog/bike-click125i-2.jpg?v=902c8fb",
+        "images/catalog/bike-click125i-3.jpg?v=1f86ccc",
+        "images/catalog/bike-click125i-4.jpg?v=36ece0e"
       ],
-      "card_photo": "images/catalog/bike-click125i-1.jpg"
+      "card_photo": "images/catalog/bike-click125i-1.jpg?v=6cbdfce"
     },
     {
       "id": "gravis125",
@@ -217,12 +217,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-gravis125-1.jpg",
-        "images/catalog/bike-gravis125-2.jpg",
-        "images/catalog/bike-gravis125-3.jpg",
-        "images/catalog/bike-gravis125-4.jpg"
+        "images/catalog/bike-gravis125-1.jpg?v=2f25afb",
+        "images/catalog/bike-gravis125-2.jpg?v=d962be8",
+        "images/catalog/bike-gravis125-3.jpg?v=ad330b8",
+        "images/catalog/bike-gravis125-4.jpg?v=7798bc9"
       ],
-      "card_photo": "images/catalog/bike-gravis125-1.jpg"
+      "card_photo": "images/catalog/bike-gravis125-1.jpg?v=2f25afb"
     },
     {
       "id": "pcx160abs",
@@ -251,12 +251,12 @@
       ],
       "cons": [],
       "photos": [
-        "images/catalog/bike-pcx160abs-1.jpg",
-        "images/catalog/bike-pcx160abs-2.jpg",
-        "images/catalog/bike-pcx160abs-3.jpg",
-        "images/catalog/bike-pcx160abs-4.jpg"
+        "images/catalog/bike-pcx160abs-1.jpg?v=c687ff2",
+        "images/catalog/bike-pcx160abs-2.jpg?v=968757d",
+        "images/catalog/bike-pcx160abs-3.jpg?v=f2d9a83",
+        "images/catalog/bike-pcx160abs-4.jpg?v=b0d2fdd"
       ],
-      "card_photo": "images/catalog/bike-pcx160abs-1.jpg"
+      "card_photo": "images/catalog/bike-pcx160abs-1.jpg?v=c687ff2"
     },
     {
       "id": "rouser160",
@@ -283,12 +283,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-rouser160-1.jpg",
-        "images/catalog/bike-rouser160-2.jpg",
-        "images/catalog/bike-rouser160-3.jpg",
-        "images/catalog/bike-rouser160-4.jpg"
+        "images/catalog/bike-rouser160-1.jpg?v=89b110f",
+        "images/catalog/bike-rouser160-2.jpg?v=5174e86",
+        "images/catalog/bike-rouser160-3.jpg?v=f3c013a",
+        "images/catalog/bike-rouser160-4.jpg?v=58b2245"
       ],
-      "card_photo": "images/catalog/bike-rouser160-1.jpg"
+      "card_photo": "images/catalog/bike-rouser160-1.jpg?v=89b110f"
     },
     {
       "id": "vstrom250",
@@ -315,12 +315,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-vstrom250-1.jpg",
-        "images/catalog/bike-vstrom250-2.jpg",
-        "images/catalog/bike-vstrom250-3.jpg",
-        "images/catalog/bike-vstrom250-4.jpg"
+        "images/catalog/bike-vstrom250-1.jpg?v=ea1ab9e",
+        "images/catalog/bike-vstrom250-2.jpg?v=58a46f4",
+        "images/catalog/bike-vstrom250-3.jpg?v=486bbb0",
+        "images/catalog/bike-vstrom250-4.jpg?v=d6190f1"
       ],
-      "card_photo": "images/catalog/bike-vstrom250-1.jpg"
+      "card_photo": "images/catalog/bike-vstrom250-1.jpg?v=ea1ab9e"
     },
     {
       "id": "pcx160",
@@ -347,12 +347,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-pcx160-1.jpg",
-        "images/catalog/bike-pcx160-2.jpg",
-        "images/catalog/bike-pcx160-3.jpg",
-        "images/catalog/bike-pcx160-4.jpg"
+        "images/catalog/bike-pcx160-1.jpg?v=eb5143a",
+        "images/catalog/bike-pcx160-2.jpg?v=2ee2537",
+        "images/catalog/bike-pcx160-3.jpg?v=830f14c",
+        "images/catalog/bike-pcx160-4.jpg?v=a7fa29f"
       ],
-      "card_photo": "images/catalog/bike-pcx160-1.jpg"
+      "card_photo": "images/catalog/bike-pcx160-1.jpg?v=eb5143a"
     },
     {
       "id": "toyotavios",
@@ -375,11 +375,11 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-toyotavios-1.jpg",
-        "images/catalog/bike-toyotavios-2.jpg",
-        "images/catalog/bike-toyotavios-3.jpg"
+        "images/catalog/bike-toyotavios-1.jpg?v=0fcce40",
+        "images/catalog/bike-toyotavios-2.jpg?v=23004c1",
+        "images/catalog/bike-toyotavios-3.jpg?v=1bf0e30"
       ],
-      "card_photo": "images/catalog/bike-toyotavios-1.jpg"
+      "card_photo": "images/catalog/bike-toyotavios-1.jpg?v=0fcce40"
     }
   ]
 }
