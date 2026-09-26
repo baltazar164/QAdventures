@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-25T07:57:56Z",
+  "refreshed_at": "2026-09-26T07:51:01Z",
   "currency": "PHP",
   "categories": [
     {
@@ -51,30 +51,30 @@
     {
       "code": "USD",
       "symbol": "$",
-      "rate": 0.01619212022745735
+      "rate": 0.016233666912075114
     },
     {
       "code": "AUD",
       "symbol": "A$",
-      "rate": 0.02309285714285714
+      "rate": 0.023871596272285592
     },
     {
       "code": "CAD",
       "symbol": "C$",
-      "rate": 0.022734343434343433
+      "rate": 0.02355867138920368
     },
     {
       "code": "EUR",
       "symbol": "€",
-      "rate": 0.01429795918367347
+      "rate": 0.014502062414410837
     },
     {
       "code": "GBP",
       "symbol": "£",
-      "rate": 0.012289795918367347
+      "rate": 0.012442988545106864
     }
   ],
-  "rates_date": "2026-09-25",
+  "rates_date": "2026-09-26",
   "models": [
     {
       "id": "aerox155",
@@ -101,12 +101,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-aerox155-1.jpg?v=d9ede9d",
+        "images/catalog/bike-aerox155-1.jpg?v=f6f5660",
         "images/catalog/bike-aerox155-2.jpg?v=9238adc",
         "images/catalog/bike-aerox155-3.jpg?v=ff6a890",
-        "images/catalog/bike-aerox155-4.jpg?v=40c7c73"
+        "images/catalog/bike-aerox155-4.jpg?v=0ead5d9"
       ],
-      "card_photo": "images/catalog/bike-aerox155-1.jpg?v=d9ede9d"
+      "card_photo": "images/catalog/bike-aerox155-1.jpg?v=f6f5660"
     },
     {
       "id": "burgman",
@@ -133,12 +133,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-burgman-1.jpg?v=0c9908d",
-        "images/catalog/bike-burgman-2.jpg?v=c1f2784",
+        "images/catalog/bike-burgman-1.jpg?v=c1f2784",
+        "images/catalog/bike-burgman-2.jpg?v=0c9908d",
         "images/catalog/bike-burgman-3.jpg?v=6ea8d16",
         "images/catalog/bike-burgman-4.jpg?v=b5eaec2"
       ],
-      "card_photo": "images/catalog/bike-burgman-1.jpg?v=0c9908d"
+      "card_photo": "images/catalog/bike-burgman-1.jpg?v=c1f2784"
     },
     {
       "id": "click125i",
@@ -181,12 +181,12 @@
         "Limited under-seat storage — enough for essentials, but not much more."
       ],
       "photos": [
-        "images/catalog/bike-click125i-1.jpg?v=6cbdfce",
+        "images/catalog/bike-click125i-1.jpg?v=5341b5e",
         "images/catalog/bike-click125i-2.jpg?v=902c8fb",
         "images/catalog/bike-click125i-3.jpg?v=1f86ccc",
         "images/catalog/bike-click125i-4.jpg?v=36ece0e"
       ],
-      "card_photo": "images/catalog/bike-click125i-1.jpg?v=6cbdfce"
+      "card_photo": "images/catalog/bike-click125i-1.jpg?v=5341b5e"
     },
     {
       "id": "gravis125",
@@ -217,12 +217,12 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-gravis125-1.jpg?v=2f25afb",
+        "images/catalog/bike-gravis125-1.jpg?v=42bf22d",
         "images/catalog/bike-gravis125-2.jpg?v=d962be8",
         "images/catalog/bike-gravis125-3.jpg?v=ad330b8",
-        "images/catalog/bike-gravis125-4.jpg?v=7798bc9"
+        "images/catalog/bike-gravis125-4.jpg?v=ba2f19a"
       ],
-      "card_photo": "images/catalog/bike-gravis125-1.jpg?v=2f25afb"
+      "card_photo": "images/catalog/bike-gravis125-1.jpg?v=42bf22d"
     },
     {
       "id": "pcx160abs",
@@ -375,11 +375,11 @@
       "pros": [],
       "cons": [],
       "photos": [
-        "images/catalog/bike-toyotavios-1.jpg?v=0fcce40",
-        "images/catalog/bike-toyotavios-2.jpg?v=23004c1",
+        "images/catalog/bike-toyotavios-1.jpg?v=23004c1",
+        "images/catalog/bike-toyotavios-2.jpg?v=0fcce40",
         "images/catalog/bike-toyotavios-3.jpg?v=1bf0e30"
       ],
-      "card_photo": "images/catalog/bike-toyotavios-1.jpg?v=0fcce40"
+      "card_photo": "images/catalog/bike-toyotavios-1.jpg?v=23004c1"
     }
   ]
 }
