@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-26T07:51:01Z",
+  "refreshed_at": "2026-09-27T08:20:46Z",
   "currency": "PHP",
   "categories": [
     {
@@ -51,30 +51,30 @@
     {
       "code": "USD",
       "symbol": "$",
-      "rate": 0.016233666912075114
+      "rate": 0.016313203722322717
     },
     {
       "code": "AUD",
       "symbol": "A$",
-      "rate": 0.023871596272285592
+      "rate": 0.02395576232348801
     },
     {
       "code": "CAD",
       "symbol": "C$",
-      "rate": 0.02355867138920368
+      "rate": 0.02364021460501721
     },
     {
       "code": "EUR",
       "symbol": "€",
-      "rate": 0.014502062414410837
+      "rate": 0.014512405515769091
     },
     {
       "code": "GBP",
       "symbol": "£",
-      "rate": 0.012442988545106864
+      "rate": 0.012452271278603712
     }
   ],
-  "rates_date": "2026-09-26",
+  "rates_date": "2026-09-27",
   "models": [
     {
       "id": "aerox155",
@@ -87,9 +87,7 @@
       "tag": "Sporty and quick around town",
       "badge": "",
       "specs": [
-        "Automatic",
-        "Top box",
-        "2 helmets"
+        "Automatic"
       ],
       "colors": [
         {
@@ -119,9 +117,7 @@
       "tag": "Comfortable maxi-style ride",
       "badge": "",
       "specs": [
-        "Automatic",
-        "Top box",
-        "2 helmets"
+        "Automatic"
       ],
       "colors": [
         {
@@ -151,9 +147,7 @@
       "tag": "The reliable all-rounder",
       "badge": "",
       "specs": [
-        "Automatic",
-        "Top box",
-        "2 helmets"
+        "Automatic"
       ],
       "colors": [
         {
@@ -199,9 +193,7 @@
       "tag": "Easy, economical everyday runabout",
       "badge": "",
       "specs": [
-        "Automatic",
-        "Top box",
-        "2 helmets"
+        "Automatic"
       ],
       "colors": [
         {
@@ -236,8 +228,7 @@
       "badge": "",
       "specs": [
         "Automatic",
-        "ABS",
-        "Top box"
+        "ABS"
       ],
       "colors": [
         {
