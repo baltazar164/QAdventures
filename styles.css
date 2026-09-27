@@ -102,6 +102,7 @@ input, button, select, textarea { font-family: inherit; }
 .hero__copy { animation: floatUp .6s ease both; }
 .hero__media { position: relative; animation: floatUp .6s .1s ease both; }
 
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill { display: inline-flex; align-items: center; gap: 8px; background: #FFF0DE; border: 1px solid #FFD9A8; color: #B25E12; font-weight: 700; font-size: 12.5px; padding: 7px 13px; border-radius: 100px; letter-spacing: .01em; }
 /* the Google rating card, over the discount pill. `width: fit-content` keeps it off
    the pill's line without a wrapper; the whole card is the link, so the hover moves
@@ -120,7 +121,7 @@ input, button, select, textarea { font-family: inherit; }
 .hero__p strong { color: var(--ink); }
 .hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
 
-.stats { display: flex; gap: 20px; margin-top: 26px; flex-wrap: wrap; }
+.stats { display: flex; gap: 26px; margin-top: 26px; flex-wrap: wrap; }
 .stat__n { font-family: var(--display); font-weight: 700; font-size: 24px; }
 .stat__unit { font-size: 14px; color: var(--muted); }
 .stat__l { font-size: 12.5px; color: var(--muted); font-weight: 600; }
@@ -570,23 +571,9 @@ a.citem:hover { color: inherit; }
   .trust__d { display: none; }
 }
 
-/* the five hero stats need 530px, which the hero column stops giving at 1130px */
-@media (max-width: 1130px) {
+/* the three hero stats need 380px plus the hero's own 20px padding either side */
+@media (max-width: 420px) {
   .stat__div { display: none; }
-}
-
-/* Left to wrap on its own the strip broke four-and-one, with «Top box» dangling under
-   a full row. Three columns instead: the row always splits three and two, and the two
-   short ones stand under the three long. Below 420px even three columns stop fitting,
-   so there the line wraps where it must. */
-@media (max-width: 1130px) and (min-width: 421px) {
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    justify-content: start;
-    column-gap: 24px;
-    row-gap: 16px;
-  }
 }
 
 /* Narrower than this the strip's widest pair (147 + 144 + a 34 gap = 325, plus the row's
