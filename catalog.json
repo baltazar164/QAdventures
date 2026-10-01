@@ -1,10 +1,14 @@
 {
-  "refreshed_at": "2026-09-30T08:43:06Z",
+  "refreshed_at": "2026-10-01T09:04:55Z",
   "currency": "PHP",
   "categories": [
     {
       "slug": "scooter",
       "label": "Scooter"
+    },
+    {
+      "slug": "bigbike",
+      "label": "Big Bike"
     },
     {
       "slug": "streetbikemanual",
@@ -74,8 +78,40 @@
       "rate": 0.01246877391593144
     }
   ],
-  "rates_date": "2026-09-30",
+  "rates_date": "2026-10-01",
   "models": [
+    {
+      "id": "adv350",
+      "name": "Honda ADV350",
+      "cc": "350cc",
+      "cat": "bigbike",
+      "price": 1900,
+      "weekly": 11970,
+      "monthly": 42560,
+      "tag": "The flagship — highway ready",
+      "badge": "Top spec",
+      "specs": [
+        "Automatic",
+        "ABS",
+        "Traction control"
+      ],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#1F1B18"
+        }
+      ],
+      "overview": "",
+      "pros": [],
+      "cons": [],
+      "photos": [
+        "images/catalog/bike-adv350-1.jpg?v=57c4565",
+        "images/catalog/bike-adv350-2.jpg?v=376e659",
+        "images/catalog/bike-adv350-3.jpg?v=a7056a3",
+        "images/catalog/bike-adv350-4.jpg?v=e929a44"
+      ],
+      "card_photo": "images/catalog/bike-adv350-1.jpg?v=57c4565"
+    },
     {
       "id": "aerox155",
       "name": "Yamaha Aerox 155",
