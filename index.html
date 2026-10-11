@@ -206,27 +206,13 @@ window.QA_API = (function () {
 <section class="fleet" id="fleet">
   <div class="tabs" id="fleet-tabs" hidden></div>
 
+  <!-- The currency alone, on every width: on a phone the header's picker is hidden
+       and this is the only one. The dates and "available only" that stood beside it
+       went with b115 — dates are picked in the booking form. -->
   <div class="filter" id="fleet-filter">
-    <div class="filter__row">
-      <div class="filter__title">Check your travel dates</div>
-      <div class="filter__dates" id="avail-wrap">
-        <button class="datefield" id="avail-field" type="button">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E4761B" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="6"></line><line x1="16" y1="3" x2="16" y2="6"></line></svg>
-          <span class="datefield__label" id="avail-label">Select dates</span>
-        </button>
-        <div class="caldrop" id="avail-cal" hidden></div>
-      </div>
-      <div class="filter__cur">
-        <span class="filter__cur-label">Currency</span>
-        <select class="cur cur--filter" id="cur-filter" aria-label="Currency"></select>
-      </div>
-      <div class="filter__only">
-        <label class="onlylbl" id="avail-only-label">
-          <input type="checkbox" id="avail-only" disabled>
-          <span>Show only available bikes</span>
-        </label>
-        <div class="availcount" id="avail-count" hidden></div>
-      </div>
+    <div class="filter__cur">
+      <span class="filter__cur-label">Currency</span>
+      <select class="cur cur--filter" id="cur-filter" aria-label="Currency"></select>
     </div>
   </div>
 
