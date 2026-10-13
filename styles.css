@@ -145,7 +145,11 @@ input, button, select, textarea { font-family: inherit; }
 
 .fleet { padding: 10px 24px; }
 
-.filter { margin-top: 14px; display: flex; justify-content: flex-end; }
+.fleet__bar { display: flex; align-items: flex-start; gap: 10px 20px; }
+/* Zero basis: the tabs take whatever the currency leaves and wrap inside it, rather
+   than pushing the currency onto a line of its own. */
+.fleet__bar .tabs { flex: 1 1 0; min-width: 0; }
+.filter { margin-left: auto; padding-top: 4px; }
 .filter__cur { display: flex; align-items: center; gap: 8px; }
 .filter__cur-label { font-size: 13px; font-weight: 700; color: var(--body); }
 
@@ -511,6 +515,8 @@ a.citem:hover { color: inherit; }
   .rev__n { font-size: 22px; }
 
   .fleet { padding: 10px 20px; }
+  .fleet__bar { flex-wrap: wrap; }
+  .fleet__bar .tabs { flex-basis: 100%; }
   .fleet__grid { grid-template-columns: 1fr; gap: 16px; }
   /* One column, so two tiles are a screenful and four are a scroll through
      grey. */

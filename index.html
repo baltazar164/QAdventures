@@ -204,15 +204,16 @@ window.QA_API = (function () {
 
 <!-- FLEET — tabs and grid are filled by app.js from the categories Odoo sends -->
 <section class="fleet" id="fleet">
-  <div class="tabs" id="fleet-tabs" hidden></div>
-
-  <!-- The currency alone, on every width: on a phone the header's picker is hidden
-       and this is the only one. The dates and "available only" that stood beside it
-       went with b115 — dates are picked in the booking form. -->
-  <div class="filter" id="fleet-filter">
-    <div class="filter__cur">
-      <span class="filter__cur-label">Currency</span>
-      <select class="cur cur--filter" id="cur-filter" aria-label="Currency"></select>
+  <!-- Tabs on the left, the currency on the right of the same line (b115). Tabs that
+       do not fit wrap under the first ones; the currency keeps the top right corner.
+       On a phone the header's picker is hidden and this is the only one. -->
+  <div class="fleet__bar">
+    <div class="tabs" id="fleet-tabs" hidden></div>
+    <div class="filter" id="fleet-filter">
+      <div class="filter__cur">
+        <span class="filter__cur-label">Currency</span>
+        <select class="cur cur--filter" id="cur-filter" aria-label="Currency"></select>
+      </div>
     </div>
   </div>
 
