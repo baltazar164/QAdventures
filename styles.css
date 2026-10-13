@@ -84,7 +84,9 @@ input, button, select, textarea { font-family: inherit; }
 
 .cur { flex: none; border: 1.5px solid var(--line-2); background: #fff; color: var(--ink); font-weight: 700; font-size: 13.5px; padding: 0 8px; cursor: pointer; appearance: auto; }
 .cur--hdr { height: 38px; border-radius: 10px; }
-.cur--filter { flex: none; height: 34px; border-radius: 9px; background: var(--field); }
+/* Drawn to be found (b115): orange frame and a larger figure, so the one place a
+   phone visitor can change currency does not pass for a plain form field. */
+.cur--filter { flex: none; height: 38px; border-radius: 10px; border: 2px solid var(--orange); background: #fff; font-size: 15px; font-weight: 800; padding: 0 10px; }
 
 .callbtn { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: #fff; font-weight: 700; font-size: 13.5px; padding: 10px 16px; border-radius: 10px; white-space: nowrap; flex: none; }
 .callbtn:hover { color: #fff; }
@@ -149,9 +151,9 @@ input, button, select, textarea { font-family: inherit; }
 /* Zero basis: the tabs take whatever the currency leaves and wrap inside it, rather
    than pushing the currency onto a line of its own. */
 .fleet__bar .tabs { flex: 1 1 0; min-width: 0; }
-.filter { margin-left: auto; padding-top: 4px; }
+.filter { margin-left: auto; padding-top: 2px; }
 .filter__cur { display: flex; align-items: center; gap: 8px; }
-.filter__cur-label { font-size: 13px; font-weight: 700; color: var(--body); }
+.filter__cur-label { font-size: 14px; font-weight: 700; color: var(--ink); }
 
 .datefield { min-width: 220px; height: 34px; display: flex; align-items: center; gap: 7px; border: 1.5px solid var(--line-2); border-radius: 9px; padding: 0 10px; background: var(--field); cursor: pointer; }
 .datefield.is-open { border-color: var(--orange); }
