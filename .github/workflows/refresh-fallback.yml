@@ -15,6 +15,12 @@ on:
     # everything scheduled on it, and a job that runs late runs after the hour it
     # was meant to represent.
     - cron: '20 2 * * *'
+  # Also started by the "Update site now" button in Odoo (d21 stage 1). The
+  # key Odoo holds for that may only start and read jobs, which is safe for one
+  # reason: this job takes NO inputs, so whoever starts it passes nothing in and
+  # everything it writes comes from Odoo's catalog. Never add `inputs:` here —
+  # it would turn that key into a way to put words on the site
+  # (decisions.md, 2026-10-14).
   workflow_dispatch:
 
 # Only the commit needs write access, and only to this repository.
@@ -52,6 +58,21 @@ jobs:
           git add catalog.json images/catalog
           git commit -m "Refresh the offline catalog"
           git push
+
+      # The watchdog (d21 stage 1): a check on healthchecks.io that expects to
+      # hear from this job once a day and mails the owner and Derek when it does
+      # not. A failed run says so at once instead of waiting out the day — which
+      # also catches GitHub switching the schedule off after 60 quiet days (see
+      # the note at the bottom). No secret, no ping: a fork stays quiet.
+      - name: Tell the watchdog
+        if: always()
+        env:
+          PING_URL: ${{ secrets.HC_PING_URL }}
+          OUTCOME: ${{ job.status }}
+        run: |
+          [ -n "$PING_URL" ] || exit 0
+          if [ "$OUTCOME" = "success" ]; then suffix=""; else suffix="/fail"; fi
+          curl -fsS -m 10 --retry 3 "$PING_URL$suffix" > /dev/null || echo "watchdog unreachable"
 
 # Two things to know before relying on this.
 #
