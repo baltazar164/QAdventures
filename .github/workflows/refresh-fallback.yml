@@ -67,7 +67,7 @@ jobs:
       - name: Tell the watchdog
         if: always()
         env:
-          PING_URL: ${{ secrets.HC_PING_URL }}
+          PING_URL: ${{ secrets.HEALTHCHECK_SITE_UPDATE_URL }}
           OUTCOME: ${{ job.status }}
         run: |
           [ -n "$PING_URL" ] || exit 0
