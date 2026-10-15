@@ -12,8 +12,15 @@
 //   CATALOG_API_URL=https://api.cebuscooterrental.com/qa/catalog \
 //   CATALOG_API_KEY=... node tools/refresh-fallback.mjs
 //
-// Exit codes: 0 means "nothing to do" as well as "updated" — a refusal to write
-// is a normal outcome here, not a failure. Only a bug in this script exits 1.
+// Exit codes: 0 — the catalog came back from Odoo and was compared with the
+// copy (whether anything needed rewriting depends only on whether Odoo
+// changed). 2 — the catalog could not be had, and nothing was written. 1 — a
+// bug in this script.
+//
+// A refusal used to exit 0, and the job's tick stayed green through a week of
+// "endpoint unreachable" (site.md, 2026-08-18). It is a failure now (d21 stage
+// 1, 2026-10-14): the copy is still never touched, but the run goes red, the
+// Last Update line in Odoo says "failed" and the watchdog hears /fail.
 
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, readdir, unlink } from 'node:fs/promises';
@@ -42,7 +49,7 @@ function log(...a) { console.log('[refresh-fallback]', ...a); }
 // destroy the emergency copy at exactly the moment it is needed.
 function refuse(why) {
   log('not writing:', why);
-  process.exit(0);
+  process.exit(2);
 }
 
 async function fetchCatalog() {

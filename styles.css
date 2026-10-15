@@ -102,6 +102,7 @@ input, button, select, textarea { font-family: inherit; }
 .hero__copy { animation: floatUp .6s ease both; }
 .hero__media { position: relative; animation: floatUp .6s .1s ease both; }
 
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill { display: inline-flex; align-items: center; gap: 8px; background: #FFF0DE; border: 1px solid #FFD9A8; color: #B25E12; font-weight: 700; font-size: 12.5px; padding: 7px 13px; border-radius: 100px; letter-spacing: .01em; }
 /* the Google rating card, over the discount pill. `width: fit-content` keeps it off
    the pill's line without a wrapper; the whole card is the link, so the hover moves
