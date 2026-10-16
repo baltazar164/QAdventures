@@ -95,6 +95,9 @@ const S = {
   // and then the form quotes the day rate only — inventing a discount tier here is
   // how a site ends up promising a number the counter will not honour.
   discounts: null, zones: null, whatsapp: '',
+  // False once the catalog's contacts say WhatsApp was left empty in Odoo: then
+  // no WhatsApp mark or button is drawn anywhere (owner, 2026-10-16).
+  hasWa: true,
   zoneId: '', address: '', phone: '', note: '',
   // Off until the live catalog says otherwise. Only Odoo's own answer can turn
   // the direct-booking button on: a booking needs Odoo reachable to land, so a
@@ -281,6 +284,8 @@ function applyCatalog(data, source) {
     ? data.discounts.slice().sort((a, b) => a.min_days - b.min_days) : null;
   S.zones = Array.isArray(data.delivery_zones) ? data.delivery_zones : null;
   S.whatsapp = (typeof data.whatsapp === 'string' && data.whatsapp) ? data.whatsapp : '';
+  // Absent from an Odoo older than d21 stage 2: the markup's contacts then stand.
+  if (data.contacts && typeof data.contacts === 'object') applyContacts(data.contacts);
   // A currency without a usable rate is dropped rather than offered: the
   // selector must not hold a choice that cannot convert anything.
   const offered = Array.isArray(data.currencies) ? data.currencies.filter(
@@ -308,6 +313,49 @@ function applyCatalog(data, source) {
   S.directBooking = source === 'odoo' && data.direct_booking === true;
   if (S.directBooking) loadGoogle();
   return true;
+}
+
+// The hours, the phones and every messenger mark, as Business Settings in Odoo
+// has them (d21 stage 2). Present means authoritative: a channel that comes as
+// null was emptied there, and its mark goes from the contact block and the footer
+// — and so from every copy of the row made later. What index.html carries is only
+// for a catalog that never answered at all, offline copy included.
+function applyContacts(c) {
+  const ch = (c.channels && typeof c.channels === 'object') ? c.channels : {};
+  S.hasWa = !!(ch.whatsapp && ch.whatsapp.href);
+  if (S.hasWa) S.whatsapp = ch.whatsapp.href.replace(/\D/g, '');
+  $$('[data-chan]').forEach(el => {
+    const it = ch[el.getAttribute('data-chan')];
+    if (!it || !it.href) { el.hidden = true; return; }
+    el.hidden = false;
+    if (el.hasAttribute('data-qr')) {
+      el.setAttribute('data-qr-link', it.href);
+      if (it.qr) el.setAttribute('data-qr', it.qr);
+      el.setAttribute('data-qr-id', it.id || '');
+      return;
+    }
+    el.href = it.href;
+    if (it.msg) el.setAttribute('data-msg-link', it.msg);
+    else el.removeAttribute('data-msg-link');
+  });
+
+  const phones = $('#phones');
+  if (phones && Array.isArray(c.phones)) {
+    phones.innerHTML = c.phones.filter(p => p && p.tel).map(p =>
+      '<div class="phone">' +
+        '<a class="phone__n" href="tel:' + esc(p.tel) + '">' + esc(p.label || p.tel) + '</a>' +
+        '<button class="phone__copy" type="button" data-copy="' + esc(p.tel) + '" aria-label="Copy ' + esc(p.label || p.tel) + '"></button>' +
+      '</div>').join('');
+    wireCopyButtons(phones);
+  }
+
+  const h = c.hours;
+  if (h && h.open && h.close) {
+    const t = $('#hours-t');
+    if (t) t.textContent = 'Open today · ' + h.open + ' – ' + h.close;
+    const s = $('#hours-s');
+    if (s) { s.textContent = h.note || ''; s.hidden = !h.note; }
+  }
 }
 
 // The request itself was made in <head>, long before this file arrived; what is
@@ -723,6 +771,7 @@ function openWhatsApp() {
   // Only a broken date range stops this. Everything else missing is simply left out
   // of the message — demanding a phone number before someone may open a messenger
   // asks for a fact the messenger is about to supply.
+  if (!S.hasWa) return;
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
   // Counted here rather than on the button itself: above this line the press did
   // not open anything, and a funnel that counts refusals as exits is a lie.
@@ -1020,13 +1069,12 @@ function doneHTML() {
       '<h2 class="done__h2">Booking requested!</h2>' +
       '<p class="done__p">We\'ve noted your <strong>' + esc(S.selected.name) + '</strong> for ' +
         esc(q.days > 0 ? (q.days + (q.days === 1 ? ' day' : ' days')) : 'your dates') +
-        '. We\'ll confirm by WhatsApp shortly — nothing to pay until pick-up.</p>' +
+        '. We\'ll message you shortly to confirm — nothing to pay until pick-up.</p>' +
       (S.account ? '<p class="done__acct">Booked as ' +
         esc([S.account.name, S.account.email].filter(Boolean).join(' · ')) + '</p>' : '') +
       '<div class="done__total"><span>Estimated total</span><span class="done__num">' + esc(peso(q.total)) + '</span></div>' +
       '<div class="done__btns">' +
         '<button class="btn done__ok" data-close>Done</button>' +
-        '<a class="btn done__wa" href="https://wa.me/' + esc(waNumber()) + '" target="_blank" rel="noopener">Message us on WhatsApp</a>' +
       '</div>' +
       '<div id="done-chans"></div>' +
     '</div>';
@@ -1034,9 +1082,11 @@ function doneHTML() {
 
 function wireDone() {
   $$('[data-close]', $('#sheet-body')).forEach(b => b.addEventListener('click', closeModal));
-  // Here the booking is already sent, so these are plain ways to reach the shop.
+  // Here the booking is already sent, so these are plain ways to reach the shop —
+  // WhatsApp among them, now that it has no button of its own on this screen
+  // (owner, 2026-10-16).
   const host = $('#done-chans');
-  if (host) chansBlock(host, 'plain');
+  if (host) chansBlock(host, 'all');
 }
 
 function wireForm() {
@@ -1100,10 +1150,13 @@ function updateActions() {
   const canBook = days() > 0;
   const busy = S.sending;
   const waNote = {
-    nogoogle: 'Sign-in isn’t available on this connection. Send it on WhatsApp instead — the booking is already written out.',
-    signin: 'Sign-in didn’t finish. You can send the booking on WhatsApp instead — it is already written out.',
-    refused: 'We couldn’t send that just now. WhatsApp reaches the shop directly, with the booking already written out.',
-    unavailable: 'That bike was just taken for those dates. Ask on WhatsApp what else is free, or pick other dates.',
+    // Any messenger, not WhatsApp alone: the shop answers on all of them, and a
+    // page that only ever says WhatsApp reads as a WhatsApp-only shop (owner,
+    // 2026-10-16).
+    nogoogle: 'Sign-in isn’t available on this connection. Send it in any messenger below — the booking is already written out.',
+    signin: 'Sign-in didn’t finish. You can send the booking in any messenger below — it is already written out.',
+    refused: 'We couldn’t send that just now. Send it in any messenger below — the booking is already written out.',
+    unavailable: 'That bike was just taken for those dates. Message us to ask what else is free, or pick other dates.',
   }[S.waReason] || '';
 
   // One exit, not two, in either of two cases: the shop is WhatsApp-only (the
@@ -1119,20 +1172,24 @@ function updateActions() {
   // it is Google that failed
   // in Live mode the button is alone for a different reason, and the booking it
   // promises is real, so it keeps the word 'book'.
+  // With WhatsApp emptied in Odoo there is no WhatsApp button at all, and in the
+  // one-exit cases the channel row below is the whole way out (owner, 2026-10-16).
   const brochure = !S.directBooking;
   host.innerHTML =
     (waOnly ? '' :
       '<button class="req' + ((canBook && !busy) ? '' : ' is-off') + '" id="m-req">' +
       (busy ? 'Sending…' : (canBook ? 'Request booking' : 'Select your dates')) + '</button>') +
-    '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
-      (brochure ? 'Send request on WhatsApp'
-                : (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead')) + '</button>' +
+    (!S.hasWa ? '' :
+      '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
+        (brochure ? 'Send request on WhatsApp'
+                  : (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead')) + '</button>') +
     (S.hint ? '<p class="mhint">' + esc(S.hint) + '</p>' : '') +
     (waNote ? '<p class="wanote">' + esc(waNote) + '</p>' : '');
 
   const req = $('#m-req');
   if (req) req.addEventListener('click', requestBooking);
-  $('#m-wa').addEventListener('click', openWhatsApp);
+  const wa = $('#m-wa');
+  if (wa) wa.addEventListener('click', openWhatsApp);
 
   // Derek answers on all of these, and the visitor who has no WhatsApp is exactly
   // the one this form would otherwise lose at the last step.
@@ -1203,7 +1260,11 @@ function chansBlock(host, mode) {
   if (!row) return;
   const cap = document.createElement('div');
   cap.className = 'chans__cap';
-  cap.textContent = 'or message us on';
+  // In the booking form the row is where the booking goes, and it says so without
+  // making WhatsApp the only way (owner, 2026-10-16).
+  cap.textContent = mode !== 'booking' ? 'or message us on'
+    : (S.hasWa ? 'Send it in WhatsApp or any messenger you use'
+               : 'Send it in any messenger you use');
   host.appendChild(cap);
   host.appendChild(row);
 }
@@ -1361,8 +1422,8 @@ function openHandover(el) {
 // Replaced the contact form, which only ever handed its text to WhatsApp — the
 // same exit the channel row offers one click away (owner, 2026-09-08).
 
-function wireCopyButtons() {
-  $$('[data-copy]').forEach(btn => {
+function wireCopyButtons(root) {
+  $$('[data-copy]', root).forEach(btn => {
     let back = null;
     btn.addEventListener('click', () => {
       copyText(btn.dataset.copy).then(ok => {
