@@ -85,19 +85,31 @@ function extFor(contentType, url) {
   return m ? '.' + m[1].toLowerCase().replace('jpeg', 'jpg') : '.jpg';
 }
 
+// 'images/catalog/bike-pcx160-1.jpg?v=abc1234' → 'bike-pcx160-1.jpg', the name
+// readdir() reports.
+function fileName(rel) {
+  return rel.split('?')[0].split('/').pop();
+}
+
 async function grabPhoto(url, slug, index) {
+  return grabPicture(url, 'bike-' + slug + '-' + (index + 1));
+}
+
+// Any picture the copy keeps beside itself: a bike photo, or the WeChat QR from
+// Business Settings (d21 stage 2). `base` is the file name without its extension.
+async function grabPicture(url, base) {
   let res;
   try {
     res = await fetch(url);
   } catch (err) {
-    log('photo unreachable, leaving it out:', slug, index, err.message);
+    log('picture unreachable, leaving it out:', base, err.message);
     return null;
   }
-  if (!res.ok) { log('photo answered HTTP ' + res.status + ', leaving it out:', slug, index); return null; }
+  if (!res.ok) { log('picture answered HTTP ' + res.status + ', leaving it out:', base); return null; }
   const buf = Buffer.from(await res.arrayBuffer());
-  if (!buf.length) { log('photo was empty, leaving it out:', slug, index); return null; }
+  if (!buf.length) { log('picture was empty, leaving it out:', base); return null; }
 
-  const name = 'bike-' + slug + '-' + (index + 1) + extFor(res.headers.get('content-type'), url);
+  const name = base + extFor(res.headers.get('content-type'), url);
   const path = join(OUT_IMG_DIR, name);
   const digest = createHash('sha256').update(buf).digest('hex');
 
@@ -137,7 +149,11 @@ async function main() {
       const got = await grabPhoto(url, slug, i);
       if (!got) continue;
       photos.push(got.rel);
-      keep.add(got.rel.split('/').pop());
+      // The file's own name, without the ?v= stamp the page address carries. With
+      // the stamp left on, nothing on disk matched the set, and from 2026-09-22 to
+      // 2026-10-16 the sweep below deleted every photo it had just written: the
+      // copy pointed at pictures that were not in the repository.
+      keep.add(fileName(got.rel));
       if (got.changed) photosChanged++;
     }
 
@@ -156,6 +172,28 @@ async function main() {
 
   if (!models.length) refuse('every model was dropped while processing');
 
+  // Hours, phones and messengers as Business Settings has them (d21 stage 2).
+  // Copied because a channel emptied in Odoo must stay gone on a day Odoo is
+  // down; everything in it is already on the page, so the public repository
+  // learns nothing new. The QR is fetched like a photo — the live address points
+  // at Odoo, which is exactly what is unreachable when this copy is read. If it
+  // cannot be fetched the address is dropped and the page keeps its own picture.
+  let contacts;
+  if (data.contacts && typeof data.contacts === 'object') {
+    contacts = JSON.parse(JSON.stringify(data.contacts));
+    const wechat = contacts.channels && contacts.channels.wechat;
+    if (wechat && wechat.qr) {
+      const got = await grabPicture(wechat.qr, 'wechat-qr');
+      if (got) {
+        wechat.qr = got.rel;
+        keep.add(fileName(got.rel));
+        if (got.changed) photosChanged++;
+      } else {
+        delete wechat.qr;
+      }
+    }
+  }
+
   // Sweep pictures belonging to cards that no longer exist. Without it a renamed
   // or deleted model leaves its photo behind for ever.
   for (const f of await readdir(OUT_IMG_DIR)) {
@@ -171,6 +209,7 @@ async function main() {
     discounts: data.discounts,
     delivery_zones: data.delivery_zones,
     whatsapp: data.whatsapp,
+    contacts,
     // The offered currencies and the day their rates were quoted. Copied,
     // unlike `direct_booking`: a converted price still works with Odoo down,
     // and this copy is refreshed daily, which is exactly how often the rates
