@@ -85,6 +85,12 @@ function extFor(contentType, url) {
   return m ? '.' + m[1].toLowerCase().replace('jpeg', 'jpg') : '.jpg';
 }
 
+// 'images/catalog/bike-pcx160-1.jpg?v=abc1234' → 'bike-pcx160-1.jpg', the name
+// readdir() reports.
+function fileName(rel) {
+  return rel.split('?')[0].split('/').pop();
+}
+
 async function grabPhoto(url, slug, index) {
   return grabPicture(url, 'bike-' + slug + '-' + (index + 1));
 }
@@ -143,7 +149,11 @@ async function main() {
       const got = await grabPhoto(url, slug, i);
       if (!got) continue;
       photos.push(got.rel);
-      keep.add(got.rel.split('/').pop());
+      // The file's own name, without the ?v= stamp the page address carries. With
+      // the stamp left on, nothing on disk matched the set, and from 2026-09-22 to
+      // 2026-10-16 the sweep below deleted every photo it had just written: the
+      // copy pointed at pictures that were not in the repository.
+      keep.add(fileName(got.rel));
       if (got.changed) photosChanged++;
     }
 
@@ -176,7 +186,7 @@ async function main() {
       const got = await grabPicture(wechat.qr, 'wechat-qr');
       if (got) {
         wechat.qr = got.rel;
-        keep.add(got.rel.split('/').pop().split('?')[0]);
+        keep.add(fileName(got.rel));
         if (got.changed) photosChanged++;
       } else {
         delete wechat.qr;
