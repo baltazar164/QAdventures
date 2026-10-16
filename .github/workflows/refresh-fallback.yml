@@ -23,9 +23,8 @@ on:
   # (decisions.md, 2026-10-14).
   workflow_dispatch:
 
-# Only the commit needs write access, and only to this repository.
-permissions:
-  contents: write
+# Nothing by default; each job below names what it needs.
+permissions: {}
 
 concurrency:
   group: refresh-fallback
@@ -34,6 +33,11 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # Only the commit needs write access, and only to this repository.
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,9 +52,11 @@ jobs:
         run: node tools/refresh-fallback.mjs
 
       - name: Commit whatever changed
+        id: commit
         run: |
           if [ -z "$(git status --porcelain)" ]; then
             echo "nothing changed"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name  "github-actions[bot]"
@@ -58,20 +64,44 @@ jobs:
           git add catalog.json images/catalog
           git commit -m "Refresh the offline catalog"
           git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
-      # The watchdog (d21 stage 1): a check on healthchecks.io that expects to
-      # hear from this job once a day and mails the owner and Derek when it does
-      # not. A failed run says so at once instead of waiting out the day — which
-      # also catches GitHub switching the schedule off after 60 quiet days (see
-      # the note at the bottom). No secret, no ping: a fork stays quiet.
+  # The commit above reaches the live site only through this (b140): a push made
+  # with the job's own token starts no other workflow, so "Publish the site" never
+  # heard of it. Nothing changed — nothing to publish.
+  publish:
+    needs: refresh
+    if: needs.refresh.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/publish.yml
+
+  # The watchdog (d21 stage 1): a check on healthchecks.io that expects to hear
+  # from this job once a day and mails the owner and Derek when it does not. A
+  # failed run says so at once instead of waiting out the day — which also catches
+  # GitHub switching the schedule off after 60 quiet days (see the note at the
+  # bottom). No secret, no ping: a fork stays quiet. "Success" means the copy was
+  # refreshed and, if it changed, published — a publish skipped for having nothing
+  # to send counts as success.
+  watchdog:
+    needs: [refresh, publish]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
       - name: Tell the watchdog
-        if: always()
         env:
           PING_URL: ${{ secrets.HEALTHCHECK_SITE_UPDATE_URL }}
-          OUTCOME: ${{ job.status }}
+          REFRESH: ${{ needs.refresh.result }}
+          PUBLISH: ${{ needs.publish.result }}
         run: |
           [ -n "$PING_URL" ] || exit 0
-          if [ "$OUTCOME" = "success" ]; then suffix=""; else suffix="/fail"; fi
+          if [ "$REFRESH" = "success" ] && { [ "$PUBLISH" = "success" ] || [ "$PUBLISH" = "skipped" ]; }; then
+            suffix=""
+          else
+            suffix="/fail"
+          fi
           curl -fsS -m 10 --retry 3 "$PING_URL$suffix" > /dev/null || echo "watchdog unreachable"
 
 # Two things to know before relying on this.
