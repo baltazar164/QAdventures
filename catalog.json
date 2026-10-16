@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-10-16T12:07:29Z",
+  "refreshed_at": "2026-10-16T12:27:59Z",
   "currency": "PHP",
   "categories": [
     {
@@ -85,7 +85,9 @@
         "id": "QAdventures",
         "qr": "images/catalog/wechat-qr.png?v=ef82b87"
       },
-      "telegram": null,
+      "telegram": {
+        "href": "https://t.me/qadventures"
+      },
       "youtube": null
     },
     "hours": {
@@ -205,7 +207,9 @@
         }
       ],
       "overview": "",
-      "pros": [],
+      "pros": [
+        "Comfortable for long legs"
+      ],
       "cons": [],
       "photos": [
         "images/catalog/bike-burgman-1.jpg?v=c1f2784",
