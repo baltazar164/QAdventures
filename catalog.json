@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-10-16T07:19:33Z",
+  "refreshed_at": "2026-10-16T12:07:29Z",
   "currency": "PHP",
   "categories": [
     {
@@ -51,6 +51,49 @@
     }
   ],
   "whatsapp": "639432458562",
+  "contacts": {
+    "phones": [
+      {
+        "label": "+63 943 245 8562",
+        "tel": "+639432458562"
+      },
+      {
+        "label": "+63 919 551 7812",
+        "tel": "+639195517812"
+      }
+    ],
+    "channels": {
+      "whatsapp": {
+        "href": "https://wa.me/639432458562"
+      },
+      "facebook": {
+        "href": "https://www.facebook.com/profile.php?id=100087573997431",
+        "msg": "https://m.me/100087573997431"
+      },
+      "instagram": {
+        "href": "https://www.instagram.com/qadventures_motorbike_rental/",
+        "msg": "https://ig.me/m/qadventures_motorbike_rental"
+      },
+      "viber": {
+        "href": "viber://add?number=639432458562"
+      },
+      "line": {
+        "href": "https://line.me/ti/p/5w8pHzkZkV"
+      },
+      "wechat": {
+        "href": "https://u.wechat.com/kFHwZfy45Z6-p9TQ04B83ZY?s=3",
+        "id": "QAdventures",
+        "qr": "images/catalog/wechat-qr.png?v=ef82b87"
+      },
+      "telegram": null,
+      "youtube": null
+    },
+    "hours": {
+      "open": "07:00",
+      "close": "22:00",
+      "note": "24 hours by appointment"
+    }
+  },
   "currencies": [
     {
       "code": "USD",
