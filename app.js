@@ -263,12 +263,7 @@ function catTabs() {
 
 function availInfo() {
   const parseIso = s => { const d = new Date(s + 'T00:00:00'); d.setHours(0,0,0,0); return d.getTime(); };
-  const picked = !!(S.availFrom && S.availTo) && parseIso(S.availTo) >= parseIso(S.availFrom);
-  // The seed carries no bookings, so it cannot say what is free: until the live
-  // catalog answers, dates picked are held and the bar says it is checking,
-  // rather than calling every bike available.
-  const pending = picked && S.catalogSource === 'seed';
-  const chosen = picked && !pending;
+  const chosen = !!(S.availFrom && S.availTo) && parseIso(S.availTo) >= parseIso(S.availFrom);
   const from = chosen ? parseIso(S.availFrom) : 0;
   const to = chosen ? parseIso(S.availTo) : 0;
   // A model is available if AT LEAST ONE of its physical units is free over the range.
@@ -277,7 +272,7 @@ function availInfo() {
     const units = (b.units && b.units.length) ? b.units : [{ booked: [] }];
     return units.some(u => !(u.booked || []).some(([bs, be]) => from <= parseIso(be) && to >= parseIso(bs)));
   };
-  return { chosen, pending, isAvailable };
+  return { chosen, isAvailable };
 }
 
 // Two levels, in order: live Odoo, then the offline copy served from this same origin.
@@ -528,7 +523,7 @@ function renderAvailBar() {
   const only = $('#avail-only');
   const onlyLabel = $('#avail-only-label');
   const field = $('#avail-field');
-  const { chosen, pending, isAvailable } = availInfo();
+  const { chosen, isAvailable } = availInfo();
 
   if (label) {
     label.textContent = (S.availFrom && S.availTo)
@@ -540,11 +535,8 @@ function renderAvailBar() {
   if (only) { only.disabled = !chosen; only.checked = S.availOnly; }
   if (onlyLabel) onlyLabel.classList.toggle('is-on', chosen);
   if (count) {
-    count.hidden = !chosen && !pending;
-    if (pending) {
-      count.textContent = 'Checking availability…';
-      count.classList.remove('is-some', 'is-none');
-    } else if (chosen) {
+    count.hidden = !chosen;
+    if (chosen) {
       const list = visibleFleet();
       const n = list.filter(isAvailable).length;
       count.textContent = n + ' of ' + list.length + ' available';
