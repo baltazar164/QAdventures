@@ -14,6 +14,38 @@
      /QAdventures/ while a browser looking for an icon on its own asks the domain root
      — which is why the console carried a 404 for favicon.ico on every visit. -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://cebuscooterrental.com/">
+
+<!-- The business card for search engines and AI (structured data, d21 stage 3):
+     invisible to a visitor, read by Google, Bing and the assistants that search
+     through them. What stands here is what the page itself says — the name and
+     address in the contact block, the pin of the map beside it — so moving the
+     shop means editing those and this together. The phones, the hours, the price
+     range and the social links are added at publish time from Business Settings
+     in Odoo (tools/prerender). Deliberately absent: the Google rating — Google
+     does not take a business's own word for its score — and the bikes as
+     products, which Google does not show for rentals.
+     LocalBusiness rather than schema.org's AutoRental: the assistants already
+     tell people the shop rents cars, and "auto" would only agree with them. -->
+<script type="application/ld+json" id="ld-business">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Q Adventures Motorbike Rental",
+  "description": "Scooter and motorbike rental in Lapu-Lapu, Cebu. No documents held, no distance limit, refundable deposit. Delivered to your hotel or the airport.",
+  "url": "https://cebuscooterrental.com/",
+  "image": "https://cebuscooterrental.com/images/hero-photo.webp",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Sitio Masiwa",
+    "addressLocality": "Lapu-Lapu",
+    "addressRegion": "Cebu",
+    "addressCountry": "PH"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 10.276493, "longitude": 123.9783612 },
+  "hasMap": "https://maps.app.goo.gl/cFdqnN46fKbPEFAk7"
+}
+</script>
 
 <!-- The catalog is asked for here, in <head>, before styles.css, the fonts and
      app.js. It used to be asked for from init() on DOMContentLoaded, which meant
@@ -146,11 +178,14 @@ window.QA_API = (function () {
            day (b54) — the site cannot ask Google itself, since any key in this
            bundle would be public. What stands written here is what shows when Odoo
            is unreachable, so it must be a real score somebody put in by hand.
-           Until the first fetch there is none, and `hidden` keeps a made-up rating
-           off the page: renderGoogleRating() reveals the card. -->
-      <a class="rev" id="rev" hidden href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener">
-        <span class="rev__n" id="rev-score">—</span>
-        <span class="rev__div"></span>
+           Until there is one the card stands without a figure — no dash, no
+           made-up number — and renderGoogleRating() puts the score and its
+           divider in when the catalog brings it (owner, 2026-10-17). The card
+           itself is never hidden: it holds its place, so the hero does not move
+           when the score arrives. -->
+      <a class="rev" id="rev" href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener">
+        <span class="rev__n" id="rev-score" hidden></span>
+        <span class="rev__div" id="rev-div" hidden></span>
         <span class="rev__txt">
           <span class="rev__stars" aria-hidden="true">★★★★★</span>
           <span class="rev__t">Very happy customers</span>
@@ -158,7 +193,10 @@ window.QA_API = (function () {
         </span>
       </a>
       <div class="pills">
-        <div class="pill">☀ 10% off for 7+ days · 20% off for 28+ days</div>
+        <!-- The tiers are Odoo's (d21 stage 3, b85): app.js rewrites this from the
+             catalog, and so does the copy written in at publish time. What stands
+             here shows only when no catalog has ever answered. -->
+        <div class="pill" id="pill-disc">☀ 10% off for 7+ days · 20% off for 28+ days</div>
         <div class="pill">✦ 2 helmets + top box included</div>
       </div>
       <h1 class="hero__h1">Ride Cebu on<br>your own terms.</h1>
