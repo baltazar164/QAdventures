@@ -96,7 +96,7 @@ const S = {
   currencies: null, ratesDate: '',
   // The shop's Google score, as Odoo last heard it (b54). `null` means nobody
   // told us one, and then the card keeps whatever is written into index.html —
-  // or stays hidden, if that is nothing yet.
+  // or stands without a figure, if that is nothing yet.
   googleRating: null,
   // Priced by the shop, not by this file. `null` means the catalog never answered,
   // and then the form quotes the day rate only — inventing a discount tier here is
@@ -591,8 +591,12 @@ function renderGoogleRating() {
   if (!card || !S.googleRating) return;
   const score = S.googleRating.rating;
   const count = S.googleRating.count;
+  // The card stands without a figure until now; the score and its divider come
+  // in beside the text, so the hero does not move (owner, 2026-10-17).
   const scoreEl = $('#rev-score');
-  if (scoreEl) scoreEl.textContent = score.toFixed(1);
+  if (scoreEl) { scoreEl.textContent = score.toFixed(1); scoreEl.hidden = false; }
+  const div = $('#rev-div');
+  if (div) div.hidden = false;
   const countEl = $('#rev-count');
   if (countEl) {
     countEl.textContent = count
@@ -601,7 +605,6 @@ function renderGoogleRating() {
   }
   card.setAttribute('aria-label',
     'Rated ' + score.toFixed(1) + ' out of 5 on Google — read the reviews');
-  card.hidden = false;
 }
 
 // The long-stay pill in the hero, from the same tiers the booking form prices

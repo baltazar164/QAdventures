@@ -178,11 +178,14 @@ window.QA_API = (function () {
            day (b54) — the site cannot ask Google itself, since any key in this
            bundle would be public. What stands written here is what shows when Odoo
            is unreachable, so it must be a real score somebody put in by hand.
-           Until the first fetch there is none, and `hidden` keeps a made-up rating
-           off the page: renderGoogleRating() reveals the card. -->
-      <a class="rev" id="rev" hidden href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener">
-        <span class="rev__n" id="rev-score">—</span>
-        <span class="rev__div"></span>
+           Until there is one the card stands without a figure — no dash, no
+           made-up number — and renderGoogleRating() puts the score and its
+           divider in when the catalog brings it (owner, 2026-10-17). The card
+           itself is never hidden: it holds its place, so the hero does not move
+           when the score arrives. -->
+      <a class="rev" id="rev" href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener">
+        <span class="rev__n" id="rev-score" hidden></span>
+        <span class="rev__div" id="rev-div" hidden></span>
         <span class="rev__txt">
           <span class="rev__stars" aria-hidden="true">★★★★★</span>
           <span class="rev__t">Very happy customers</span>
