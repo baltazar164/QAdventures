@@ -1,0 +1,7 @@
+# Every robot is welcome, the ones that collect text to train AI included: the
+# point of this site is that search engines and assistants know the shop (d21
+# stage 3, owner 2026-10-17).
+User-agent: *
+Allow: /
+
+Sitemap: https://cebuscooterrental.com/sitemap.xml
