@@ -8,7 +8,8 @@
 # something has to do the changing; a branch served as-is has nobody to do it.
 #
 # The working files keep `?v=dev`, so the site opens straight from the repository
-# with no build step, exactly as before. Only what is published carries a number.
+# with no build step, exactly as before. Only what is published carries a number —
+# and, since d21 stage 3, the offline catalog written into the page.
 
 name: Publish the site
 
@@ -52,17 +53,38 @@ jobs:
         with:
           ref: ${{ github.event_name == 'push' && github.sha || github.ref }}
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # What is published is a copy in _site/, never the checkout itself: the
+      # repository's index.html stays the plain page that opens with no build step,
+      # and the tool's node_modules stay out of the site.
+      - name: Copy the site
+        run: rsync -a --exclude .git --exclude .github --exclude node_modules --exclude _site ./ _site/
+
+      # The offline catalog written into the page (d21 stage 3): the fleet, the
+      # prices, the discounts and the hours in the first answer the server gives,
+      # for robots that run no scripts, plus the business card for search engines
+      # and sitemap.xml. If its checks fail, so does this publish, and the site
+      # keeps the page the last good one wrote.
+      - name: Write the catalog into the page
+        run: |
+          npm ci --prefix tools/prerender --no-audit --no-fund
+          node tools/prerender/prerender.mjs _site
+
       - name: Stamp the version onto the files the page loads
         # The commit's own number, so every publish carries a different one and no
         # publish invents a number that could repeat.
         run: |
           v="$(git rev-parse --short=7 HEAD)"
-          sed -i "s/?v=dev/?v=$v/g" index.html
-          grep -n "?v=" index.html
+          sed -i "s/?v=dev/?v=$v/g" _site/index.html
+          # Only the stamped names: the line the catalog is written on is long.
+          grep -o "[a-z./-]*?v=$v" _site/index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - id: deploy
         uses: actions/deploy-pages@v4

@@ -1,12 +1,14 @@
 // Refreshes the offline copy of the catalog: catalog.json and the pictures it
-// points at. Run by .github/workflows/refresh-fallback.yml once a day, and by
-// hand with `node tools/refresh-fallback.mjs` when something needs pushing
-// through immediately.
+// points at. Run by .github/workflows/refresh-fallback.yml every three hours
+// and from the "Update site now" button in Odoo, and by hand with
+// `node tools/refresh-fallback.mjs` when something needs pushing through
+// immediately.
 //
 // What this file is for: the page fetches the live catalog from Odoo on every
-// load, so nothing here affects what a visitor normally sees. This only keeps
-// the copy that gets shown when Odoo is unreachable — and that copy is worth
-// nothing if it is a year old.
+// load. This copy is what it shows when Odoo is unreachable — and, since d21
+// stage 3, what is written into the page itself when the site is published
+// (tools/prerender), which is how a robot that runs no scripts reads the fleet,
+// the prices and the hours.
 //
 // Run it with:
 //   CATALOG_API_URL=https://api.cebuscooterrental.com/qa/catalog \
@@ -166,7 +168,20 @@ async function main() {
     // reached — a card would be left pointing at a picture nobody can fetch.
     const { units, card_photo, ...rest } = m;
     const card = { ...rest, photos };
-    if (photos.length) card.card_photo = photos[0];
+    // The card's own small picture, copied like the photos (d21 stage 3). The
+    // page is published with these cards already drawn, so a full-size photo
+    // here would be the heaviest thing on the first screen. `card_photo_src`
+    // keeps the Odoo address it was copied from: a live card still pointing
+    // there shows this same copy, and the swap to live data reloads nothing.
+    const small = card_photo ? await grabPicture(card_photo, 'card-' + slug) : null;
+    if (small) {
+      card.card_photo = small.rel;
+      card.card_photo_src = card_photo;
+      keep.add(fileName(small.rel));
+      if (small.changed) photosChanged++;
+    } else if (photos.length) {
+      card.card_photo = photos[0];
+    }
     models.push(card);
   }
 

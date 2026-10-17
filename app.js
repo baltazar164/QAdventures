@@ -76,7 +76,14 @@ const S = {
   // Which level the prices on screen came from — 'odoo' live, 'offline' the daily
   // copy, 'down' neither — and the day that copy was written. Read by the note above
   // the grid: figures nobody can date are not shown without saying so.
+  // 'seed' is the copy written into the page itself at publish time (d21 stage 3):
+  // the same figures as 'offline', shown without the note because the live catalog
+  // is still on its way, and replacing them is the normal case, not a fallback.
   catalogSource: '', refreshedAt: '',
+  // The seed's card pictures, keyed by the Odoo address each was copied from. A
+  // live card whose picture is still that one keeps the copy the page already
+  // shows, so the swap to live data does not reload a single picture.
+  seedPhotos: {},
   selected: null, photoIndex: 0,
   pickup: '', dropoff: '', step: 'form', color: '',
   availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '',
@@ -223,7 +230,7 @@ function normalizeModel(m, captions) {
     // full-size `photos` are for the sheet, which opens one card at a time. An
     // older server, or the offline copy, sends no `card_photo` — then the grid
     // falls back to the first gallery photo, as it always did.
-    cardPhoto: m.card_photo || '',
+    cardPhoto: S.seedPhotos[m.card_photo] || m.card_photo || '',
 
     desc: hasDesc ? { overview: m.overview || '', pros: m.pros || [], cons: m.cons || [] } : null,
   };
@@ -256,7 +263,12 @@ function catTabs() {
 
 function availInfo() {
   const parseIso = s => { const d = new Date(s + 'T00:00:00'); d.setHours(0,0,0,0); return d.getTime(); };
-  const chosen = !!(S.availFrom && S.availTo) && parseIso(S.availTo) >= parseIso(S.availFrom);
+  const picked = !!(S.availFrom && S.availTo) && parseIso(S.availTo) >= parseIso(S.availFrom);
+  // The seed carries no bookings, so it cannot say what is free: until the live
+  // catalog answers, dates picked are held and the bar says it is checking,
+  // rather than calling every bike available.
+  const pending = picked && S.catalogSource === 'seed';
+  const chosen = picked && !pending;
   const from = chosen ? parseIso(S.availFrom) : 0;
   const to = chosen ? parseIso(S.availTo) : 0;
   // A model is available if AT LEAST ONE of its physical units is free over the range.
@@ -265,7 +277,7 @@ function availInfo() {
     const units = (b.units && b.units.length) ? b.units : [{ booked: [] }];
     return units.some(u => !(u.booked || []).some(([bs, be]) => from <= parseIso(be) && to >= parseIso(bs)));
   };
-  return { chosen, isAvailable };
+  return { chosen, pending, isAvailable };
 }
 
 // Two levels, in order: live Odoo, then the offline copy served from this same origin.
@@ -276,6 +288,10 @@ function availInfo() {
 function applyCatalog(data, source) {
   const models = (data && Array.isArray(data.models)) ? data.models : [];
   if (!models.length) return false;
+  if (source === 'seed') {
+    S.seedPhotos = {};
+    models.forEach(m => { if (m.card_photo_src && m.card_photo) S.seedPhotos[m.card_photo_src] = m.card_photo; });
+  }
   S.models = models;
   S.categories = (data && Array.isArray(data.categories)) ? data.categories : null;
   S.catalogSource = source;
@@ -341,11 +357,11 @@ function applyContacts(c) {
 
   const phones = $('#phones');
   if (phones && Array.isArray(c.phones)) {
-    phones.innerHTML = c.phones.filter(p => p && p.tel).map(p =>
+    patchChildren(phones, c.phones.filter(p => p && p.tel).map(p =>
       '<div class="phone">' +
         '<a class="phone__n" href="tel:' + esc(p.tel) + '">' + esc(p.label || p.tel) + '</a>' +
         '<button class="phone__copy" type="button" data-copy="' + esc(p.tel) + '" aria-label="Copy ' + esc(p.label || p.tel) + '"></button>' +
-      '</div>').join('');
+      '</div>').join(''));
     wireCopyButtons(phones);
   }
 
@@ -383,6 +399,14 @@ function loadOfflineCopy() {
       throw new Error('offline copy is empty');
     })
     .catch(err => {
+      // The page's own seed is that same copy, written in at publish time, so it
+      // stands — now with the note that says how old it is.
+      if (S.catalogSource === 'seed') {
+        console.warn('[catalog] offline copy unusable; keeping the copy in the page', err);
+        S.catalogSource = 'offline';
+        renderCatalog();
+        return;
+      }
       // Nothing left to fall back to, and that is deliberate: the grid empties rather
       // than filling with prices no one can date. `[]` and not `null` — the difference
       // between "still loading" and "there is nothing", which the grid reads.
@@ -416,13 +440,31 @@ function renderTabs() {
   // One category and "All bikes" is not a filter, it is decoration.
   if (tabs.length <= 2) { host.innerHTML = ''; host.hidden = true; return; }
   host.hidden = false;
-  host.innerHTML = tabs.map(t =>
+  // Clicks are taken by init() on the host, so tabs written into the page at
+  // publish time work the same as tabs drawn here.
+  patchChildren(host, tabs.map(t =>
     '<button class="tab' + (S.filter === t.key ? ' is-active' : '') + '" data-tab="' + esc(t.key) + '">' +
-    esc(t.label) + '</button>').join('');
-  $$('.tab', host).forEach(b => b.addEventListener('click', () => {
-    S.filter = b.getAttribute('data-tab');
-    renderCatalog();
-  }));
+    esc(t.label) + '</button>').join(''));
+}
+
+// Puts `html` into `host`, touching only the children that differ (d21 stage 3).
+// The page arrives with the fleet already written in; when the live catalog says
+// the same thing, nothing on screen may move or reload, and when one price
+// changed only that card is redrawn. A different number of children is a
+// different list, and is drawn afresh. Compared as the browser writes them back
+// out, so how the markup was spelled does not count as a change.
+// Returns whether anything was replaced.
+function patchChildren(host, html) {
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  const next = Array.from(t.content.children);
+  const cur = Array.from(host.children);
+  if (next.length !== cur.length) { host.replaceChildren(...next); return true; }
+  let changed = false;
+  next.forEach((n, i) => {
+    if (cur[i].outerHTML !== n.outerHTML) { cur[i].replaceWith(n); changed = true; }
+  });
+  return changed;
 }
 
 function visibleFleet() {
@@ -441,7 +483,7 @@ function renderFleet() {
   if (!grid) return;
 
   const { chosen, isAvailable } = availInfo();
-  grid.innerHTML = visibleFleet().map(b => {
+  patchChildren(grid, visibleFleet().map(b => {
     const avail = isAvailable(b);
     const img = b.cardPhoto || (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '';
     const booked = chosen && !avail;
@@ -475,14 +517,9 @@ function renderFleet() {
           '</div>' +
         '</div>' +
       '</article>';
-  }).join('');
-
-  $$('.card', grid).forEach(el => el.addEventListener('click', () => {
-    if (el.classList.contains('is-booked')) return;
-    const id = el.getAttribute('data-bike');
-    const bike = fleet().find(b => b.id === id);
-    if (bike) openModal(bike);
-  }));
+  }).join(''));
+  // Clicks on a card are taken by init() on the grid itself, so a card written
+  // into the page at publish time opens the moment this file has run.
 }
 
 function renderAvailBar() {
@@ -491,7 +528,7 @@ function renderAvailBar() {
   const only = $('#avail-only');
   const onlyLabel = $('#avail-only-label');
   const field = $('#avail-field');
-  const { chosen, isAvailable } = availInfo();
+  const { chosen, pending, isAvailable } = availInfo();
 
   if (label) {
     label.textContent = (S.availFrom && S.availTo)
@@ -503,8 +540,11 @@ function renderAvailBar() {
   if (only) { only.disabled = !chosen; only.checked = S.availOnly; }
   if (onlyLabel) onlyLabel.classList.toggle('is-on', chosen);
   if (count) {
-    count.hidden = !chosen;
-    if (chosen) {
+    count.hidden = !chosen && !pending;
+    if (pending) {
+      count.textContent = 'Checking availability…';
+      count.classList.remove('is-some', 'is-none');
+    } else if (chosen) {
       const list = visibleFleet();
       const n = list.filter(isAvailable).length;
       count.textContent = n + ' of ' + list.length + ' available';
@@ -572,6 +612,23 @@ function renderGoogleRating() {
   card.hidden = false;
 }
 
+// The long-stay pill in the hero, from the same tiers the booking form prices
+// with (d21 stage 3; b85 — it was typed into index.html). No tiers in hand, the
+// catalog never answered: the pill keeps what the page carries. Tiers present
+// but none set in Odoo: there is no discount to announce, and the pill goes.
+function pctText(p) {
+  return (Math.round(p * 10) / 10).toLocaleString('en-US') + '%';
+}
+
+function renderDiscountPill() {
+  const pill = $('#pill-disc');
+  if (!pill || !S.discounts) return;
+  const tiers = S.discounts.filter(t => t && t.percent > 0 && t.min_days > 0);
+  pill.hidden = !tiers.length;
+  const text = '☀ ' + tiers.map(t => pctText(t.percent) + ' off for ' + t.min_days + '+ days').join(' · ');
+  if (tiers.length && pill.textContent !== text) pill.textContent = text;
+}
+
 function renderCatalog() {
   renderTabs();
   renderAvailBar();
@@ -581,7 +638,14 @@ function renderCatalog() {
   // empty grid are furniture pretending the page still works.
   const filter = $('#fleet-filter');
   if (filter) filter.hidden = S.catalogSource === 'down';
-  if (S.selected) updateModal();
+  // A form opened on the seed's figures takes the live ones in place: same bike,
+  // new price, nothing typed is lost and the form stays open.
+  if (S.selected) {
+    const fresh = fleet().find(b => b.id === S.selected.id);
+    if (fresh) S.selected = fresh;
+    updateModal();
+  }
+  renderDiscountPill();
   $$('[data-wa]').forEach(wa => { wa.href = 'https://wa.me/' + waNumber(); });
   renderGoogleRating();
   const from = $('#hero-from');
@@ -989,8 +1053,8 @@ function formHTML() {
     '<div class="sheet__head">' +
       '<h2 class="sheet__name">' + esc(sel.name) + '</h2>' +
       '<div class="sheet__price">' +
-        '<div><span class="sheet__pnum">' + esc(peso(sel.price)) + '</span><span class="card__per">/day</span></div>' +
-        '<div class="card__wk">' + esc(peso(sel.weekly) + '/wk · ' + peso(sel.monthly) + '/mo') + '</div>' +
+        '<div><span class="sheet__pnum" id="m-pnum">' + esc(peso(sel.price)) + '</span><span class="card__per">/day</span></div>' +
+        '<div class="card__wk" id="m-pwk">' + esc(peso(sel.weekly) + '/wk · ' + peso(sel.monthly) + '/mo') + '</div>' +
       '</div>' +
     '</div>' +
     (sel.desc ? descHTML(sel.desc) : '') +
@@ -1206,6 +1270,12 @@ function updateModal() {
       : (S.pickup ? (fmtDate(S.pickup) + ' – …') : 'Select your dates');
     label.classList.toggle('is-filled', !!S.pickup);
   }
+  // The price in the head of the form, which renderModalBody() drew once: the
+  // live catalog can arrive while the form is open (d21 stage 3).
+  const pnum = $('#m-pnum');
+  if (pnum) pnum.textContent = peso(S.selected.price);
+  const pwk = $('#m-pwk');
+  if (pwk) pwk.textContent = peso(S.selected.weekly) + '/wk · ' + peso(S.selected.monthly) + '/mo';
   updateQuote();
   updateActions();
 }
@@ -1424,6 +1494,10 @@ function openHandover(el) {
 
 function wireCopyButtons(root) {
   $$('[data-copy]', root).forEach(btn => {
+    // Once per button: the phones are patched in place now, so a button can be
+    // handed back here that already has its listener (d21 stage 3).
+    if (btn.__wired) return;
+    btn.__wired = true;
     let back = null;
     btn.addEventListener('click', () => {
       copyText(btn.dataset.copy).then(ok => {
@@ -1527,14 +1601,56 @@ function init() {
   const map = $('#citem-map');
   if (map) map.addEventListener('click', () => track('google-map'));
 
+  // One listener each on the grid and the tabs rather than one per card: the
+  // cards and tabs written into the page at publish time have none of their own,
+  // and redrawing a single card must not cost it its click.
+  const grid = $('#fleet-grid');
+  if (grid) grid.addEventListener('click', e => {
+    const el = e.target.closest('.card');
+    if (!el || el.classList.contains('is-booked')) return;
+    const id = el.getAttribute('data-bike');
+    const bike = fleet().find(b => b.id === id);
+    if (bike) openModal(bike);
+  });
+  const tabs = $('#fleet-tabs');
+  if (tabs) tabs.addEventListener('click', e => {
+    const b = e.target.closest('[data-tab]');
+    if (!b) return;
+    S.filter = b.getAttribute('data-tab');
+    renderCatalog();
+  });
+
   fillCurrencySelects();
   wireCopyButtons();
   wireQrChannels();
   wireChanTracking(document, 'msg-page');
+  // The copy written into the page at publish time, if this page has one (d21
+  // stage 3). Taken as the catalog in hand until the live one answers, so a card
+  // pressed in the meantime opens straight away.
+  const seed = readSeed();
+  if (seed) applyCatalog(seed, 'seed');
   renderCatalog();
   // loadGoogle() is not called here: applyCatalog calls it if and only if the
   // live payload allows direct booking. Until then the modal is WhatsApp-only.
   loadCatalog();
+}
+
+function readSeed() {
+  const el = document.getElementById('qa-seed');
+  if (!el) return null;
+  try { return JSON.parse(el.textContent); } catch (e) { return null; }
+}
+
+// Run by tools/prerender/prerender.mjs when the site is published, in a DOM of
+// its own and never in a visitor's browser (d21 stage 3). It draws the page from
+// the offline copy with the very functions a visitor's browser runs, so what is
+// written into the page is exactly what this file would draw from the same
+// figures — which is what lets the live catalog replace it without anything
+// moving. Returns false when the copy has no fleet to draw.
+function prerender(data) {
+  if (!applyCatalog(data, 'seed')) return false;
+  renderCatalog();
+  return true;
 }
 
 function toggleMobileMenu() {
