@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-10-17T07:02:48Z",
+  "refreshed_at": "2026-10-17T09:42:18Z",
   "currency": "PHP",
   "categories": [
     {
@@ -155,7 +155,8 @@
         "images/catalog/bike-adv350-3.jpg?v=a7056a3",
         "images/catalog/bike-adv350-4.jpg?v=e929a44"
       ],
-      "card_photo": "images/catalog/bike-adv350-1.jpg?v=57c4565"
+      "card_photo": "images/catalog/card-adv350.jpg?v=f0fc350",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/96/image_512?unique=20261001032145"
     },
     {
       "id": "aerox155",
@@ -185,7 +186,8 @@
         "images/catalog/bike-aerox155-3.jpg?v=ff6a890",
         "images/catalog/bike-aerox155-4.jpg?v=0ead5d9"
       ],
-      "card_photo": "images/catalog/bike-aerox155-1.jpg?v=f6f5660"
+      "card_photo": "images/catalog/card-aerox155.jpg?v=9c929eb",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/7/image_512?unique=20260925101702"
     },
     {
       "id": "burgman",
@@ -215,7 +217,8 @@
         "images/catalog/bike-burgman-3.jpg?v=6ea8d16",
         "images/catalog/bike-burgman-4.jpg?v=b5eaec2"
       ],
-      "card_photo": "images/catalog/bike-burgman-1.jpg?v=c1f2784"
+      "card_photo": "images/catalog/card-burgman.jpg?v=ec39159",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/66/image_512?unique=20260925095259"
     },
     {
       "id": "click125i",
@@ -261,7 +264,8 @@
         "images/catalog/bike-click125i-3.jpg?v=1f86ccc",
         "images/catalog/bike-click125i-4.jpg?v=36ece0e"
       ],
-      "card_photo": "images/catalog/bike-click125i-1.jpg?v=5341b5e"
+      "card_photo": "images/catalog/card-click125i.jpg?v=903240c",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/49/image_512?unique=20260925101800"
     },
     {
       "id": "gravis125",
@@ -295,7 +299,8 @@
         "images/catalog/bike-gravis125-3.jpg?v=ad330b8",
         "images/catalog/bike-gravis125-4.jpg?v=ba2f19a"
       ],
-      "card_photo": "images/catalog/bike-gravis125-1.jpg?v=42bf22d"
+      "card_photo": "images/catalog/card-gravis125.jpg?v=c076acc",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/57/image_512?unique=20260925095415"
     },
     {
       "id": "pcx160abs",
@@ -328,7 +333,8 @@
         "images/catalog/bike-pcx160abs-3.jpg?v=f2d9a83",
         "images/catalog/bike-pcx160abs-4.jpg?v=b0d2fdd"
       ],
-      "card_photo": "images/catalog/bike-pcx160abs-1.jpg?v=c687ff2"
+      "card_photo": "images/catalog/card-pcx160abs.jpg?v=77869bf",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/69/image_512?unique=20260830021738"
     },
     {
       "id": "rouser160",
@@ -360,7 +366,8 @@
         "images/catalog/bike-rouser160-3.jpg?v=f3c013a",
         "images/catalog/bike-rouser160-4.jpg?v=58b2245"
       ],
-      "card_photo": "images/catalog/bike-rouser160-1.jpg?v=89b110f"
+      "card_photo": "images/catalog/card-rouser160.jpg?v=b97ec1e",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/73/image_512?unique=20260830023001"
     },
     {
       "id": "vstrom250",
@@ -392,7 +399,8 @@
         "images/catalog/bike-vstrom250-3.jpg?v=486bbb0",
         "images/catalog/bike-vstrom250-4.jpg?v=d6190f1"
       ],
-      "card_photo": "images/catalog/bike-vstrom250-1.jpg?v=ea1ab9e"
+      "card_photo": "images/catalog/card-vstrom250.jpg?v=9389c03",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/61/image_512?unique=20260829063020"
     },
     {
       "id": "pcx160",
@@ -424,7 +432,8 @@
         "images/catalog/bike-pcx160-3.jpg?v=830f14c",
         "images/catalog/bike-pcx160-4.jpg?v=a7fa29f"
       ],
-      "card_photo": "images/catalog/bike-pcx160-1.jpg?v=eb5143a"
+      "card_photo": "images/catalog/card-pcx160.jpg?v=4e71c5e",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/77/image_512?unique=20260830023221"
     },
     {
       "id": "toyotavios",
@@ -451,7 +460,8 @@
         "images/catalog/bike-toyotavios-2.jpg?v=0fcce40",
         "images/catalog/bike-toyotavios-3.jpg?v=1bf0e30"
       ],
-      "card_photo": "images/catalog/bike-toyotavios-1.jpg?v=23004c1"
+      "card_photo": "images/catalog/card-toyotavios.jpg?v=c62e97c",
+      "card_photo_src": "https://api.cebuscooterrental.com/web/image/qa.catalog.image/94/image_512?unique=20260925100014"
     }
   ]
 }
