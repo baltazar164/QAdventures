@@ -225,6 +225,10 @@ async function main() {
     delivery_zones: data.delivery_zones,
     whatsapp: data.whatsapp,
     contacts,
+    // Name, description, address and map (d21 stage 4). All of it is on the
+    // page already, and the publish writes it into the page and llms.txt from
+    // this copy — so it has to travel, or Odoo's edits never reach either.
+    business: data.business,
     // The offered currencies and the day their rates were quoted. Copied,
     // unlike `direct_booking`: a converted price still works with Odoo down,
     // and this copy is refreshed daily, which is exactly how often the rates
