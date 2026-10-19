@@ -8,7 +8,7 @@
      and it carried no description at all, because the export wrapped the whole
      page in a script and there was nowhere to put them. -->
 <title>Q Adventures — Scooter &amp; Motorbike Rental in Cebu</title>
-<meta name="description" content="Rent a scooter or adventure bike in Cebu, Philippines. No documents held, no distance limit, refundable deposit. Delivered to your hotel/airport, from ₱600 a day.">
+<meta name="description" content="Scooter and adventure bike rental on Mactan, Cebu. No documents held, no distance limit, rent from 1 day, two helmets included. Delivery to hotel or airport.">
 
 <!-- Relative on purpose. This is a GitHub *project* page, so the site lives under
      /QAdventures/ while a browser looking for an icon on its own asks the domain root
@@ -23,11 +23,11 @@
 
 <!-- The business card for search engines and AI (structured data, d21 stage 3):
      invisible to a visitor, read by Google, Bing and the assistants that search
-     through them. What stands here is what the page itself says — the name and
-     address in the contact block, the pin of the map beside it — so moving the
-     shop means editing those and this together. The phones, the hours, the price
-     range and the social links are added at publish time from Business Settings
-     in Odoo (tools/prerender). Deliberately absent: the Google rating — Google
+     through them. Filled at publish time from Business Settings in Odoo
+     (tools/prerender): the name, the description, the address, the pin and the
+     map link since d21 stage 4, the phones, the hours, the price range and the
+     social links since stage 3. What stands here is only for a catalog copy
+     taken from an Odoo older than stage 4. Deliberately absent: the Google rating — Google
      does not take a business's own word for its score — and the bikes as
      products, which Google does not show for rentals.
      LocalBusiness rather than schema.org's AutoRental: the assistants already
@@ -37,7 +37,7 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "Q Adventures Motorbike Rental",
-  "description": "Scooter and motorbike rental in Lapu-Lapu, Cebu. No documents held, no distance limit, refundable deposit. Delivered to your hotel or the airport.",
+  "description": "Scooter and adventure bike rental on Mactan, Cebu. No documents held, no distance limit, rent from 1 day, two helmets included. Delivery to hotel or airport.",
   "url": "https://cebuscooterrental.com/",
   "image": "https://cebuscooterrental.com/images/hero-photo.webp",
   "address": {
@@ -234,7 +234,7 @@ window.QA_API = (function () {
 <!-- TRUST STRIP -->
 <section class="trust">
   <div class="trust__row">
-    <span class="trust__i">✦ Refundable deposit</span>
+    <span class="trust__i">✦ Rent from 1 day</span>
     <span class="trust__d">·</span>
     <span class="trust__i">✦ No documents held</span>
     <span class="trust__d">·</span>
@@ -380,7 +380,7 @@ window.QA_API = (function () {
       <p class="story__p">This company started after a rental shop lost my passport. So we do things differently: <strong>no document holding, fully equipped bikes, and zero restrictions.</strong> Just safe, convenient, worry-free riding anywhere in the Philippines.</p>
       <div class="promises">
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">No document holding</div></div>
-        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Refundable deposit</div></div>
+        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Rent from 1 day</div></div>
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Fully equipped bikes</div></div>
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Unlimited distance</div></div>
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Two helmets included</div></div>
@@ -403,7 +403,7 @@ window.QA_API = (function () {
       <div class="contact__items">
         <a class="citem" id="citem-map" href="https://maps.app.goo.gl/cFdqnN46fKbPEFAk7" target="_blank" rel="noopener">
           <div class="citem__i">📍</div>
-          <div><div class="citem__t">Q Adventures Motorbike Rental</div><div class="citem__s">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines <span class="citem__link">· View on map →</span></div></div>
+          <div><div class="citem__t" id="biz-name">Q Adventures Motorbike Rental</div><div class="citem__s"><span id="biz-addr">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines</span> <span class="citem__link">· View on map →</span></div></div>
         </a>
         <!-- Two numbers, each its own line: tapping the number dials it, the button
              beside it copies it. The copied form carries no spaces — it is pasted into
@@ -467,7 +467,7 @@ window.QA_API = (function () {
          The heading beside it links to the same place for anyone who wants a route. -->
     <div>
       <div class="cmap">
-        <iframe
+        <iframe id="biz-map"
           src="https://www.google.com/maps?q=10.276493,123.9783612&amp;z=16&amp;hl=en&amp;output=embed"
           title="Q Adventures Motorbike Rental on the map"
           loading="lazy" referrerpolicy="no-referrer-when-downgrade"

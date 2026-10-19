@@ -14,8 +14,9 @@
 //   - drops the grey placeholder cards, which nothing is waiting for any more;
 //   - carries the copy along as a JSON block, so app.js starts from it and a card
 //     pressed before Odoo answers opens straight away;
-//   - completes the business card for search engines from Business Settings.
-// And writes <folder>/sitemap.xml.
+//   - completes the business card for search engines from Business Settings,
+//     and puts the description from there into the page's own description.
+// And writes <folder>/sitemap.xml and <folder>/llms.txt.
 //
 // Exit codes: 0 — written and checked. 1 — a check failed or something broke;
 // nothing is written then, and the publish fails, which turns the run red, puts
@@ -71,18 +72,114 @@ if (!appTag) fail('index.html has no app.js script tag');
 appTag.parentNode.insertBefore(block, appTag);
 
 completeBusinessCard(doc.getElementById('ld-business'), JSON.parse(seedText));
-check(doc, JSON.parse(seedText));
+describePage(doc, JSON.parse(seedText));
+const llms = llmsTxt(JSON.parse(seedText));
+check(doc, JSON.parse(seedText), llms);
 
 await writeFile(join(dir, 'index.html'), dom.serialize());
 await writeFile(join(dir, 'sitemap.xml'), sitemap());
-log('wrote index.html with ' + JSON.parse(seedText).models.length + ' models, and sitemap.xml');
+await writeFile(join(dir, 'llms.txt'), llms);
+log('wrote index.html with ' + JSON.parse(seedText).models.length + ' models, sitemap.xml and llms.txt');
 
-// The parts of the business card that live in Odoo. The static parts — name,
-// address, map — stand in index.html beside the contact block they repeat.
+// The two lines under the site in Google's results (d21 stage 4). From Odoo when
+// the copy carries `business`; emptied there, the tag goes, and Google writes its
+// own lines from the page.
+function describePage(doc, data) {
+  const b = data.business;
+  if (!b || typeof b !== 'object') return;
+  const meta = doc.querySelector('meta[name="description"]');
+  if (b.description) {
+    if (meta) meta.setAttribute('content', b.description);
+  } else if (meta) {
+    meta.remove();
+  }
+}
+
+// llms.txt — the business in plain Markdown for the AI that read it (d21 stage
+// 4), after the convention at llmstxt.org: a title, a one-line summary as a
+// quote, then sections. Everything here is on the page already; this is the
+// same thing without the pictures and buttons around it.
+function llmsTxt(data) {
+  const b = data.business || {};
+  const c = data.contacts || {};
+  const peso = n => '₱' + Math.round(n).toLocaleString('en-US');
+  const cats = {};
+  (data.categories || []).forEach(k => { cats[k.slug] = k.label; });
+  const out = ['# ' + (b.name || 'Q Adventures Motorbike Rental'), ''];
+  if (b.description) out.push('> ' + b.description, '');
+
+  out.push('## Bikes and prices per day', '');
+  for (const m of data.models || []) {
+    const bits = [m.name];
+    if (cats[m.cat]) bits.push(cats[m.cat]);
+    if (m.cc) bits.push(m.cc);
+    out.push('- ' + bits.join(' — ') + ': ' + peso(m.price) + ' a day' + (m.tag ? '. ' + m.tag : ''));
+  }
+  out.push('');
+
+  const tiers = (data.discounts || []).filter(t => t.percent > 0);
+  if (tiers.length) {
+    out.push('## Discounts', '');
+    tiers.forEach(t => out.push('- ' + t.percent + '% off for ' + t.min_days + '+ days'));
+    out.push('');
+  }
+
+  const h = c.hours;
+  if (h && h.open && h.close) {
+    out.push('## Hours', '', '- Every day ' + h.open + '–' + h.close + (h.note ? '; ' + h.note : ''), '');
+  }
+
+  out.push('## Contacts', '');
+  (c.phones || []).filter(p => p && p.tel).forEach(p => out.push('- Phone: ' + (p.label || p.tel)));
+  const ch = c.channels || {};
+  const names = { whatsapp: 'WhatsApp', viber: 'Viber', facebook: 'Facebook', instagram: 'Instagram',
+    line: 'LINE', telegram: 'Telegram', wechat: 'WeChat' };
+  for (const [key, label] of Object.entries(names)) {
+    const it = ch[key];
+    if (!it || !it.href) continue;
+    const shown = key === 'wechat' && it.id ? 'ID ' + it.id
+      : key === 'viber' ? '+' + it.href.replace(/\D/g, '') : it.href;
+    out.push('- ' + label + ': ' + shown);
+  }
+  const a = b.address || {};
+  if (a.line) out.push('- Address: ' + a.line + (a.zip ? ' (postcode ' + a.zip + ')' : ''));
+  if (b.map && b.map.href) out.push('- Google Maps: ' + b.map.href);
+  out.push('- Website: ' + SITE, '');
+  return out.join('\n');
+}
+
+// The parts of the business card that live in Odoo. What index.html carries —
+// name, description, address, map — is only for a copy taken from an Odoo older
+// than d21 stage 4, which sends no `business`.
 function completeBusinessCard(el, data) {
   if (!el) fail('index.html has no business card (#ld-business)');
   let card;
   try { card = JSON.parse(el.textContent); } catch (e) { fail('the business card in index.html is not JSON: ' + e.message); }
+
+  const b = data.business;
+  if (b && typeof b === 'object') {
+    if (b.name) card.name = b.name;
+    // Emptied in Odoo means none at all (owner, 2026-10-19): Google then takes
+    // its own lines from the page rather than an old text of ours.
+    if (b.description) card.description = b.description;
+    else delete card.description;
+    const a = b.address || {};
+    if (a.street || a.city) {
+      card.address = { '@type': 'PostalAddress' };
+      if (a.street) card.address.streetAddress = a.street;
+      if (a.city) card.address.addressLocality = a.city;
+      if (a.region) card.address.addressRegion = a.region;
+      if (a.zip) card.address.postalCode = a.zip;
+      if (a.country) card.address.addressCountry = a.country;
+    }
+    const m = b.map;
+    if (m && m.href) {
+      card.hasMap = m.href;
+      if (typeof m.lat === 'number' && typeof m.lng === 'number') {
+        card.geo = { '@type': 'GeoCoordinates', latitude: m.lat, longitude: m.lng };
+      }
+    }
+  }
 
   const c = data.contacts || {};
   const phones = (c.phones || []).map(p => p && p.tel).filter(Boolean);
@@ -114,7 +211,7 @@ function completeBusinessCard(el, data) {
 }
 
 // What the acceptance criteria ask the page to hold, checked before it goes out.
-function check(doc, data) {
+function check(doc, data, llms) {
   const cards = doc.querySelectorAll('#fleet-grid > article.card');
   if (cards.length !== data.models.length) {
     fail(cards.length + ' cards drawn for ' + data.models.length + ' models');
@@ -137,6 +234,16 @@ function check(doc, data) {
   const card = JSON.parse(doc.getElementById('ld-business').textContent);
   for (const key of ['name', 'address', 'geo', 'url']) {
     if (!card[key]) fail('the business card has no ' + key);
+  }
+  const b = data.business;
+  if (b && b.description) {
+    if (card.description !== b.description) fail('the business card does not carry the description from Odoo');
+    const meta = doc.querySelector('meta[name="description"]');
+    if (!meta || meta.getAttribute('content') !== b.description) fail('the page description is not the one from Odoo');
+  }
+  for (const m of data.models) {
+    const price = '₱' + Math.round(m.price).toLocaleString('en-US');
+    if (!llms.includes('- ' + m.name) || !llms.includes(price)) fail('llms.txt has no ' + m.name + ' at ' + price);
   }
 }
 

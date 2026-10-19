@@ -297,6 +297,8 @@ function applyCatalog(data, source) {
   S.whatsapp = (typeof data.whatsapp === 'string' && data.whatsapp) ? data.whatsapp : '';
   // Absent from an Odoo older than d21 stage 2: the markup's contacts then stand.
   if (data.contacts && typeof data.contacts === 'object') applyContacts(data.contacts);
+  // Absent from an Odoo older than d21 stage 4: the markup's name and address stand.
+  if (data.business && typeof data.business === 'object') applyBusiness(data.business);
   // A currency without a usable rate is dropped rather than offered: the
   // selector must not hold a choice that cannot convert anything.
   const offered = Array.isArray(data.currencies) ? data.currencies.filter(
@@ -366,6 +368,26 @@ function applyContacts(c) {
     if (t) t.textContent = 'Open today · ' + h.open + ' – ' + h.close;
     const s = $('#hours-s');
     if (s) { s.textContent = h.note || ''; s.hidden = !h.note; }
+  }
+}
+
+// The shop's name, address and place on the map, from Business Settings in Odoo
+// (d21 stage 4). One Google Maps link serves the contact block and the rating
+// card under the hero alike. The map frame is only given a new address when the
+// pin moved: an unchanged one would reload the whole map for nothing.
+function applyBusiness(b) {
+  const name = $('#biz-name');
+  if (name && b.name) name.textContent = b.name;
+  const addr = $('#biz-addr');
+  if (addr && b.address && b.address.line) addr.textContent = b.address.line;
+  const m = b.map;
+  if (!m || !m.href) return;
+  ['#citem-map', '#rev'].forEach(sel => { const el = $(sel); if (el) el.href = m.href; });
+  const frame = $('#biz-map');
+  if (frame && typeof m.lat === 'number' && typeof m.lng === 'number') {
+    const src = 'https://www.google.com/maps?q=' + m.lat + ',' + m.lng + '&z=16&hl=en&output=embed';
+    if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+    if (b.name) frame.title = b.name + ' on the map';
   }
 }
 
