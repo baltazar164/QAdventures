@@ -8,12 +8,50 @@
      and it carried no description at all, because the export wrapped the whole
      page in a script and there was nowhere to put them. -->
 <title>Q Adventures — Scooter &amp; Motorbike Rental in Cebu</title>
-<meta name="description" content="Rent a scooter or adventure bike in Cebu, Philippines. No documents held, no distance limit, refundable deposit. Delivered to your hotel/airport, from ₱600 a day.">
+<meta name="description" content="Scooter and adventure bike rental on Mactan, Cebu. No documents held, no distance limit, rent from 1 day, two helmets included. Delivery to hotel or airport.">
 
 <!-- Relative on purpose. This is a GitHub *project* page, so the site lives under
      /QAdventures/ while a browser looking for an icon on its own asks the domain root
      — which is why the console carried a 404 for favicon.ico on every visit. -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://cebuscooterrental.com/">
+<!-- Google Search Console owns the site through this tag (d21 stage 3, 2026-10-17).
+     Not a secret; remove it and Search Console loses the site. -->
+<meta name="google-site-verification" content="eA6osDxhyVQeF43UxTxAL5QuWI1jPUCx1jlU_EGzcm8" />
+<!-- Bing Webmaster Tools, the same way and for the same reason (2026-10-17). -->
+<meta name="msvalidate.01" content="EA2A8089BB75D1B63F1F27E31A449746" />
+
+<!-- The business card for search engines and AI (structured data, d21 stage 3):
+     invisible to a visitor, read by Google, Bing and the assistants that search
+     through them. Filled at publish time from Business Settings in Odoo
+     (tools/prerender): the name, the description, the address, the pin and the
+     map link since d21 stage 4, the phones, the hours, the price range and the
+     social links since stage 3. What stands here is only for a catalog copy
+     taken from an Odoo older than stage 4. Deliberately absent: the Google rating — Google
+     does not take a business's own word for its score — and the bikes as
+     products, which Google does not show for rentals.
+     LocalBusiness rather than schema.org's AutoRental: the assistants already
+     tell people the shop rents cars, and "auto" would only agree with them. -->
+<script type="application/ld+json" id="ld-business">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Q Adventures Motorbike Rental",
+  "description": "Scooter and adventure bike rental on Mactan, Cebu. No documents held, no distance limit, rent from 1 day, two helmets included. Delivery to hotel or airport.",
+  "url": "https://cebuscooterrental.com/",
+  "image": "https://cebuscooterrental.com/images/hero-photo.webp",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Sitio Masiwa",
+    "addressLocality": "Lapu-Lapu",
+    "addressRegion": "Cebu",
+    "postalCode": "6015",
+    "addressCountry": "PH"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 10.276493, "longitude": 123.9783612 },
+  "hasMap": "https://maps.app.goo.gl/cFdqnN46fKbPEFAk7"
+}
+</script>
 
 <!-- The catalog is asked for here, in <head>, before styles.css, the fonts and
      app.js. It used to be asked for from init() on DOMContentLoaded, which meant
@@ -146,11 +184,14 @@ window.QA_API = (function () {
            day (b54) — the site cannot ask Google itself, since any key in this
            bundle would be public. What stands written here is what shows when Odoo
            is unreachable, so it must be a real score somebody put in by hand.
-           Until the first fetch there is none, and `hidden` keeps a made-up rating
-           off the page: renderGoogleRating() reveals the card. -->
-      <a class="rev" id="rev" hidden href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener">
-        <span class="rev__n" id="rev-score">—</span>
-        <span class="rev__div"></span>
+           Until there is one the card stands without a figure — no dash, no
+           made-up number — and renderGoogleRating() puts the score and its
+           divider in when the catalog brings it (owner, 2026-10-17). The card
+           itself is never hidden: it holds its place, so the hero does not move
+           when the score arrives. -->
+      <a class="rev" id="rev" href="https://maps.app.goo.gl/sQD6EEa4G2weKDL28" target="_blank" rel="noopener">
+        <span class="rev__n" id="rev-score" hidden></span>
+        <span class="rev__div" id="rev-div" hidden></span>
         <span class="rev__txt">
           <span class="rev__stars" aria-hidden="true">★★★★★</span>
           <span class="rev__t">Very happy customers</span>
@@ -158,7 +199,10 @@ window.QA_API = (function () {
         </span>
       </a>
       <div class="pills">
-        <div class="pill">☀ 10% off for 7+ days · 20% off for 28+ days</div>
+        <!-- The tiers are Odoo's (d21 stage 3, b85): app.js rewrites this from the
+             catalog, and so does the copy written in at publish time. What stands
+             here shows only when no catalog has ever answered. -->
+        <div class="pill" id="pill-disc">☀ 10% off for 7+ days · 20% off for 28+ days</div>
         <div class="pill">✦ 2 helmets + top box included</div>
       </div>
       <h1 class="hero__h1">Ride Cebu on<br>your own terms.</h1>
@@ -190,7 +234,7 @@ window.QA_API = (function () {
 <!-- TRUST STRIP -->
 <section class="trust">
   <div class="trust__row">
-    <span class="trust__i">✦ Refundable deposit</span>
+    <span class="trust__i">✦ Rent from 1 day</span>
     <span class="trust__d">·</span>
     <span class="trust__i">✦ No documents held</span>
     <span class="trust__d">·</span>
@@ -323,7 +367,7 @@ window.QA_API = (function () {
       <p class="story__p">This company started after a rental shop lost my passport. So we do things differently: <strong>no document holding, fully equipped bikes, and zero restrictions.</strong> Just safe, convenient, worry-free riding anywhere in the Philippines.</p>
       <div class="promises">
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">No document holding</div></div>
-        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Refundable deposit</div></div>
+        <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Rent from 1 day</div></div>
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Fully equipped bikes</div></div>
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Unlimited distance</div></div>
         <div class="promise"><div class="promise__c">✓</div><div class="promise__t">Two helmets included</div></div>
@@ -346,7 +390,7 @@ window.QA_API = (function () {
       <div class="contact__items">
         <a class="citem" id="citem-map" href="https://maps.app.goo.gl/cFdqnN46fKbPEFAk7" target="_blank" rel="noopener">
           <div class="citem__i">📍</div>
-          <div><div class="citem__t">Q Adventures Motorbike Rental</div><div class="citem__s">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines <span class="citem__link">· View on map →</span></div></div>
+          <div><div class="citem__t" id="biz-name">Q Adventures Motorbike Rental</div><div class="citem__s"><span id="biz-addr">Sitio Masiwa, Lapu-Lapu, Cebu, Philippines</span> <span class="citem__link">· View on map →</span></div></div>
         </a>
         <!-- Two numbers, each its own line: tapping the number dials it, the button
              beside it copies it. The copied form carries no spaces — it is pasted into
@@ -356,7 +400,7 @@ window.QA_API = (function () {
         <div class="citem">
           <div class="citem__i">✆</div>
           <div>
-            <div class="phones">
+            <div class="phones" id="phones">
               <div class="phone">
                 <a class="phone__n" href="tel:+639432458562">+63 943 245 8562</a>
                 <button class="phone__copy" type="button" data-copy="+639432458562" aria-label="Copy +63 943 245 8562"></button>
@@ -366,31 +410,34 @@ window.QA_API = (function () {
                 <button class="phone__copy" type="button" data-copy="+639195517812" aria-label="Copy +63 919 551 7812"></button>
               </div>
             </div>
-            <div class="citem__s">Call or WhatsApp, after hours too</div>
+            <div class="citem__s">Call or message us, after hours too</div>
           </div>
         </div>
         <div class="citem">
           <div class="citem__i">🕗</div>
-          <div><div class="citem__t">Open today · 08:00 – 17:00</div><div class="citem__s">After-hours service on request</div></div>
+          <div><div class="citem__t" id="hours-t">Open today · 07:00 – 22:00</div><div class="citem__s" id="hours-s">24 hours by appointment</div></div>
         </div>
       </div>
       <!-- Derek answers on all of these, so all of them are offered: the visitor
            writes where they already are instead of installing something first.
            WhatsApp sits in the row rather than above it (owner, 2026-08-18). -->
       <div class="chans" aria-label="Message the shop">
-        <a class="chan chan--whatsapp" data-wa href="https://wa.me/639432458562" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
-        <a class="chan chan--facebook" href="https://www.facebook.com/profile.php?id=100087573997431" data-msg-link="https://m.me/100087573997431" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg aria-hidden="true"><use href="#i-facebook"/></svg></a>
-        <a class="chan chan--instagram" href="https://www.instagram.com/qadventures_motorbike_rental/" data-msg-link="https://ig.me/m/qadventures_motorbike_rental" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg aria-hidden="true"><use href="#i-instagram"/></svg></a>
-        <a class="chan chan--viber" href="viber://add?number=639432458562" title="Viber" aria-label="Viber"><svg aria-hidden="true"><use href="#i-viber"/></svg></a>
-        <a class="chan chan--line" href="https://line.me/ti/p/5w8pHzkZkV" target="_blank" rel="noopener" title="LINE" aria-label="LINE"><svg aria-hidden="true"><use href="#i-line"/></svg></a>
-        <button class="chan chan--wechat" data-qr="images/wechat-qr.png" data-qr-label="WeChat" data-qr-id="QAdventures" data-qr-link="https://u.wechat.com/kFHwZfy45Z6-p9TQ04B83ZY?s=3" title="WeChat" aria-label="WeChat"><svg aria-hidden="true"><use href="#i-wechat"/></svg></button>
+        <a class="chan chan--whatsapp" data-chan="whatsapp" data-wa href="https://wa.me/639432458562" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
+        <a class="chan chan--facebook" data-chan="facebook" href="https://www.facebook.com/profile.php?id=100087573997431" data-msg-link="https://m.me/100087573997431" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg aria-hidden="true"><use href="#i-facebook"/></svg></a>
+        <a class="chan chan--instagram" data-chan="instagram" href="https://www.instagram.com/qadventures_motorbike_rental/" data-msg-link="https://ig.me/m/qadventures_motorbike_rental" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg aria-hidden="true"><use href="#i-instagram"/></svg></a>
+        <a class="chan chan--viber" data-chan="viber" href="viber://add?number=639432458562" title="Viber" aria-label="Viber"><svg aria-hidden="true"><use href="#i-viber"/></svg></a>
+        <a class="chan chan--line" data-chan="line" href="https://line.me/ti/p/5w8pHzkZkV" target="_blank" rel="noopener" title="LINE" aria-label="LINE"><svg aria-hidden="true"><use href="#i-line"/></svg></a>
+        <button class="chan chan--wechat" data-chan="wechat" data-qr="images/wechat-qr.png" data-qr-label="WeChat" data-qr-id="QAdventures" data-qr-link="https://u.wechat.com/kFHwZfy45Z6-p9TQ04B83ZY?s=3" title="WeChat" aria-label="WeChat"><svg aria-hidden="true"><use href="#i-wechat"/></svg></button>
+        <a class="chan chan--telegram" data-chan="telegram" href="https://t.me/" target="_blank" rel="noopener" title="Telegram" aria-label="Telegram" hidden><svg aria-hidden="true"><use href="#i-telegram"/></svg></a>
         <!-- Instagram, like Facebook, carries two addresses: the page mark opens the
              profile, and the booking window takes the ig.me one so the written-out
              booking lands in a chat (owner, 2026-09-10). Derek's handle arrived the
              same day (b79).
-             One still waiting (b28): Telegram is held back until Derek has a @username —
-             the invite link his QR carries dies the day he regenerates it (owner,
-             2026-08-18). Then: https://t.me/<username>, as an <a> like the others.
+             Every mark here is the fallback: when the catalog answers, app.js fills
+             each one from Business Settings in Odoo and hides the ones left empty
+             there (d21 stage 2). Telegram starts hidden and appears once Derek's
+             @username is entered — an invite link from his QR dies the day he
+             regenerates it (owner, 2026-08-18).
              KakaoTalk is not coming: Derek could not register an account there (owner,
              2026-09-10), so its mark is not offered. -->
       </div>
@@ -407,7 +454,7 @@ window.QA_API = (function () {
          The heading beside it links to the same place for anyone who wants a route. -->
     <div>
       <div class="cmap">
-        <iframe
+        <iframe id="biz-map"
           src="https://www.google.com/maps?q=10.276493,123.9783612&amp;z=16&amp;hl=en&amp;output=embed"
           title="Q Adventures Motorbike Rental on the map"
           loading="lazy" referrerpolicy="no-referrer-when-downgrade"
@@ -428,12 +475,13 @@ window.QA_API = (function () {
       <span class="ftr__link" data-scroll="fleet">Fleet</span>
       <span class="ftr__link" data-scroll="contact">Contact</span>
       <div class="ftr__chans">
-        <a class="chan chan--whatsapp" data-wa href="https://wa.me/639432458562" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
-        <a class="chan chan--facebook" href="https://www.facebook.com/profile.php?id=100087573997431" data-msg-link="https://m.me/100087573997431" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg aria-hidden="true"><use href="#i-facebook"/></svg></a>
-        <a class="chan chan--instagram" href="https://www.instagram.com/qadventures_motorbike_rental/" data-msg-link="https://ig.me/m/qadventures_motorbike_rental" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg aria-hidden="true"><use href="#i-instagram"/></svg></a>
-        <a class="chan chan--viber" href="viber://add?number=639432458562" title="Viber" aria-label="Viber"><svg aria-hidden="true"><use href="#i-viber"/></svg></a>
-        <a class="chan chan--line" href="https://line.me/ti/p/5w8pHzkZkV" target="_blank" rel="noopener" title="LINE" aria-label="LINE"><svg aria-hidden="true"><use href="#i-line"/></svg></a>
-        <button class="chan chan--wechat" data-qr="images/wechat-qr.png" data-qr-label="WeChat" data-qr-id="QAdventures" data-qr-link="https://u.wechat.com/kFHwZfy45Z6-p9TQ04B83ZY?s=3" title="WeChat" aria-label="WeChat"><svg aria-hidden="true"><use href="#i-wechat"/></svg></button>
+        <a class="chan chan--whatsapp" data-chan="whatsapp" data-wa href="https://wa.me/639432458562" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
+        <a class="chan chan--facebook" data-chan="facebook" href="https://www.facebook.com/profile.php?id=100087573997431" data-msg-link="https://m.me/100087573997431" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg aria-hidden="true"><use href="#i-facebook"/></svg></a>
+        <a class="chan chan--instagram" data-chan="instagram" href="https://www.instagram.com/qadventures_motorbike_rental/" data-msg-link="https://ig.me/m/qadventures_motorbike_rental" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg aria-hidden="true"><use href="#i-instagram"/></svg></a>
+        <a class="chan chan--viber" data-chan="viber" href="viber://add?number=639432458562" title="Viber" aria-label="Viber"><svg aria-hidden="true"><use href="#i-viber"/></svg></a>
+        <a class="chan chan--line" data-chan="line" href="https://line.me/ti/p/5w8pHzkZkV" target="_blank" rel="noopener" title="LINE" aria-label="LINE"><svg aria-hidden="true"><use href="#i-line"/></svg></a>
+        <button class="chan chan--wechat" data-chan="wechat" data-qr="images/wechat-qr.png" data-qr-label="WeChat" data-qr-id="QAdventures" data-qr-link="https://u.wechat.com/kFHwZfy45Z6-p9TQ04B83ZY?s=3" title="WeChat" aria-label="WeChat"><svg aria-hidden="true"><use href="#i-wechat"/></svg></button>
+        <a class="chan chan--telegram" data-chan="telegram" href="https://t.me/" target="_blank" rel="noopener" title="Telegram" aria-label="Telegram" hidden><svg aria-hidden="true"><use href="#i-telegram"/></svg></a>
       </div>
     </div>
   </div>

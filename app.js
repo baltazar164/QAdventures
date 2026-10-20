@@ -76,7 +76,14 @@ const S = {
   // Which level the prices on screen came from — 'odoo' live, 'offline' the daily
   // copy, 'down' neither — and the day that copy was written. Read by the note above
   // the grid: figures nobody can date are not shown without saying so.
+  // 'seed' is the copy written into the page itself at publish time (d21 stage 3):
+  // the same figures as 'offline', shown without the note because the live catalog
+  // is still on its way, and replacing them is the normal case, not a fallback.
   catalogSource: '', refreshedAt: '',
+  // The seed's card pictures, keyed by the Odoo address each was copied from. A
+  // live card whose picture is still that one keeps the copy the page already
+  // shows, so the swap to live data does not reload a single picture.
+  seedPhotos: {},
   selected: null, photoIndex: 0,
   pickup: '', dropoff: '', step: 'form', color: '',
   modalCalOpen: false, modalCursor: '',
@@ -88,12 +95,15 @@ const S = {
   currencies: null, ratesDate: '',
   // The shop's Google score, as Odoo last heard it (b54). `null` means nobody
   // told us one, and then the card keeps whatever is written into index.html —
-  // or stays hidden, if that is nothing yet.
+  // or stands without a figure, if that is nothing yet.
   googleRating: null,
   // Priced by the shop, not by this file. `null` means the catalog never answered,
   // and then the form quotes the day rate only — inventing a discount tier here is
   // how a site ends up promising a number the counter will not honour.
   discounts: null, zones: null, whatsapp: '',
+  // False once the catalog's contacts say WhatsApp was left empty in Odoo: then
+  // no WhatsApp mark or button is drawn anywhere (owner, 2026-10-16).
+  hasWa: true,
   zoneId: '', address: '', phone: '', note: '',
   // Off until the live catalog says otherwise. Only Odoo's own answer can turn
   // the direct-booking button on: a booking needs Odoo reachable to land, so a
@@ -219,7 +229,7 @@ function normalizeModel(m, captions) {
     // full-size `photos` are for the sheet, which opens one card at a time. An
     // older server, or the offline copy, sends no `card_photo` — then the grid
     // falls back to the first gallery photo, as it always did.
-    cardPhoto: m.card_photo || '',
+    cardPhoto: S.seedPhotos[m.card_photo] || m.card_photo || '',
 
     desc: hasDesc ? { overview: m.overview || '', pros: m.pros || [], cons: m.cons || [] } : null,
   };
@@ -258,6 +268,10 @@ function catTabs() {
 function applyCatalog(data, source) {
   const models = (data && Array.isArray(data.models)) ? data.models : [];
   if (!models.length) return false;
+  if (source === 'seed') {
+    S.seedPhotos = {};
+    models.forEach(m => { if (m.card_photo_src && m.card_photo) S.seedPhotos[m.card_photo_src] = m.card_photo; });
+  }
   S.models = models;
   S.categories = (data && Array.isArray(data.categories)) ? data.categories : null;
   S.catalogSource = source;
@@ -266,6 +280,10 @@ function applyCatalog(data, source) {
     ? data.discounts.slice().sort((a, b) => a.min_days - b.min_days) : null;
   S.zones = Array.isArray(data.delivery_zones) ? data.delivery_zones : null;
   S.whatsapp = (typeof data.whatsapp === 'string' && data.whatsapp) ? data.whatsapp : '';
+  // Absent from an Odoo older than d21 stage 2: the markup's contacts then stand.
+  if (data.contacts && typeof data.contacts === 'object') applyContacts(data.contacts);
+  // Absent from an Odoo older than d21 stage 4: the markup's name and address stand.
+  if (data.business && typeof data.business === 'object') applyBusiness(data.business);
   // A currency without a usable rate is dropped rather than offered: the
   // selector must not hold a choice that cannot convert anything.
   const offered = Array.isArray(data.currencies) ? data.currencies.filter(
@@ -295,6 +313,69 @@ function applyCatalog(data, source) {
   return true;
 }
 
+// The hours, the phones and every messenger mark, as Business Settings in Odoo
+// has them (d21 stage 2). Present means authoritative: a channel that comes as
+// null was emptied there, and its mark goes from the contact block and the footer
+// — and so from every copy of the row made later. What index.html carries is only
+// for a catalog that never answered at all, offline copy included.
+function applyContacts(c) {
+  const ch = (c.channels && typeof c.channels === 'object') ? c.channels : {};
+  S.hasWa = !!(ch.whatsapp && ch.whatsapp.href);
+  if (S.hasWa) S.whatsapp = ch.whatsapp.href.replace(/\D/g, '');
+  $$('[data-chan]').forEach(el => {
+    const it = ch[el.getAttribute('data-chan')];
+    if (!it || !it.href) { el.hidden = true; return; }
+    el.hidden = false;
+    if (el.hasAttribute('data-qr')) {
+      el.setAttribute('data-qr-link', it.href);
+      if (it.qr) el.setAttribute('data-qr', it.qr);
+      el.setAttribute('data-qr-id', it.id || '');
+      return;
+    }
+    el.href = it.href;
+    if (it.msg) el.setAttribute('data-msg-link', it.msg);
+    else el.removeAttribute('data-msg-link');
+  });
+
+  const phones = $('#phones');
+  if (phones && Array.isArray(c.phones)) {
+    patchChildren(phones, c.phones.filter(p => p && p.tel).map(p =>
+      '<div class="phone">' +
+        '<a class="phone__n" href="tel:' + esc(p.tel) + '">' + esc(p.label || p.tel) + '</a>' +
+        '<button class="phone__copy" type="button" data-copy="' + esc(p.tel) + '" aria-label="Copy ' + esc(p.label || p.tel) + '"></button>' +
+      '</div>').join(''));
+    wireCopyButtons(phones);
+  }
+
+  const h = c.hours;
+  if (h && h.open && h.close) {
+    const t = $('#hours-t');
+    if (t) t.textContent = 'Open today · ' + h.open + ' – ' + h.close;
+    const s = $('#hours-s');
+    if (s) { s.textContent = h.note || ''; s.hidden = !h.note; }
+  }
+}
+
+// The shop's name, address and place on the map, from Business Settings in Odoo
+// (d21 stage 4). One Google Maps link serves the contact block and the rating
+// card under the hero alike. The map frame is only given a new address when the
+// pin moved: an unchanged one would reload the whole map for nothing.
+function applyBusiness(b) {
+  const name = $('#biz-name');
+  if (name && b.name) name.textContent = b.name;
+  const addr = $('#biz-addr');
+  if (addr && b.address && b.address.line) addr.textContent = b.address.line;
+  const m = b.map;
+  if (!m || !m.href) return;
+  ['#citem-map', '#rev'].forEach(sel => { const el = $(sel); if (el) el.href = m.href; });
+  const frame = $('#biz-map');
+  if (frame && typeof m.lat === 'number' && typeof m.lng === 'number') {
+    const src = 'https://www.google.com/maps?q=' + m.lat + ',' + m.lng + '&z=16&hl=en&output=embed';
+    if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+    if (b.name) frame.title = b.name + ' on the map';
+  }
+}
+
 // The request itself was made in <head>, long before this file arrived; what is
 // left here is what to do with the answer. Anything that goes wrong on the way —
 // unreachable, not JSON, an empty list — lands in the same two fallbacks it
@@ -320,6 +401,14 @@ function loadOfflineCopy() {
       throw new Error('offline copy is empty');
     })
     .catch(err => {
+      // The page's own seed is that same copy, written in at publish time, so it
+      // stands — now with the note that says how old it is.
+      if (S.catalogSource === 'seed') {
+        console.warn('[catalog] offline copy unusable; keeping the copy in the page', err);
+        S.catalogSource = 'offline';
+        renderCatalog();
+        return;
+      }
       // Nothing left to fall back to, and that is deliberate: the grid empties rather
       // than filling with prices no one can date. `[]` and not `null` — the difference
       // between "still loading" and "there is nothing", which the grid reads.
@@ -353,13 +442,31 @@ function renderTabs() {
   // One category and "All bikes" is not a filter, it is decoration.
   if (tabs.length <= 2) { host.innerHTML = ''; host.hidden = true; return; }
   host.hidden = false;
-  host.innerHTML = tabs.map(t =>
+  // Clicks are taken by init() on the host, so tabs written into the page at
+  // publish time work the same as tabs drawn here.
+  patchChildren(host, tabs.map(t =>
     '<button class="tab' + (S.filter === t.key ? ' is-active' : '') + '" data-tab="' + esc(t.key) + '">' +
-    esc(t.label) + '</button>').join('');
-  $$('.tab', host).forEach(b => b.addEventListener('click', () => {
-    S.filter = b.getAttribute('data-tab');
-    renderCatalog();
-  }));
+    esc(t.label) + '</button>').join(''));
+}
+
+// Puts `html` into `host`, touching only the children that differ (d21 stage 3).
+// The page arrives with the fleet already written in; when the live catalog says
+// the same thing, nothing on screen may move or reload, and when one price
+// changed only that card is redrawn. A different number of children is a
+// different list, and is drawn afresh. Compared as the browser writes them back
+// out, so how the markup was spelled does not count as a change.
+// Returns whether anything was replaced.
+function patchChildren(host, html) {
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  const next = Array.from(t.content.children);
+  const cur = Array.from(host.children);
+  if (next.length !== cur.length) { host.replaceChildren(...next); return true; }
+  let changed = false;
+  next.forEach((n, i) => {
+    if (cur[i].outerHTML !== n.outerHTML) { cur[i].replaceWith(n); changed = true; }
+  });
+  return changed;
 }
 
 function visibleFleet() {
@@ -374,7 +481,7 @@ function renderFleet() {
   if (skel) skel.hidden = S.models !== null;
   if (!grid) return;
 
-  grid.innerHTML = visibleFleet().map(b => {
+  patchChildren(grid, visibleFleet().map(b => {
     const img = b.cardPhoto || (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '';
     return '' +
       '<article class="card" data-bike="' + esc(b.id) + '">' +
@@ -402,13 +509,9 @@ function renderFleet() {
           '</div>' +
         '</div>' +
       '</article>';
-  }).join('');
-
-  $$('.card', grid).forEach(el => el.addEventListener('click', () => {
-    const id = el.getAttribute('data-bike');
-    const bike = fleet().find(b => b.id === id);
-    if (bike) openModal(bike);
-  }));
+  }).join(''));
+  // Clicks on a card are taken by init() on the grid itself, so a card written
+  // into the page at publish time opens the moment this file has run.
 }
 
 // The page says out loud where its prices came from. Saying nothing is only right when
@@ -456,8 +559,12 @@ function renderGoogleRating() {
   if (!card || !S.googleRating) return;
   const score = S.googleRating.rating;
   const count = S.googleRating.count;
+  // The card stands without a figure until now; the score and its divider come
+  // in beside the text, so the hero does not move (owner, 2026-10-17).
   const scoreEl = $('#rev-score');
-  if (scoreEl) scoreEl.textContent = score.toFixed(1);
+  if (scoreEl) { scoreEl.textContent = score.toFixed(1); scoreEl.hidden = false; }
+  const div = $('#rev-div');
+  if (div) div.hidden = false;
   const countEl = $('#rev-count');
   if (countEl) {
     countEl.textContent = count
@@ -466,7 +573,23 @@ function renderGoogleRating() {
   }
   card.setAttribute('aria-label',
     'Rated ' + score.toFixed(1) + ' out of 5 on Google — read the reviews');
-  card.hidden = false;
+}
+
+// The long-stay pill in the hero, from the same tiers the booking form prices
+// with (d21 stage 3; b85 — it was typed into index.html). No tiers in hand, the
+// catalog never answered: the pill keeps what the page carries. Tiers present
+// but none set in Odoo: there is no discount to announce, and the pill goes.
+function pctText(p) {
+  return (Math.round(p * 10) / 10).toLocaleString('en-US') + '%';
+}
+
+function renderDiscountPill() {
+  const pill = $('#pill-disc');
+  if (!pill || !S.discounts) return;
+  const tiers = S.discounts.filter(t => t && t.percent > 0 && t.min_days > 0);
+  pill.hidden = !tiers.length;
+  const text = '☀ ' + tiers.map(t => pctText(t.percent) + ' off for ' + t.min_days + '+ days').join(' · ');
+  if (tiers.length && pill.textContent !== text) pill.textContent = text;
 }
 
 function renderCatalog() {
@@ -477,7 +600,14 @@ function renderCatalog() {
   // furniture pretending the page still works.
   const filter = $('#fleet-filter');
   if (filter) filter.hidden = S.catalogSource === 'down';
-  if (S.selected) updateModal();
+  // A form opened on the seed's figures takes the live ones in place: same bike,
+  // new price, nothing typed is lost and the form stays open.
+  if (S.selected) {
+    const fresh = fleet().find(b => b.id === S.selected.id);
+    if (fresh) S.selected = fresh;
+    updateModal();
+  }
+  renderDiscountPill();
   $$('[data-wa]').forEach(wa => { wa.href = 'https://wa.me/' + waNumber(); });
   renderGoogleRating();
   const from = $('#hero-from');
@@ -655,6 +785,7 @@ function openWhatsApp() {
   // Only a broken date range stops this. Everything else missing is simply left out
   // of the message — demanding a phone number before someone may open a messenger
   // asks for a fact the messenger is about to supply.
+  if (!S.hasWa) return;
   if (days() <= 0) { S.hint = 'Choose your dates first.'; updateModal(); return; }
   // Counted here rather than on the button itself: above this line the press did
   // not open anything, and a funnel that counts refusals as exits is a lie.
@@ -870,8 +1001,8 @@ function formHTML() {
     '<div class="sheet__head">' +
       '<h2 class="sheet__name">' + esc(sel.name) + '</h2>' +
       '<div class="sheet__price">' +
-        '<div><span class="sheet__pnum">' + esc(peso(sel.price)) + '</span><span class="card__per">/day</span></div>' +
-        '<div class="card__wk">' + esc(peso(sel.weekly) + '/wk · ' + peso(sel.monthly) + '/mo') + '</div>' +
+        '<div><span class="sheet__pnum" id="m-pnum">' + esc(peso(sel.price)) + '</span><span class="card__per">/day</span></div>' +
+        '<div class="card__wk" id="m-pwk">' + esc(peso(sel.weekly) + '/wk · ' + peso(sel.monthly) + '/mo') + '</div>' +
       '</div>' +
     '</div>' +
     (sel.desc ? descHTML(sel.desc) : '') +
@@ -950,13 +1081,12 @@ function doneHTML() {
       '<h2 class="done__h2">Booking requested!</h2>' +
       '<p class="done__p">We\'ve noted your <strong>' + esc(S.selected.name) + '</strong> for ' +
         esc(q.days > 0 ? (q.days + (q.days === 1 ? ' day' : ' days')) : 'your dates') +
-        '. We\'ll confirm by WhatsApp shortly — nothing to pay until pick-up.</p>' +
+        '. We\'ll message you shortly to confirm — nothing to pay until pick-up.</p>' +
       (S.account ? '<p class="done__acct">Booked as ' +
         esc([S.account.name, S.account.email].filter(Boolean).join(' · ')) + '</p>' : '') +
       '<div class="done__total"><span>Estimated total</span><span class="done__num">' + esc(peso(q.total)) + '</span></div>' +
       '<div class="done__btns">' +
         '<button class="btn done__ok" data-close>Done</button>' +
-        '<a class="btn done__wa" href="https://wa.me/' + esc(waNumber()) + '" target="_blank" rel="noopener">Message us on WhatsApp</a>' +
       '</div>' +
       '<div id="done-chans"></div>' +
     '</div>';
@@ -964,9 +1094,11 @@ function doneHTML() {
 
 function wireDone() {
   $$('[data-close]', $('#sheet-body')).forEach(b => b.addEventListener('click', closeModal));
-  // Here the booking is already sent, so these are plain ways to reach the shop.
+  // Here the booking is already sent, so these are plain ways to reach the shop —
+  // WhatsApp among them, now that it has no button of its own on this screen
+  // (owner, 2026-10-16).
   const host = $('#done-chans');
-  if (host) chansBlock(host, 'plain');
+  if (host) chansBlock(host, 'all');
 }
 
 function wireForm() {
@@ -1030,10 +1162,13 @@ function updateActions() {
   const canBook = days() > 0;
   const busy = S.sending;
   const waNote = {
-    nogoogle: 'Sign-in isn’t available on this connection. Send it on WhatsApp instead — the booking is already written out.',
-    signin: 'Sign-in didn’t finish. You can send the booking on WhatsApp instead — it is already written out.',
-    refused: 'We couldn’t send that just now. WhatsApp reaches the shop directly, with the booking already written out.',
-    unavailable: 'That bike was just taken for those dates. Ask on WhatsApp what else is free, or pick other dates.',
+    // Any messenger, not WhatsApp alone: the shop answers on all of them, and a
+    // page that only ever says WhatsApp reads as a WhatsApp-only shop (owner,
+    // 2026-10-16).
+    nogoogle: 'Sign-in isn’t available on this connection. Send it in any messenger below — the booking is already written out.',
+    signin: 'Sign-in didn’t finish. You can send the booking in any messenger below — it is already written out.',
+    refused: 'We couldn’t send that just now. Send it in any messenger below — the booking is already written out.',
+    unavailable: 'That bike was just taken for those dates. Message us to ask what else is free, or pick other dates.',
   }[S.waReason] || '';
 
   // One exit, not two, in either of two cases: the shop is WhatsApp-only (the
@@ -1049,20 +1184,24 @@ function updateActions() {
   // it is Google that failed
   // in Live mode the button is alone for a different reason, and the booking it
   // promises is real, so it keeps the word 'book'.
+  // With WhatsApp emptied in Odoo there is no WhatsApp button at all, and in the
+  // one-exit cases the channel row below is the whole way out (owner, 2026-10-16).
   const brochure = !S.directBooking;
   host.innerHTML =
     (waOnly ? '' :
       '<button class="req' + ((canBook && !busy) ? '' : ' is-off') + '" id="m-req">' +
       (busy ? 'Sending…' : (canBook ? 'Request booking' : 'Select your dates')) + '</button>') +
-    '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
-      (brochure ? 'Send request on WhatsApp'
-                : (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead')) + '</button>' +
+    (!S.hasWa ? '' :
+      '<button class="wabtn' + (waOnly ? ' wabtn--solo' : '') + '" id="m-wa">' +
+        (brochure ? 'Send request on WhatsApp'
+                  : (waOnly ? 'Book on WhatsApp' : 'Book on WhatsApp instead')) + '</button>') +
     (S.hint ? '<p class="mhint">' + esc(S.hint) + '</p>' : '') +
     (waNote ? '<p class="wanote">' + esc(waNote) + '</p>' : '');
 
   const req = $('#m-req');
   if (req) req.addEventListener('click', requestBooking);
-  $('#m-wa').addEventListener('click', openWhatsApp);
+  const wa = $('#m-wa');
+  if (wa) wa.addEventListener('click', openWhatsApp);
 
   // Derek answers on all of these, and the visitor who has no WhatsApp is exactly
   // the one this form would otherwise lose at the last step.
@@ -1079,6 +1218,12 @@ function updateModal() {
       : (S.pickup ? (fmtDate(S.pickup) + ' – …') : 'Select your dates');
     label.classList.toggle('is-filled', !!S.pickup);
   }
+  // The price in the head of the form, which renderModalBody() drew once: the
+  // live catalog can arrive while the form is open (d21 stage 3).
+  const pnum = $('#m-pnum');
+  if (pnum) pnum.textContent = peso(S.selected.price);
+  const pwk = $('#m-pwk');
+  if (pwk) pwk.textContent = peso(S.selected.weekly) + '/wk · ' + peso(S.selected.monthly) + '/mo';
   updateQuote();
   updateActions();
 }
@@ -1133,7 +1278,11 @@ function chansBlock(host, mode) {
   if (!row) return;
   const cap = document.createElement('div');
   cap.className = 'chans__cap';
-  cap.textContent = 'or message us on';
+  // In the booking form the row is where the booking goes, and it says so without
+  // making WhatsApp the only way (owner, 2026-10-16).
+  cap.textContent = mode !== 'booking' ? 'or message us on'
+    : (S.hasWa ? 'Send it in WhatsApp or any messenger you use'
+               : 'Send it in any messenger you use');
   host.appendChild(cap);
   host.appendChild(row);
 }
@@ -1291,8 +1440,12 @@ function openHandover(el) {
 // Replaced the contact form, which only ever handed its text to WhatsApp — the
 // same exit the channel row offers one click away (owner, 2026-09-08).
 
-function wireCopyButtons() {
-  $$('[data-copy]').forEach(btn => {
+function wireCopyButtons(root) {
+  $$('[data-copy]', root).forEach(btn => {
+    // Once per button: the phones are patched in place now, so a button can be
+    // handed back here that already has its listener (d21 stage 3).
+    if (btn.__wired) return;
+    btn.__wired = true;
     let back = null;
     btn.addEventListener('click', () => {
       copyText(btn.dataset.copy).then(ok => {
@@ -1383,14 +1536,56 @@ function init() {
   const map = $('#citem-map');
   if (map) map.addEventListener('click', () => track('google-map'));
 
+  // One listener each on the grid and the tabs rather than one per card: the
+  // cards and tabs written into the page at publish time have none of their own,
+  // and redrawing a single card must not cost it its click.
+  const grid = $('#fleet-grid');
+  if (grid) grid.addEventListener('click', e => {
+    const el = e.target.closest('.card');
+    if (!el) return;
+    const id = el.getAttribute('data-bike');
+    const bike = fleet().find(b => b.id === id);
+    if (bike) openModal(bike);
+  });
+  const tabs = $('#fleet-tabs');
+  if (tabs) tabs.addEventListener('click', e => {
+    const b = e.target.closest('[data-tab]');
+    if (!b) return;
+    S.filter = b.getAttribute('data-tab');
+    renderCatalog();
+  });
+
   fillCurrencySelects();
   wireCopyButtons();
   wireQrChannels();
   wireChanTracking(document, 'msg-page');
+  // The copy written into the page at publish time, if this page has one (d21
+  // stage 3). Taken as the catalog in hand until the live one answers, so a card
+  // pressed in the meantime opens straight away.
+  const seed = readSeed();
+  if (seed) applyCatalog(seed, 'seed');
   renderCatalog();
   // loadGoogle() is not called here: applyCatalog calls it if and only if the
   // live payload allows direct booking. Until then the modal is WhatsApp-only.
   loadCatalog();
+}
+
+function readSeed() {
+  const el = document.getElementById('qa-seed');
+  if (!el) return null;
+  try { return JSON.parse(el.textContent); } catch (e) { return null; }
+}
+
+// Run by tools/prerender/prerender.mjs when the site is published, in a DOM of
+// its own and never in a visitor's browser (d21 stage 3). It draws the page from
+// the offline copy with the very functions a visitor's browser runs, so what is
+// written into the page is exactly what this file would draw from the same
+// figures — which is what lets the live catalog replace it without anything
+// moving. Returns false when the copy has no fleet to draw.
+function prerender(data) {
+  if (!applyCatalog(data, 'seed')) return false;
+  renderCatalog();
+  return true;
 }
 
 function toggleMobileMenu() {

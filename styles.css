@@ -356,8 +356,6 @@ textarea.inp { padding: 11px 14px; font-family: inherit; resize: vertical; }
 .done__num { font-family: var(--display); font-weight: 700; font-size: 22px; }
 .done__btns { display: flex; gap: 10px; }
 .done__ok { flex: 1; background: var(--ink); color: #fff; border: none; font-weight: 700; font-size: 14.5px; padding: 14px; border-radius: 11px; cursor: pointer; }
-.done__wa { flex: none; background: transparent; border: 1.5px solid rgba(15,92,74,.35); color: var(--green); font-weight: 700; font-size: 14.5px; padding: 14px 20px; border-radius: 11px; text-align: center; }
-.done__wa:hover { color: var(--green); }
 
 /* how it works -------------------------------------------------------- */
 
@@ -435,6 +433,9 @@ a.citem:hover { color: inherit; }
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .chan:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(27,23,18,.22); }
+/* `display: inline-flex` above beats the browser's own rule for [hidden]; a channel
+   emptied in Odoo is hidden this way (d21 stage 2). */
+.chan[hidden] { display: none; }
 .chan svg { width: 21px; height: 21px; fill: currentColor; display: block; }
 
 .chan--whatsapp  { --chan: #25D366; }

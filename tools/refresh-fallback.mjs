@@ -1,19 +1,28 @@
 // Refreshes the offline copy of the catalog: catalog.json and the pictures it
-// points at. Run by .github/workflows/refresh-fallback.yml once a day, and by
-// hand with `node tools/refresh-fallback.mjs` when something needs pushing
-// through immediately.
+// points at. Run by .github/workflows/refresh-fallback.yml every three hours
+// and from the "Update site now" button in Odoo, and by hand with
+// `node tools/refresh-fallback.mjs` when something needs pushing through
+// immediately.
 //
 // What this file is for: the page fetches the live catalog from Odoo on every
-// load, so nothing here affects what a visitor normally sees. This only keeps
-// the copy that gets shown when Odoo is unreachable — and that copy is worth
-// nothing if it is a year old.
+// load. This copy is what it shows when Odoo is unreachable — and, since d21
+// stage 3, what is written into the page itself when the site is published
+// (tools/prerender), which is how a robot that runs no scripts reads the fleet,
+// the prices and the hours.
 //
 // Run it with:
 //   CATALOG_API_URL=https://api.cebuscooterrental.com/qa/catalog \
 //   CATALOG_API_KEY=... node tools/refresh-fallback.mjs
 //
-// Exit codes: 0 means "nothing to do" as well as "updated" — a refusal to write
-// is a normal outcome here, not a failure. Only a bug in this script exits 1.
+// Exit codes: 0 — the catalog came back from Odoo and was compared with the
+// copy (whether anything needed rewriting depends only on whether Odoo
+// changed). 2 — the catalog could not be had, and nothing was written. 1 — a
+// bug in this script.
+//
+// A refusal used to exit 0, and the job's tick stayed green through a week of
+// "endpoint unreachable" (site.md, 2026-08-18). It is a failure now (d21 stage
+// 1, 2026-10-14): the copy is still never touched, but the run goes red, the
+// Last Update line in Odoo says "failed" and the watchdog hears /fail.
 
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, readdir, unlink } from 'node:fs/promises';
@@ -42,7 +51,7 @@ function log(...a) { console.log('[refresh-fallback]', ...a); }
 // destroy the emergency copy at exactly the moment it is needed.
 function refuse(why) {
   log('not writing:', why);
-  process.exit(0);
+  process.exit(2);
 }
 
 async function fetchCatalog() {
@@ -78,19 +87,31 @@ function extFor(contentType, url) {
   return m ? '.' + m[1].toLowerCase().replace('jpeg', 'jpg') : '.jpg';
 }
 
+// 'images/catalog/bike-pcx160-1.jpg?v=abc1234' → 'bike-pcx160-1.jpg', the name
+// readdir() reports.
+function fileName(rel) {
+  return rel.split('?')[0].split('/').pop();
+}
+
 async function grabPhoto(url, slug, index) {
+  return grabPicture(url, 'bike-' + slug + '-' + (index + 1));
+}
+
+// Any picture the copy keeps beside itself: a bike photo, or the WeChat QR from
+// Business Settings (d21 stage 2). `base` is the file name without its extension.
+async function grabPicture(url, base) {
   let res;
   try {
     res = await fetch(url);
   } catch (err) {
-    log('photo unreachable, leaving it out:', slug, index, err.message);
+    log('picture unreachable, leaving it out:', base, err.message);
     return null;
   }
-  if (!res.ok) { log('photo answered HTTP ' + res.status + ', leaving it out:', slug, index); return null; }
+  if (!res.ok) { log('picture answered HTTP ' + res.status + ', leaving it out:', base); return null; }
   const buf = Buffer.from(await res.arrayBuffer());
-  if (!buf.length) { log('photo was empty, leaving it out:', slug, index); return null; }
+  if (!buf.length) { log('picture was empty, leaving it out:', base); return null; }
 
-  const name = 'bike-' + slug + '-' + (index + 1) + extFor(res.headers.get('content-type'), url);
+  const name = base + extFor(res.headers.get('content-type'), url);
   const path = join(OUT_IMG_DIR, name);
   const digest = createHash('sha256').update(buf).digest('hex');
 
@@ -130,7 +151,11 @@ async function main() {
       const got = await grabPhoto(url, slug, i);
       if (!got) continue;
       photos.push(got.rel);
-      keep.add(got.rel.split('/').pop());
+      // The file's own name, without the ?v= stamp the page address carries. With
+      // the stamp left on, nothing on disk matched the set, and from 2026-09-22 to
+      // 2026-10-16 the sweep below deleted every photo it had just written: the
+      // copy pointed at pictures that were not in the repository.
+      keep.add(fileName(got.rel));
       if (got.changed) photosChanged++;
     }
 
@@ -143,11 +168,46 @@ async function main() {
     // reached — a card would be left pointing at a picture nobody can fetch.
     const { units, card_photo, ...rest } = m;
     const card = { ...rest, photos };
-    if (photos.length) card.card_photo = photos[0];
+    // The card's own small picture, copied like the photos (d21 stage 3). The
+    // page is published with these cards already drawn, so a full-size photo
+    // here would be the heaviest thing on the first screen. `card_photo_src`
+    // keeps the Odoo address it was copied from: a live card still pointing
+    // there shows this same copy, and the swap to live data reloads nothing.
+    const small = card_photo ? await grabPicture(card_photo, 'card-' + slug) : null;
+    if (small) {
+      card.card_photo = small.rel;
+      card.card_photo_src = card_photo;
+      keep.add(fileName(small.rel));
+      if (small.changed) photosChanged++;
+    } else if (photos.length) {
+      card.card_photo = photos[0];
+    }
     models.push(card);
   }
 
   if (!models.length) refuse('every model was dropped while processing');
+
+  // Hours, phones and messengers as Business Settings has them (d21 stage 2).
+  // Copied because a channel emptied in Odoo must stay gone on a day Odoo is
+  // down; everything in it is already on the page, so the public repository
+  // learns nothing new. The QR is fetched like a photo — the live address points
+  // at Odoo, which is exactly what is unreachable when this copy is read. If it
+  // cannot be fetched the address is dropped and the page keeps its own picture.
+  let contacts;
+  if (data.contacts && typeof data.contacts === 'object') {
+    contacts = JSON.parse(JSON.stringify(data.contacts));
+    const wechat = contacts.channels && contacts.channels.wechat;
+    if (wechat && wechat.qr) {
+      const got = await grabPicture(wechat.qr, 'wechat-qr');
+      if (got) {
+        wechat.qr = got.rel;
+        keep.add(fileName(got.rel));
+        if (got.changed) photosChanged++;
+      } else {
+        delete wechat.qr;
+      }
+    }
+  }
 
   // Sweep pictures belonging to cards that no longer exist. Without it a renamed
   // or deleted model leaves its photo behind for ever.
@@ -164,6 +224,11 @@ async function main() {
     discounts: data.discounts,
     delivery_zones: data.delivery_zones,
     whatsapp: data.whatsapp,
+    contacts,
+    // Name, description, address and map (d21 stage 4). All of it is on the
+    // page already, and the publish writes it into the page and llms.txt from
+    // this copy — so it has to travel, or Odoo's edits never reach either.
+    business: data.business,
     // The offered currencies and the day their rates were quoted. Copied,
     // unlike `direct_booking`: a converted price still works with Odoo down,
     // and this copy is refreshed daily, which is exactly how often the rates

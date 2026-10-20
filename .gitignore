@@ -8,3 +8,7 @@ Thumbs.db
 # Bundled / generated output (не версионируем — нечитаемые диффы)
 github-pages-export/
 *.bundle.html
+
+# The publish step builds into _site/ and installs its one tool beside itself
+_site/
+node_modules/

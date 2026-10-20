@@ -1,25 +1,30 @@
 # Keeps the site's offline copy of the catalog fresh.
 #
-# It matters only while Odoo is unreachable: the page fetches the live catalog on
-# every load, so a visitor normally never sees this file. Once a day is the agreed
-# cadence — the copy is a safety net for the few hours a year the backend is down,
-# and refreshing it more often would mean hundreds of commits a day, permanently,
-# in a public repository, to buy freshness nobody would ever notice.
+# Since d21 stage 3 the copy is also written into the page when the site is
+# published, and that is what search engines and AI assistants read: the fleet,
+# the prices and the hours. So a price changed in Odoo reaches them only through
+# here. Every three hours (owner, 2026-10-17), and at once from the "Update site
+# now" button. A run that finds nothing changed commits nothing and publishes
+# nothing, so the history grows with the shop's edits, not with the clock.
 
 name: Refresh the offline catalog
 
 on:
   schedule:
-    # 02:20 UTC ≈ 10:20 in Cebu — after the shop's morning edits, before nobody is
-    # awake to notice a bad one. Minutes are off the hour on purpose: GitHub queues
-    # everything scheduled on it, and a job that runs late runs after the hour it
-    # was meant to represent.
-    - cron: '20 2 * * *'
+    # Every three hours at twenty past — 02:20 UTC is 10:20 in Cebu. Off the hour on
+    # purpose: GitHub calls the top of the hour its busiest time, and delays or
+    # drops scheduled runs then.
+    - cron: '20 */3 * * *'
+  # Also started by the "Update site now" button in Odoo (d21 stage 1). The
+  # key Odoo holds for that may only start and read jobs, which is safe for one
+  # reason: this job takes NO inputs, so whoever starts it passes nothing in and
+  # everything it writes comes from Odoo's catalog. Never add `inputs:` here —
+  # it would turn that key into a way to put words on the site
+  # (decisions.md, 2026-10-14).
   workflow_dispatch:
 
-# Only the commit needs write access, and only to this repository.
-permissions:
-  contents: write
+# Nothing by default; each job below names what it needs.
+permissions: {}
 
 concurrency:
   group: refresh-fallback
@@ -28,6 +33,11 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # Only the commit needs write access, and only to this repository.
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,9 +52,11 @@ jobs:
         run: node tools/refresh-fallback.mjs
 
       - name: Commit whatever changed
+        id: commit
         run: |
           if [ -z "$(git status --porcelain)" ]; then
             echo "nothing changed"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name  "github-actions[bot]"
@@ -52,6 +64,46 @@ jobs:
           git add catalog.json images/catalog
           git commit -m "Refresh the offline catalog"
           git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  # The commit above reaches the live site only through this (b140): a push made
+  # with the job's own token starts no other workflow, so "Publish the site" never
+  # heard of it. Nothing changed — nothing to publish.
+  publish:
+    needs: refresh
+    if: needs.refresh.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/publish.yml
+
+  # The watchdog (d21 stage 1): a check on healthchecks.io that expects to hear
+  # from this job every three hours and mails the owner and Derek after seven
+  # quiet ones — two missed runs and an hour's grace (d21 stage 3). A
+  # failed run says so at once instead of waiting out the day — which also catches
+  # GitHub switching the schedule off after 60 quiet days (see the note at the
+  # bottom). No secret, no ping: a fork stays quiet. "Success" means the copy was
+  # refreshed and, if it changed, published — a publish skipped for having nothing
+  # to send counts as success.
+  watchdog:
+    needs: [refresh, publish]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tell the watchdog
+        env:
+          PING_URL: ${{ secrets.HEALTHCHECK_SITE_UPDATE_URL }}
+          REFRESH: ${{ needs.refresh.result }}
+          PUBLISH: ${{ needs.publish.result }}
+        run: |
+          [ -n "$PING_URL" ] || exit 0
+          if [ "$REFRESH" = "success" ] && { [ "$PUBLISH" = "success" ] || [ "$PUBLISH" = "skipped" ]; }; then
+            suffix=""
+          else
+            suffix="/fail"
+          fi
+          curl -fsS -m 10 --retry 3 "$PING_URL$suffix" > /dev/null || echo "watchdog unreachable"
 
 # Two things to know before relying on this.
 #

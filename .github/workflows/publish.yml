@@ -8,7 +8,8 @@
 # something has to do the changing; a branch served as-is has nobody to do it.
 #
 # The working files keep `?v=dev`, so the site opens straight from the repository
-# with no build step, exactly as before. Only what is published carries a number.
+# with no build step, exactly as before. Only what is published carries a number —
+# and, since d21 stage 3, the offline catalog written into the page.
 
 name: Publish the site
 
@@ -16,6 +17,13 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Called by "Refresh the offline catalog" right after it commits (b140). A push
+  # made by a job's own token starts no other workflow — GitHub's rule against
+  # loops — so from 2026-09-10 to 2026-10-16 the daily refresh and the Odoo button
+  # wrote into `main` and the live site never received it. Being part of the same
+  # run also means a failed publish fails that run, which is what "Last update" in
+  # Odoo and the watchdog read.
+  workflow_call:
 
 # The deploy signs itself with a short-lived token (id-token) rather than writing to
 # the repository, so nothing here can commit — the published copy is built, sent and
@@ -25,32 +33,58 @@ permissions:
   pages: write
   id-token: write
 
-# One publish at a time, and a queued one waits rather than cancelling the one in
-# flight: a half-sent site is worse than a late one.
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # One publish at a time, and a queued one waits rather than cancelling the one in
+    # flight: a half-sent site is worse than a late one. Set on the job, not the
+    # workflow, so it holds the same whether this runs alone or called by the refresh.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      # A push publishes exactly the commit pushed. Called by the refresh, the run's
+      # own commit is the one from *before* the refresh committed, so take the branch
+      # as it stands now — which is the commit just pushed.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # What is published is a copy in _site/, never the checkout itself: the
+      # repository's index.html stays the plain page that opens with no build step,
+      # and the tool's node_modules stay out of the site.
+      - name: Copy the site
+        run: rsync -a --exclude .git --exclude .github --exclude node_modules --exclude _site ./ _site/
+
+      # The offline catalog written into the page (d21 stage 3): the fleet, the
+      # prices, the discounts and the hours in the first answer the server gives,
+      # for robots that run no scripts, plus the business card for search engines
+      # and sitemap.xml. If its checks fail, so does this publish, and the site
+      # keeps the page the last good one wrote.
+      - name: Write the catalog into the page
+        run: |
+          npm ci --prefix tools/prerender --no-audit --no-fund
+          node tools/prerender/prerender.mjs _site
 
       - name: Stamp the version onto the files the page loads
         # The commit's own number, so every publish carries a different one and no
         # publish invents a number that could repeat.
         run: |
-          v="${GITHUB_SHA::7}"
-          sed -i "s/?v=dev/?v=$v/g" index.html
-          grep -n "?v=" index.html
+          v="$(git rev-parse --short=7 HEAD)"
+          sed -i "s/?v=dev/?v=$v/g" _site/index.html
+          # Only the stamped names: the line the catalog is written on is long.
+          grep -o "[a-z./-]*?v=$v" _site/index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - id: deploy
         uses: actions/deploy-pages@v4
