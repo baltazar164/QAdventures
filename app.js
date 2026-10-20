@@ -86,7 +86,6 @@ const S = {
   seedPhotos: {},
   selected: null, photoIndex: 0,
   pickup: '', dropoff: '', step: 'form', color: '',
-  availFrom: '', availTo: '', availOnly: false, calOpen: false, calCursor: '',
   modalCalOpen: false, modalCursor: '',
   currency: 'PHP', mobileMenuOpen: false,
   // Offered currencies and the day their rates were quoted, both from Odoo.
@@ -225,7 +224,7 @@ function normalizeModel(m, captions) {
     catLabel: (captions && captions[m.cat]) || catCaption(m.cat),
     price: m.price, weekly: m.weekly, monthly: m.monthly,
     tag: m.tag || '', badge: m.badge || '', specs: m.specs || [],
-    colors: m.colors || [], photos: m.photos || [], units: m.units || [],
+    colors: m.colors || [], photos: m.photos || [],
     // The grid's picture, sent in the size the card actually shows it at; the
     // full-size `photos` are for the sheet, which opens one card at a time. An
     // older server, or the offline copy, sends no `card_photo` — then the grid
@@ -259,20 +258,6 @@ function catTabs() {
   const captions = catCaptions();
   return [{ key: 'all', label: 'All bikes' }]
     .concat(slugs.map(slug => ({ key: slug, label: captions[slug] || catCaption(slug) })));
-}
-
-function availInfo() {
-  const parseIso = s => { const d = new Date(s + 'T00:00:00'); d.setHours(0,0,0,0); return d.getTime(); };
-  const chosen = !!(S.availFrom && S.availTo) && parseIso(S.availTo) >= parseIso(S.availFrom);
-  const from = chosen ? parseIso(S.availFrom) : 0;
-  const to = chosen ? parseIso(S.availTo) : 0;
-  // A model is available if AT LEAST ONE of its physical units is free over the range.
-  const isAvailable = b => {
-    if (!chosen) return true;
-    const units = (b.units && b.units.length) ? b.units : [{ booked: [] }];
-    return units.some(u => !(u.booked || []).some(([bs, be]) => from <= parseIso(be) && to >= parseIso(bs)));
-  };
-  return { chosen, isAvailable };
 }
 
 // Two levels, in order: live Odoo, then the offline copy served from this same origin.
@@ -485,10 +470,7 @@ function patchChildren(host, html) {
 }
 
 function visibleFleet() {
-  const { chosen, isAvailable } = availInfo();
-  let list = fleet().filter(b => S.filter === 'all' || b.cat === S.filter);
-  if (chosen && S.availOnly) list = list.filter(isAvailable);
-  return list;
+  return fleet().filter(b => S.filter === 'all' || b.cat === S.filter);
 }
 
 function renderFleet() {
@@ -499,20 +481,14 @@ function renderFleet() {
   if (skel) skel.hidden = S.models !== null;
   if (!grid) return;
 
-  const { chosen, isAvailable } = availInfo();
   patchChildren(grid, visibleFleet().map(b => {
-    const avail = isAvailable(b);
     const img = b.cardPhoto || (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '';
-    const booked = chosen && !avail;
     return '' +
-      '<article class="card' + (booked ? ' is-booked' : '') + '" data-bike="' + esc(b.id) + '">' +
+      '<article class="card" data-bike="' + esc(b.id) + '">' +
         '<div class="card__media">' +
           (img ? '<img src="' + esc(img) + '" alt="' + esc(b.name) + '" loading="lazy">'
                : '<div class="card__noimg">' + esc(b.name) + '</div>') +
           (b.badge ? '<span class="card__badge">' + esc(b.badge) + '</span>' : '') +
-          (chosen ? '<span class="card__chip' + (avail ? ' is-free' : ' is-taken') + '">● ' +
-                    (avail ? 'Available' : 'Booked') + '</span>' : '') +
-          (booked ? '<div class="card__dim"></div>' : '') +
         '</div>' +
         '<div class="card__body">' +
           '<div class="card__meta">' +
@@ -529,43 +505,13 @@ function renderFleet() {
               '<div><span class="card__price">' + esc(peso(b.price)) + '</span><span class="card__per">/day</span></div>' +
               '<div class="card__wk">' + esc(peso(b.weekly) + '/wk · ' + peso(b.monthly) + '/mo') + '</div>' +
             '</div>' +
-            '<button class="card__book" ' + (booked ? 'disabled' : '') + '>' +
-              (booked ? 'Booked' : 'Book') + '</button>' +
+            '<button class="card__book">Book</button>' +
           '</div>' +
         '</div>' +
       '</article>';
   }).join(''));
   // Clicks on a card are taken by init() on the grid itself, so a card written
   // into the page at publish time opens the moment this file has run.
-}
-
-function renderAvailBar() {
-  const label = $('#avail-label');
-  const count = $('#avail-count');
-  const only = $('#avail-only');
-  const onlyLabel = $('#avail-only-label');
-  const field = $('#avail-field');
-  const { chosen, isAvailable } = availInfo();
-
-  if (label) {
-    label.textContent = (S.availFrom && S.availTo)
-      ? (fmtDate(S.availFrom) + ' – ' + fmtDate(S.availTo))
-      : (S.availFrom ? (fmtDate(S.availFrom) + ' – …') : 'Select dates');
-    label.classList.toggle('is-filled', !!S.availFrom);
-  }
-  if (field) field.classList.toggle('is-open', S.calOpen);
-  if (only) { only.disabled = !chosen; only.checked = S.availOnly; }
-  if (onlyLabel) onlyLabel.classList.toggle('is-on', chosen);
-  if (count) {
-    count.hidden = !chosen;
-    if (chosen) {
-      const list = visibleFleet();
-      const n = list.filter(isAvailable).length;
-      count.textContent = n + ' of ' + list.length + ' available';
-      count.classList.toggle('is-some', n > 0);
-      count.classList.toggle('is-none', n === 0);
-    }
-  }
 }
 
 // The page says out loud where its prices came from. Saying nothing is only right when
@@ -648,11 +594,10 @@ function renderDiscountPill() {
 
 function renderCatalog() {
   renderTabs();
-  renderAvailBar();
   renderFleet();
   renderCatalogNote();
-  // With no catalog there is nothing to filter: dates, a currency and a count over an
-  // empty grid are furniture pretending the page still works.
+  // With no catalog there is nothing to price: a currency over an empty grid is
+  // furniture pretending the page still works.
   const filter = $('#fleet-filter');
   if (filter) filter.hidden = S.catalogSource === 'down';
   // A form opened on the seed's figures takes the live ones in place: same bike,
@@ -677,7 +622,6 @@ function renderCatalog() {
 // --- Calendars --------------------------------------------------------------
 
 const CAL = {
-  avail: { fromKey: 'availFrom', toKey: 'availTo', curKey: 'calCursor', openKey: 'calOpen' },
   modal: { fromKey: 'pickup',    toKey: 'dropoff', curKey: 'modalCursor', openKey: 'modalCalOpen' },
 };
 
@@ -702,8 +646,7 @@ function pickDay(ctx, iso) {
   else if (iso < from)       { S[cfg.fromKey] = iso; }
   else                       { S[cfg.toKey] = iso; S[cfg.openKey] = false; }
   renderCal(ctx);
-  if (ctx === 'avail') renderCatalog();
-  else updateModal();
+  updateModal();
 }
 
 function calCells(ctx) {
@@ -750,14 +693,11 @@ function calHTML(ctx) {
       return '<div class="cal__day' + (c.past ? ' is-past' : '') + (c.sel ? ' is-sel' : '') + '"' +
              (c.past ? '' : ' data-day="' + c.iso + '"') + radius + '>' + c.label + '</div>';
     }).join('') + '</div>' +
-    (ctx === 'avail'
-      ? '<div class="cal__foot"><button class="cal__clear" data-cal-clear>Clear</button>' +
-        '<button class="cal__done" data-cal-done>Done</button></div>'
-      : '<div class="cal__foot cal__foot--end"><button class="cal__done" data-cal-done>Done</button></div>');
+    '<div class="cal__foot"><button class="cal__done" data-cal-done>Done</button></div>';
 }
 
 function renderCal(ctx) {
-  const host = ctx === 'avail' ? $('#avail-cal') : $('#modal-cal');
+  const host = $('#modal-cal');
   if (!host) return;
   const open = S[CAL[ctx].openKey];
   host.hidden = !open;
@@ -772,18 +712,11 @@ function renderCal(ctx) {
     e.stopPropagation();
     pickDay(ctx, d.getAttribute('data-day'));
   }));
-  const clear = $('[data-cal-clear]', host);
-  if (clear) clear.addEventListener('click', e => {
-    e.stopPropagation();
-    S.availFrom = ''; S.availTo = ''; S.availOnly = false;
-    renderCal('avail'); renderCatalog();
-  });
   const done = $('[data-cal-done]', host);
   if (done) done.addEventListener('click', e => {
     e.stopPropagation();
     S[CAL[ctx].openKey] = false;
     renderCal(ctx);
-    if (ctx === 'avail') renderAvailBar();
   });
 }
 
@@ -980,8 +913,6 @@ function openModal(bike) {
   // Colours belong to a card; the last bike's choice must not ride along.
   // One offered colour is not a choice — it is a fact, stated pre-picked.
   S.color = (bike.colors && bike.colors.length === 1) ? bike.colors[0].name : '';
-  S.pickup = S.availFrom || S.pickup;
-  S.dropoff = S.availTo || S.dropoff;
   S.waReason = ''; S.hint = ''; S.account = null; S.sending = false;
   S.modalCalOpen = false;
 
@@ -1082,7 +1013,7 @@ function formHTML() {
           '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E4761B" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="3" x2="8" y2="6"></line><line x1="16" y1="3" x2="16" y2="6"></line></svg>' +
           '<span class="datefield__label" id="modal-label"></span>' +
         '</button>' +
-        '<div class="caldrop caldrop--modal" id="modal-cal" hidden></div>' +
+        '<div class="caldrop" id="modal-cal" hidden></div>' +
       '</div>' +
     '</div>' +
     // A wish, not a condition (brd/d2): the choice goes into the message and
@@ -1587,21 +1518,8 @@ function init() {
   const scrim = $('#mobnav-scrim');
   if (scrim) scrim.addEventListener('click', toggleMobileMenu);
 
-  const field = $('#avail-field');
-  if (field) field.addEventListener('click', e => {
-    e.stopPropagation();
-    S.calOpen = !S.calOpen;
-    renderCal('avail');
-    renderAvailBar();
-  });
-  const only = $('#avail-only');
-  if (only) only.addEventListener('change', () => { S.availOnly = only.checked; renderCatalog(); });
-
   // Clicking anywhere else closes an open calendar, as the old full-screen scrim did.
   document.addEventListener('click', e => {
-    if (S.calOpen && !e.target.closest('#avail-wrap')) {
-      S.calOpen = false; renderCal('avail'); renderAvailBar();
-    }
     if (S.modalCalOpen && !e.target.closest('.fld__cal')) {
       S.modalCalOpen = false; renderCal('modal');
       const mf = $('#modal-field'); if (mf) mf.classList.remove('is-open');
@@ -1624,7 +1542,7 @@ function init() {
   const grid = $('#fleet-grid');
   if (grid) grid.addEventListener('click', e => {
     const el = e.target.closest('.card');
-    if (!el || el.classList.contains('is-booked')) return;
+    if (!el) return;
     const id = el.getAttribute('data-bike');
     const bike = fleet().find(b => b.id === id);
     if (bike) openModal(bike);
