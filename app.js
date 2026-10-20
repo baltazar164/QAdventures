@@ -284,6 +284,8 @@ function applyCatalog(data, source) {
   if (data.contacts && typeof data.contacts === 'object') applyContacts(data.contacts);
   // Absent from an Odoo older than d21 stage 4: the markup's name and address stand.
   if (data.business && typeof data.business === 'object') applyBusiness(data.business);
+  // Absent from an Odoo older than d21 stage 5: the questions in the page stand.
+  if (Array.isArray(data.faq)) applyFaq(data.faq);
   // A currency without a usable rate is dropped rather than offered: the
   // selector must not hold a choice that cannot convert anything.
   const offered = Array.isArray(data.currencies) ? data.currencies.filter(
@@ -374,6 +376,41 @@ function applyBusiness(b) {
     if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
     if (b.name) frame.title = b.name + ' on the map';
   }
+}
+
+// The questions and answers, in the order of the list in Odoo (d21 stage 5).
+// Each is a <details>: the answer opens on a press without any script, and its
+// text is in the page for a robot to read. A question the live catalog brings
+// unchanged keeps its element, so an answer the visitor opened stays open — which
+// is why this is not patchChildren(): an opened <details> carries `open`, and
+// would never compare equal to the same question drawn fresh. An empty list hides
+// the block and its menu entries. A blank line in an answer starts a paragraph.
+function faqHTML(f) {
+  return '<details class="faq__item">' +
+    '<summary class="faq__q">' + esc(f.question) + '</summary>' +
+    '<div class="faq__a">' + String(f.answer).split(/\n\s*\n/).map(p =>
+      '<p>' + esc(p.trim()).replace(/\n/g, '<br>') + '</p>').join('') + '</div>' +
+  '</details>';
+}
+
+function applyFaq(list) {
+  const items = list.filter(f => f && f.question && f.answer);
+  const host = $('#faq-list');
+  if (host) {
+    const t = document.createElement('template');
+    t.innerHTML = items.map(faqHTML).join('');
+    const next = Array.from(t.content.children);
+    const cur = Array.from(host.children);
+    if (next.length !== cur.length) host.replaceChildren(...next);
+    else next.forEach((n, i) => {
+      const was = cur[i].cloneNode(true);
+      was.removeAttribute('open');
+      if (was.outerHTML !== n.outerHTML) cur[i].replaceWith(n);
+    });
+  }
+  const sec = $('#faq');
+  if (sec) sec.hidden = !items.length;
+  $$('[data-faq-nav]').forEach(el => { el.hidden = !items.length; });
 }
 
 // The request itself was made in <head>, long before this file arrived; what is
