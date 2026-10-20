@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-10-19T05:24:11Z",
+  "refreshed_at": "2026-10-20T00:19:32Z",
   "currency": "PHP",
   "categories": [
     {
@@ -98,7 +98,7 @@
   },
   "business": {
     "name": "Q Adventures Motorbike Rental",
-    "description": "Scooter and adventure bike rental on Mactan, Cebu. No documents held, no distance limit, rent from 1 day, two helmets included. Delivery to hotel or airport.",
+    "description": "Scooter, adventure bike and car rental on Mactan, Cebu. No documents held, no distance limit, rent from 1 day, 2 helmets free. Delivery to hotel or airport.",
     "address": {
       "street": "Sitio Masiwa",
       "city": "Lapu-Lapu",
@@ -454,7 +454,7 @@
     },
     {
       "id": "toyotavios",
-      "name": "Toyota Toyota Vios",
+      "name": "Toyota Vios",
       "cc": "1329cc",
       "cat": "car",
       "price": 1600,
