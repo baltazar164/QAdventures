@@ -229,6 +229,9 @@ async function main() {
     // page already, and the publish writes it into the page and llms.txt from
     // this copy — so it has to travel, or Odoo's edits never reach either.
     business: data.business,
+    // Questions and answers (d21 stage 5). Shown on the page, so public; the
+    // publish writes them into the page, its FAQ markup and llms.txt from here.
+    faq: data.faq,
     // The offered currencies and the day their rates were quoted. Copied,
     // unlike `direct_booking`: a converted price still works with Odoo down,
     // and this copy is refreshed daily, which is exactly how often the rates

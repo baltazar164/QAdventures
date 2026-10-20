@@ -15,7 +15,8 @@
 //   - carries the copy along as a JSON block, so app.js starts from it and a card
 //     pressed before Odoo answers opens straight away;
 //   - completes the business card for search engines from Business Settings,
-//     and puts the description from there into the page's own description.
+//     and puts the description from there into the page's own description;
+//   - adds the questions and answers as FAQPage markup (d21 stage 5).
 // And writes <folder>/sitemap.xml and <folder>/llms.txt.
 //
 // Exit codes: 0 — written and checked. 1 — a check failed or something broke;
@@ -72,6 +73,7 @@ if (!appTag) fail('index.html has no app.js script tag');
 appTag.parentNode.insertBefore(block, appTag);
 
 completeBusinessCard(doc.getElementById('ld-business'), JSON.parse(seedText));
+writeFaqCard(doc, JSON.parse(seedText));
 describePage(doc, JSON.parse(seedText));
 const llms = llmsTxt(JSON.parse(seedText));
 check(doc, JSON.parse(seedText), llms);
@@ -151,7 +153,44 @@ function llmsTxt(data) {
   if (a.line) out.push('- Address: ' + a.line + (a.zip ? ' (postcode ' + a.zip + ')' : ''));
   if (b.map && b.map.href) out.push('- Google Maps: ' + b.map.href);
   out.push('- Website: ' + SITE, '');
+
+  // The rental terms are among these (d21 stage 5): Derek words them as
+  // questions, and this is the same list the page shows.
+  const faq = faqList(data);
+  if (faq.length) {
+    out.push('## Questions', '');
+    faq.forEach(f => out.push('### ' + f.question, '', f.answer, ''));
+  }
   return out.join('\n');
+}
+
+// The questions the page shows: those with both halves, in Odoo's order.
+function faqList(data) {
+  return (Array.isArray(data.faq) ? data.faq : [])
+    .filter(f => f && f.question && f.answer)
+    .map(f => ({ question: String(f.question).trim(), answer: String(f.answer).trim() }));
+}
+
+// The same questions as FAQPage markup (d21 stage 5). Written here only: the
+// live catalog redraws the questions on screen but not this block, which robots
+// read from the published page. No questions, no block.
+function writeFaqCard(doc, data) {
+  const faq = faqList(data);
+  if (!faq.length) return;
+  const card = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map(f => ({
+      '@type': 'Question', name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
+  const el = doc.createElement('script');
+  el.type = 'application/ld+json';
+  el.id = 'ld-faq';
+  el.textContent = '\n' + JSON.stringify(card, null, 2).replace(/</g, '\\u003c') + '\n';
+  const after = doc.getElementById('ld-business');
+  after.parentNode.insertBefore(el, after.nextSibling);
 }
 
 // The parts of the business card that live in Odoo. What index.html carries —
@@ -250,6 +289,16 @@ function check(doc, data, llms) {
   for (const m of data.models) {
     const price = '₱' + Math.round(m.price).toLocaleString('en-US');
     if (!llms.includes('- ' + m.name) || !llms.includes(price)) fail('llms.txt has no ' + m.name + ' at ' + price);
+  }
+  const faq = faqList(data);
+  const shown = doc.getElementById('faq-list');
+  const ldFaq = doc.getElementById('ld-faq');
+  const marked = ldFaq ? JSON.parse(ldFaq.textContent).mainEntity.map(q => q.name) : [];
+  if (faq.length && doc.getElementById('faq').hidden) fail('the questions block is hidden');
+  for (const f of faq) {
+    if (!shown || !shown.textContent.includes(f.question)) fail('the page has no question "' + f.question + '"');
+    if (!marked.includes(f.question)) fail('the FAQ markup has no question "' + f.question + '"');
+    if (!llms.includes('### ' + f.question)) fail('llms.txt has no question "' + f.question + '"');
   }
 }
 
