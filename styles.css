@@ -84,7 +84,9 @@ input, button, select, textarea { font-family: inherit; }
 
 .cur { flex: none; border: 1.5px solid var(--line-2); background: #fff; color: var(--ink); font-weight: 700; font-size: 13.5px; padding: 0 8px; cursor: pointer; appearance: auto; }
 .cur--hdr { height: 38px; border-radius: 10px; }
-.cur--filter { flex: none; height: 34px; border-radius: 9px; background: var(--field); }
+/* Drawn to be found (b115): orange frame and a larger figure, so the one place a
+   phone visitor can change currency does not pass for a plain form field. */
+.cur--filter { flex: none; height: 38px; border-radius: 10px; border: 2px solid var(--orange); background: #fff; font-size: 15px; font-weight: 800; padding: 0 10px; }
 
 .callbtn { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: #fff; font-weight: 700; font-size: 13.5px; padding: 10px 16px; border-radius: 10px; white-space: nowrap; flex: none; }
 .callbtn:hover { color: #fff; }
@@ -145,31 +147,19 @@ input, button, select, textarea { font-family: inherit; }
 
 .fleet { padding: 10px 24px; }
 
-.filter { margin-top: 14px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; box-shadow: 0 2px 10px rgba(27,23,18,.04); }
-.filter__row { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
-.filter__title { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: -.01em; flex: none; min-width: 0; }
-.filter__dates { position: relative; }
+.fleet__bar { display: flex; align-items: flex-start; gap: 10px 20px; }
+/* Zero basis: the tabs take whatever the currency leaves and wrap inside it, rather
+   than pushing the currency onto a line of its own. */
+.fleet__bar .tabs { flex: 1 1 0; min-width: 0; }
+.filter { margin-left: auto; padding-top: 2px; }
 .filter__cur { display: flex; align-items: center; gap: 8px; }
-.filter__cur-label { font-size: 13px; font-weight: 700; color: var(--body); }
-.filter__only { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.filter__cur-label { font-size: 14px; font-weight: 700; color: var(--ink); }
 
-/* 220px was the old fixed width, kept here as a minimum rather than a cap: a full
-   range with both years spelled out ("13 Aug 2026 – 22 Aug 2026") does not fit it,
-   and wrapping the label pushed the field onto two lines. It now grows by as much
-   as the dates need and never wraps. */
 .datefield { min-width: 220px; height: 34px; display: flex; align-items: center; gap: 7px; border: 1.5px solid var(--line-2); border-radius: 9px; padding: 0 10px; background: var(--field); cursor: pointer; }
 .datefield.is-open { border-color: var(--orange); }
 .datefield svg { flex: none; }
 .datefield__label { flex: 1; text-align: left; font-size: 14.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
 .datefield__label.is-filled { color: var(--ink); }
-
-.onlylbl { display: flex; align-items: center; gap: 8px; cursor: not-allowed; opacity: .5; }
-.onlylbl.is-on { cursor: pointer; opacity: 1; }
-.onlylbl input { width: 16px; height: 16px; accent-color: var(--orange); flex: none; }
-.onlylbl span { font-size: 13px; font-weight: 600; color: var(--ink); }
-.availcount { font-weight: 700; font-size: 12.5px; color: var(--muted); }
-.availcount.is-some { color: var(--green); }
-.availcount.is-none { color: #B25E12; }
 
 /* The grey tiles that hold the grid's place while the catalog is on its way. Cards
    in outline rather than a spinner or a line of text: the section keeps its shape,
@@ -207,8 +197,6 @@ input, button, select, textarea { font-family: inherit; }
 /* bike card */
 .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(27,23,18,.04); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
 .card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(27,23,18,.12); }
-.card.is-booked { cursor: default; }
-.card.is-booked:hover { transform: none; box-shadow: 0 2px 10px rgba(27,23,18,.04); }
 .card__media { position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--sand); }
 /* The grid fills its frame rather than fitting the photo inside it. A row of
    cards has to line up, and photos of ten different shapes letterboxed against
@@ -220,10 +208,6 @@ input, button, select, textarea { font-family: inherit; }
 .card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card__noimg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); font-weight: 600; font-size: 13px; text-align: center; padding: 12px; }
 .card__badge { position: absolute; top: 12px; left: 12px; z-index: 2; pointer-events: none; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--orange); padding: 5px 10px; border-radius: 100px; }
-.card__chip { position: absolute; top: 12px; right: 12px; z-index: 2; pointer-events: none; font-size: 11px; font-weight: 800; letter-spacing: .02em; color: #fff; padding: 5px 10px; border-radius: 100px; }
-.card__chip.is-free { background: var(--green); }
-.card__chip.is-taken { background: var(--muted); }
-.card__dim { position: absolute; inset: 0; z-index: 1; background: rgba(251,247,240,.62); pointer-events: none; }
 .card__body { padding: 15px 18px 16px; display: flex; flex-direction: column; flex: 1; position: relative; }
 .card__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
 .card__cat { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green); background: #E5F0EC; padding: 3px 8px; border-radius: 6px; }
@@ -253,8 +237,7 @@ input, button, select, textarea { font-family: inherit; }
 
 /* calendar ------------------------------------------------------------ */
 
-.caldrop { position: absolute; top: 76px; right: 0; z-index: 56; width: 322px; }
-.caldrop--modal { top: 54px; left: 0; right: 0; width: auto; z-index: 6; }
+.caldrop { position: absolute; top: 54px; left: 0; right: 0; z-index: 6; }
 .cal { background: #fff; border: 1px solid rgba(27,23,18,.1); border-radius: 16px; box-shadow: 0 22px 54px rgba(27,23,18,.2); padding: 16px; }
 .cal__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .cal__nav { width: 34px; height: 34px; border: none; border-radius: 50%; background: var(--sand); color: var(--ink); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -267,9 +250,7 @@ input, button, select, textarea { font-family: inherit; }
 .cal__day.is-blank { visibility: hidden; }
 .cal__day.is-past { color: #CFC8BA; cursor: default; }
 .cal__day.is-sel { background: var(--orange); color: #fff; }
-.cal__foot { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
-.cal__foot--end { justify-content: flex-end; }
-.cal__clear { background: transparent; border: none; color: var(--muted); font-weight: 700; font-size: 13px; cursor: pointer; padding: 0; }
+.cal__foot { display: flex; justify-content: flex-end; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .cal__done { background: var(--ink); color: #fff; border: none; font-weight: 700; font-size: 13.5px; padding: 9px 18px; border-radius: 9px; cursor: pointer; }
 
 /* the bike / booking modal -------------------------------------------- */
@@ -523,7 +504,7 @@ a.citem:hover { color: inherit; }
   .hdr__bar { padding: 12px 18px; gap: 10px; }
   .nav { display: none; }
   .burger { display: flex; }
-  /* The currency picker leaves the header here and lives in the filter card alone.
+  /* The currency picker leaves the header here and lives in the line above the grid alone.
      With it, the bar needs 396px for brand + burger + picker + call button, none of
      which may shrink, so on any phone under that the call button was pushed past the
      right edge and clipped — with no sideways scroll to recover it. */
@@ -537,18 +518,13 @@ a.citem:hover { color: inherit; }
   .rev__n { font-size: 22px; }
 
   .fleet { padding: 10px 20px; }
-  .filter__row { flex-direction: column; align-items: stretch; }
-  .filter__dates { width: 100%; }
-  .datefield { width: 100%; }
-  .filter__cur { width: 100%; }
-  .cur--filter { flex: 1; }
-  .filter__only { width: 100%; }
+  .fleet__bar { flex-wrap: wrap; }
+  .fleet__bar .tabs { flex-basis: 100%; }
   .fleet__grid { grid-template-columns: 1fr; gap: 16px; }
   /* One column, so two tiles are a screenful and four are a scroll through
      grey. */
   .fleet__skel { grid-template-columns: 1fr; gap: 16px; }
   .skel-card:nth-child(n+3) { display: none; }
-  .caldrop { top: 52px; left: 0; right: 0; width: auto; }
 
   .how { padding: 40px 20px; }
   .steps { grid-template-columns: 1fr; }
