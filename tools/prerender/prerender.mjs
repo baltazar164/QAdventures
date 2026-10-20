@@ -108,12 +108,18 @@ function llmsTxt(data) {
   const out = ['# ' + (b.name || 'Q Adventures Motorbike Rental'), ''];
   if (b.description) out.push('> ' + b.description, '');
 
-  out.push('## Bikes and prices per day', '');
+  // The week and the 28-day month are what the cards show as /wk and /mo:
+  // computed in Odoo, discount included. "28 days" is spelled out, or an
+  // assistant would quote it as a calendar month.
+  out.push('## Bikes and prices', '');
   for (const m of data.models || []) {
     const bits = [m.name];
     if (cats[m.cat]) bits.push(cats[m.cat]);
     if (m.cc) bits.push(m.cc);
-    out.push('- ' + bits.join(' — ') + ': ' + peso(m.price) + ' a day' + (m.tag ? '. ' + m.tag : ''));
+    const prices = [peso(m.price) + ' a day'];
+    if (m.weekly > 0) prices.push(peso(m.weekly) + ' a week');
+    if (m.monthly > 0) prices.push(peso(m.monthly) + ' for 28 days');
+    out.push('- ' + bits.join(' — ') + ': ' + prices.join(', ') + (m.tag ? '. ' + m.tag : ''));
   }
   out.push('');
 
