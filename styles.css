@@ -384,9 +384,11 @@ textarea.inp { padding: 11px 14px; font-family: inherit; resize: vertical; }
 
 /* The list is a column of the steps' white cards: the answer opens under its
    question on a press, by the browser alone (<details>). */
-.faq { max-width: 820px; margin: 0 auto; padding: 50px 24px 10px; }
+.faq { max-width: 1200px; margin: 0 auto; padding: 50px 24px 10px; }
 .faq[hidden] { display: none; }
-.faq__list { display: grid; gap: 10px; margin-top: 28px; }
+/* Two columns where two 420px rows fit side by side, one below that. `start`, so
+   an answer opened in one column does not stretch the question beside it. */
+.faq__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr)); align-items: start; gap: 10px; margin-top: 28px; }
 .faq__item { background: #fff; border: 1px solid var(--line); border-radius: 14px; }
 .faq__q { list-style: none; cursor: pointer; padding: 16px 48px 16px 20px; position: relative; font-family: var(--display); font-weight: 600; font-size: 17px; line-height: 1.35; }
 .faq__q::-webkit-details-marker { display: none; }
