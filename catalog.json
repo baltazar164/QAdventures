@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-10-25T04:54:07Z",
+  "refreshed_at": "2026-10-25T05:34:28Z",
   "currency": "PHP",
   "categories": [
     {
@@ -113,6 +113,56 @@
       "lng": 123.9783612
     }
   },
+  "faq": [
+    {
+      "question": "Do you keep my passport or ID?",
+      "answer": "No. We never hold your passport or any document."
+    },
+    {
+      "question": "What documents do I need?",
+      "answer": "A valid driver's license. An international driving permit is not required."
+    },
+    {
+      "question": "Is there a deposit?",
+      "answer": "No deposit."
+    },
+    {
+      "question": "What is the minimum rental?",
+      "answer": "One day."
+    },
+    {
+      "question": "Is insurance included?",
+      "answer": "Yes, third-party liability insurance is included."
+    },
+    {
+      "question": "What about fuel?",
+      "answer": "Please return the bike with a full tank."
+    },
+    {
+      "question": "What if the bike breaks down?",
+      "answer": "Call us. We come and fix it, or bring you another bike."
+    },
+    {
+      "question": "Can I leave my luggage with you?",
+      "answer": "Yes, you can leave it at the shop while you ride."
+    },
+    {
+      "question": "Are helmets included?",
+      "answer": "Yes, two helmets, and a top box on every bike."
+    },
+    {
+      "question": "Do you deliver?",
+      "answer": "Yes, to your hotel or the airport."
+    },
+    {
+      "question": "Is there a distance limit?",
+      "answer": "No. Ride anywhere in the Philippines."
+    },
+    {
+      "question": "Can I visit the shop?",
+      "answer": "Yes, come by during opening hours. We also serve Vietnamese food and coffee."
+    }
+  ],
   "currencies": [
     {
       "code": "USD",
