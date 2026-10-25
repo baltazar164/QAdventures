@@ -284,6 +284,8 @@ function applyCatalog(data, source) {
   if (data.contacts && typeof data.contacts === 'object') applyContacts(data.contacts);
   // Absent from an Odoo older than d21 stage 4: the markup's name and address stand.
   if (data.business && typeof data.business === 'object') applyBusiness(data.business);
+  // Absent from an Odoo older than d21 stage 5: the questions in the page stand.
+  if (Array.isArray(data.faq)) applyFaq(data.faq);
   // A currency without a usable rate is dropped rather than offered: the
   // selector must not hold a choice that cannot convert anything.
   const offered = Array.isArray(data.currencies) ? data.currencies.filter(
@@ -374,6 +376,68 @@ function applyBusiness(b) {
     if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
     if (b.name) frame.title = b.name + ' on the map';
   }
+}
+
+// The questions and answers, in the order of the list in Odoo (d21 stage 5).
+// Each is a <details>: the answer opens on a press without any script, and its
+// text is in the page for a robot to read. A question the live catalog brings
+// unchanged keeps its element, so an answer the visitor opened stays open — which
+// is why this is not patchChildren(): an opened <details> carries `open`, and
+// would never compare equal to the same question drawn fresh. An empty list hides
+// the block and its menu entries. A blank line in an answer starts a paragraph.
+function faqHTML(f) {
+  return '<details class="faq__item">' +
+    '<summary class="faq__q">' + esc(f.question) + '</summary>' +
+    '<div class="faq__a">' + String(f.answer).split(/\n\s*\n/).map(p =>
+      '<p>' + esc(p.trim()).replace(/\n/g, '<br>') + '</p>').join('') + '</div>' +
+  '</details>';
+}
+
+function applyFaq(list) {
+  const items = list.filter(f => f && f.question && f.answer);
+  const host = $('#faq-list');
+  if (host) {
+    const t = document.createElement('template');
+    t.innerHTML = items.map(faqHTML).join('');
+    const next = Array.from(t.content.children);
+    const cur = Array.from(host.children);
+    if (next.length !== cur.length) host.replaceChildren(...next);
+    else next.forEach((n, i) => {
+      const was = cur[i].cloneNode(true);
+      was.removeAttribute('open');
+      if (was.outerHTML !== n.outerHTML) cur[i].replaceWith(n);
+    });
+  }
+  const sec = $('#faq');
+  if (sec) sec.hidden = !items.length;
+  $$('[data-faq-nav]').forEach(el => { el.hidden = !items.length; });
+  S.faqCount = items.length;
+  renderFaqMore();
+}
+
+// The first FAQ_SHORT questions show; the rest wait behind "Show all N questions"
+// (owner, 2026-10-24: twelve in a row took too much of the page). They are hidden
+// by a class on the list, not removed: their text stays in the page for robots.
+const FAQ_SHORT = 4;
+
+function renderFaqMore() {
+  const host = $('#faq-list');
+  const btn = $('#faq-more');
+  const n = S.faqCount || 0;
+  const short = n > FAQ_SHORT && !S.faqAll;
+  if (host) host.classList.toggle('is-short', short);
+  if (!btn) return;
+  btn.hidden = n <= FAQ_SHORT;
+  btn.textContent = S.faqAll ? 'Show fewer' : 'Show all ' + n + ' questions';
+  btn.setAttribute('aria-expanded', String(!!S.faqAll));
+}
+
+function toggleFaqMore() {
+  S.faqAll = !S.faqAll;
+  renderFaqMore();
+  // Folded back from the bottom of a long list, the button would land a screen
+  // above the reader; bring it back under the eye.
+  if (!S.faqAll) { const btn = $('#faq-more'); if (btn) btn.scrollIntoView({ block: 'nearest' }); }
 }
 
 // The request itself was made in <head>, long before this file arrived; what is
@@ -1554,6 +1618,9 @@ function init() {
     S.filter = b.getAttribute('data-tab');
     renderCatalog();
   });
+
+  const faqMore = $('#faq-more');
+  if (faqMore) faqMore.addEventListener('click', toggleFaqMore);
 
   fillCurrencySelects();
   wireCopyButtons();
