@@ -411,6 +411,33 @@ function applyFaq(list) {
   const sec = $('#faq');
   if (sec) sec.hidden = !items.length;
   $$('[data-faq-nav]').forEach(el => { el.hidden = !items.length; });
+  S.faqCount = items.length;
+  renderFaqMore();
+}
+
+// The first FAQ_SHORT questions show; the rest wait behind "Show all N questions"
+// (owner, 2026-10-24: twelve in a row took too much of the page). They are hidden
+// by a class on the list, not removed: their text stays in the page for robots.
+const FAQ_SHORT = 4;
+
+function renderFaqMore() {
+  const host = $('#faq-list');
+  const btn = $('#faq-more');
+  const n = S.faqCount || 0;
+  const short = n > FAQ_SHORT && !S.faqAll;
+  if (host) host.classList.toggle('is-short', short);
+  if (!btn) return;
+  btn.hidden = n <= FAQ_SHORT;
+  btn.textContent = S.faqAll ? 'Show fewer' : 'Show all ' + n + ' questions';
+  btn.setAttribute('aria-expanded', String(!!S.faqAll));
+}
+
+function toggleFaqMore() {
+  S.faqAll = !S.faqAll;
+  renderFaqMore();
+  // Folded back from the bottom of a long list, the button would land a screen
+  // above the reader; bring it back under the eye.
+  if (!S.faqAll) { const btn = $('#faq-more'); if (btn) btn.scrollIntoView({ block: 'nearest' }); }
 }
 
 // The request itself was made in <head>, long before this file arrived; what is
@@ -1591,6 +1618,9 @@ function init() {
     S.filter = b.getAttribute('data-tab');
     renderCatalog();
   });
+
+  const faqMore = $('#faq-more');
+  if (faqMore) faqMore.addEventListener('click', toggleFaqMore);
 
   fillCurrencySelects();
   wireCopyButtons();
