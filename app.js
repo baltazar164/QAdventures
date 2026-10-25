@@ -418,7 +418,7 @@ function applyFaq(list) {
 // The first FAQ_SHORT questions show; the rest wait behind "Show all N questions"
 // (owner, 2026-10-24: twelve in a row took too much of the page). They are hidden
 // by a class on the list, not removed: their text stays in the page for robots.
-const FAQ_SHORT = 5;
+const FAQ_SHORT = 4;
 
 function renderFaqMore() {
   const host = $('#faq-list');
