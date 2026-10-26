@@ -15,21 +15,6 @@
 // no date, which had been drifting since the day it was written.
 const PESO = { code: 'PHP', symbol: '₱', rate: 1 };
 
-// Fallback picture per card, by site_id. Filename including extension, because
-// one of them is a .webp and the rest are .png.
-const BIKE_IMG = {
-  pcx160:    'images/bike-pcx160.png',
-  aerox155:  'images/bike-aerox155.png',
-  burgman:   'images/bike-burgman.png',
-  gravis125: 'images/bike-gravis125.png',
-  click125i: 'images/bike-click125i.webp',
-  pcx160abs: 'images/bike-pcx160abs.png',
-  adv160:    'images/bike-adv160.png',
-  adv350:    'images/bike-adv350.png',
-  vstrom250: 'images/bike-vstrom250.png',
-  rouser160: 'images/bike-rouser160.png',
-};
-
 // The endpoint, its key and the request for the catalog all live in index.html's
 // <head> now (b83): the page has to ask for the fleet before this file has even
 // been downloaded, so the origin switch — localhost talks to the Odoo at 8069,
@@ -546,7 +531,10 @@ function renderFleet() {
   if (!grid) return;
 
   patchChildren(grid, visibleFleet().map(b => {
-    const img = b.cardPhoto || (b.photos && b.photos[0]) || BIKE_IMG[b.id] || '';
+    // A card with no photo of its own shows its name instead. Until b12 the site
+    // carried a picture of its own per card for this case, and it drifted out of
+    // step with Odoo the moment a card was renamed.
+    const img = b.cardPhoto || (b.photos && b.photos[0]) || '';
     return '' +
       '<article class="card" data-bike="' + esc(b.id) + '">' +
         '<div class="card__media">' +
@@ -960,9 +948,7 @@ function namedAccount(token) {
 // --- The modal --------------------------------------------------------------
 
 function modalPhotos() {
-  const sel = S.selected;
-  const img = (sel.photos && sel.photos[0]) || BIKE_IMG[sel.id] || '';
-  return (sel.photos && sel.photos.length) ? sel.photos : (img ? [img] : []);
+  return S.selected.photos || [];
 }
 
 function openModal(bike) {

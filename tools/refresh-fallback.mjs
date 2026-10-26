@@ -32,10 +32,9 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_JSON = join(ROOT, 'catalog.json');
-// Deliberately its own folder. The hand-curated images/bike-<slug>.<ext> are the
-// last-resort layer, tied by name and extension to the BIKE_IMG table compiled
-// into app.js; writing over them from here would eventually rename one and cost
-// a card its picture with no error anywhere.
+// Its own folder, which this script owns whole: a file in it the catalog no
+// longer names is removed. Until b12 it sat apart from a hand-curated picture
+// per card in images/, which the script must not touch; those are gone.
 const OUT_IMG_DIR = join(ROOT, 'images', 'catalog');
 const OUT_IMG_REL = 'images/catalog';
 
