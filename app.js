@@ -1600,6 +1600,26 @@ function init() {
   const map = $('#citem-map');
   if (map) map.addEventListener('click', () => track('google-map'));
 
+  // Whether a visit reached the bikes at all (b153). On a phone the first card sits
+  // almost two screens down, and nothing else on the page can tell a visitor who
+  // never got there from one who looked and left. Once per page load, however the
+  // grid came into view — scrolled to, or brought by a button. It counts a card
+  // actually on screen: the grid's top edge 120px clear of the bottom, and a card in
+  // it, so an empty grid behind the loading skeleton does not count as seen.
+  const seenGrid = $('#fleet-grid');
+  if (seenGrid && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      if (!entries.some(e => e.isIntersecting) || !seenGrid.querySelector('.card')) return;
+      io.disconnect();
+      track('fleet-seen');
+    }, { rootMargin: '0px 0px -120px 0px' });
+    io.observe(seenGrid);
+  }
+  // The hero's own way down to the bikes (b153), counted apart from scrolling so the
+  // funnel can say which of the two brought people there.
+  const heroBook = $('.hero [data-scroll="fleet"]');
+  if (heroBook) heroBook.addEventListener('click', () => track('hero-book'));
+
   // One listener each on the grid and the tabs rather than one per card: the
   // cards and tabs written into the page at publish time have none of their own,
   // and redrawing a single card must not cost it its click.
