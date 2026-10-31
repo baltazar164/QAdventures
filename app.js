@@ -40,13 +40,24 @@ const CATALOG_API_URL = window.QA_API.url;
 const CATALOG_API_KEY = window.QA_API.key;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1'].includes(location.hostname);
 
+// The site's own root, read off the address app.js was loaded from. The questions
+// page sits one folder down (/faq/, b146), so a path the catalog gives relative to
+// the root — the offline copy, the WeChat code — would miss from there if read
+// against the page. The prerender runs this file through eval, where there is no
+// current script, so the script tag is looked up instead.
+const SITE_ROOT = (function () {
+  const tag = document.currentScript || document.querySelector('script[src*="app.js"]');
+  return tag && tag.src ? new URL('./', tag.src).href : '';
+})();
+function siteUrl(path) { return SITE_ROOT ? new URL(path, SITE_ROOT).href : path; }
+
 // Derived rather than written out again, so repointing is still one constant.
 const BOOK_API_URL = CATALOG_API_URL.replace(/\/qa\/catalog\/?$/, '') + '/qa/book';
 
 // The offline copy, refreshed daily by a GitHub schedule (plan 0007). Same shape
 // as the endpoint's answer, served from this site's own origin — so it is reachable
 // exactly when Odoo is not.
-const FALLBACK_JSON_URL = 'catalog.json';
+const FALLBACK_JSON_URL = siteUrl('catalog.json');
 
 // Client ids are public by design. What is NOT interchangeable is the origin: the
 // address this page is served from must be a registered JavaScript origin on that
@@ -330,7 +341,7 @@ function applyContacts(c) {
     el.hidden = false;
     if (el.hasAttribute('data-qr')) {
       el.setAttribute('data-qr-link', it.href);
-      if (it.qr) el.setAttribute('data-qr', it.qr);
+      if (it.qr) el.setAttribute('data-qr', siteUrl(it.qr));
       el.setAttribute('data-qr-id', it.id || '');
       return;
     }
@@ -384,7 +395,9 @@ function applyBusiness(b) {
 // unchanged keeps its element, so an answer the visitor opened stays open — which
 // is why this is not patchChildren(): an opened <details> carries `open`, and
 // would never compare equal to the same question drawn fresh. An empty list hides
-// the block and its menu entries. A blank line in an answer starts a paragraph.
+// the list and the menu entries. A blank line in an answer starts a paragraph.
+// The home page draws only the first FAQ_SHORT and links to the page that has
+// them all (b146); the questions page draws every one.
 function faqHTML(f) {
   return '<details class="faq__item">' +
     '<summary class="faq__q">' + esc(f.question) + '</summary>' +
@@ -397,8 +410,9 @@ function applyFaq(list) {
   const items = list.filter(f => f && f.question && f.answer);
   const host = $('#faq-list');
   if (host) {
+    const shown = host.hasAttribute('data-faq-short') ? items.slice(0, FAQ_SHORT) : items;
     const t = document.createElement('template');
-    t.innerHTML = items.map(faqHTML).join('');
+    t.innerHTML = shown.map(faqHTML).join('');
     const next = Array.from(t.content.children);
     const cur = Array.from(host.children);
     if (next.length !== cur.length) host.replaceChildren(...next);
@@ -408,37 +422,23 @@ function applyFaq(list) {
       if (was.outerHTML !== n.outerHTML) cur[i].replaceWith(n);
     });
   }
+  // The home page hides its whole block; the questions page keeps its heading
+  // and the "Still have a question?" line, and only the list goes.
+  if (host) host.hidden = !items.length;
   const sec = $('#faq');
   if (sec) sec.hidden = !items.length;
   $$('[data-faq-nav]').forEach(el => { el.hidden = !items.length; });
-  S.faqCount = items.length;
-  renderFaqMore();
+  // "All 12 questions →" under the home page's four, only when there is more to see.
+  const more = $('#faq-more');
+  if (more) {
+    more.hidden = items.length <= FAQ_SHORT;
+    more.textContent = 'All ' + items.length + ' questions →';
+  }
 }
 
-// The first FAQ_SHORT questions show; the rest wait behind "Show all N questions"
-// (owner, 2026-10-24: twelve in a row took too much of the page). They are hidden
-// by a class on the list, not removed: their text stays in the page for robots.
+// How many questions the home page shows (owner, 2026-10-24 and 2026-10-25). The
+// rest are on the questions page, /faq/ (owner, 2026-10-31, b146).
 const FAQ_SHORT = 4;
-
-function renderFaqMore() {
-  const host = $('#faq-list');
-  const btn = $('#faq-more');
-  const n = S.faqCount || 0;
-  const short = n > FAQ_SHORT && !S.faqAll;
-  if (host) host.classList.toggle('is-short', short);
-  if (!btn) return;
-  btn.hidden = n <= FAQ_SHORT;
-  btn.textContent = S.faqAll ? 'Show fewer' : 'Show all ' + n + ' questions';
-  btn.setAttribute('aria-expanded', String(!!S.faqAll));
-}
-
-function toggleFaqMore() {
-  S.faqAll = !S.faqAll;
-  renderFaqMore();
-  // Folded back from the bottom of a long list, the button would land a screen
-  // above the reader; bring it back under the eye.
-  if (!S.faqAll) { const btn = $('#faq-more'); if (btn) btn.scrollIntoView({ block: 'nearest' }); }
-}
 
 // The request itself was made in <head>, long before this file arrived; what is
 // left here is what to do with the answer. Anything that goes wrong on the way —
@@ -1638,9 +1638,6 @@ function init() {
     S.filter = b.getAttribute('data-tab');
     renderCatalog();
   });
-
-  const faqMore = $('#faq-more');
-  if (faqMore) faqMore.addEventListener('click', toggleFaqMore);
 
   fillCurrencySelects();
   wireCopyButtons();
