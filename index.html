@@ -384,14 +384,18 @@ window.QA_API = (function () {
 
 <!-- QUESTIONS — the list on Odoo's Questions & Answers screen (d21 stage 5).
      Hidden here: the publish writes the questions in, and the live catalog keeps
-     them current; with neither, there is nothing to show. -->
+     them current; with neither, there is nothing to show.
+     Only the first four (FAQ_SHORT in app.js); every one of them, and the FAQPage
+     markup, is on the questions page, faq/index.html (b146). The link under the
+     four goes there. "FAQ" in the menu scrolls here, like every other entry, so
+     the menu behaves one way (owner, 2026-11-03). -->
 <section class="faq" id="faq" hidden>
   <div class="sec-head">
     <div class="eyebrow eyebrow--orange">Before you ride</div>
     <h2 class="sec-h2">Questions</h2>
   </div>
-  <div class="faq__list" id="faq-list"></div>
-  <button class="faq__more" id="faq-more" type="button" aria-controls="faq-list" aria-expanded="false" hidden></button>
+  <div class="faq__list" id="faq-list" data-faq-short></div>
+  <a class="faq__more" id="faq-more" href="faq/" hidden></a>
 </section>
 
 <!-- CONTACT -->
