@@ -4,18 +4,17 @@
 # published, and that is what search engines and AI assistants read: the fleet,
 # the prices and the hours. So a price changed in Odoo reaches them only through
 # here. Every three hours (owner, 2026-10-17), and at once from the "Update site
-# now" button. A run that finds nothing changed commits nothing and publishes
+# now" button — both are Odoo pressing that button: since b154 the three-hourly
+# run is an Odoo cron, because GitHub's own schedule dropped about half its runs,
+# while a run started this way begins at once. Hence no `schedule:` below — one
+# alarm clock, not two. A run that finds nothing changed commits nothing and publishes
 # nothing, so the history grows with the shop's edits, not with the clock.
 
 name: Refresh the offline catalog
 
 on:
-  schedule:
-    # Every three hours at twenty past — 02:20 UTC is 10:20 in Cebu. Off the hour on
-    # purpose: GitHub calls the top of the hour its busiest time, and delays or
-    # drops scheduled runs then.
-    - cron: '20 */3 * * *'
-  # Also started by the "Update site now" button in Odoo (d21 stage 1). The
+  # Started only by the "Update site now" button in Odoo (d21 stage 1), pressed
+  # by a person or by Odoo's three-hourly cron. The
   # key Odoo holds for that may only start and read jobs, which is safe for one
   # reason: this job takes NO inputs, so whoever starts it passes nothing in and
   # everything it writes comes from Odoo's catalog. Never add `inputs:` here —
@@ -81,9 +80,8 @@ jobs:
   # The watchdog (d21 stage 1): a check on healthchecks.io that expects to hear
   # from this job every three hours and mails the owner and Derek after seven
   # quiet ones — two missed runs and an hour's grace (d21 stage 3). A
-  # failed run says so at once instead of waiting out the day — which also catches
-  # GitHub switching the schedule off after 60 quiet days (see the note at the
-  # bottom). No secret, no ping: a fork stays quiet. "Success" means the copy was
+  # failed run says so at once; a run that never starts — Odoo down, its key
+  # refused — is caught by the silence. No secret, no ping: a fork stays quiet. "Success" means the copy was
   # refreshed and, if it changed, published — a publish skipped for having nothing
   # to send counts as success.
   watchdog:
@@ -105,13 +103,8 @@ jobs:
           fi
           curl -fsS -m 10 --retry 3 "$PING_URL$suffix" > /dev/null || echo "watchdog unreachable"
 
-# Two things to know before relying on this.
+# One thing to know before relying on this.
 #
 # It cannot work until the server has a database with published models — plan 0006
 # step 4. Until then every run will refuse to write, which is the correct outcome
 # and looks like a green job that did nothing.
-#
-# GitHub disables scheduled workflows in a public repository after 60 days without
-# repository activity, and sends one email when it does. Whether this job's own
-# commits count as activity has NOT been verified — check it once the schedule has
-# been live for a couple of months, because the failure mode is silence.
