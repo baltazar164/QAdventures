@@ -154,7 +154,7 @@ window.QA_API = (function () {
       <span class="nav__item" data-scroll="fleet">Fleet</span>
       <span class="nav__item" data-scroll="how">How it works</span>
       <span class="nav__item" data-scroll="story">Why us</span>
-      <a class="nav__item" href="faq/" data-faq-nav hidden>FAQ</a>
+      <span class="nav__item" data-scroll="faq" data-faq-nav hidden>FAQ</span>
       <span class="nav__item" data-scroll="contact">Contact</span>
     </nav>
     <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
@@ -171,7 +171,7 @@ window.QA_API = (function () {
       <span class="mobnav__item" data-scroll="fleet">Fleet</span>
       <span class="mobnav__item" data-scroll="how">How it works</span>
       <span class="mobnav__item" data-scroll="story">Why us</span>
-      <a class="mobnav__item" href="faq/" data-faq-nav hidden>FAQ</a>
+      <span class="mobnav__item" data-scroll="faq" data-faq-nav hidden>FAQ</span>
       <span class="mobnav__item" data-scroll="contact">Contact</span>
     </div>
   </div>
@@ -387,7 +387,8 @@ window.QA_API = (function () {
      them current; with neither, there is nothing to show.
      Only the first four (FAQ_SHORT in app.js); every one of them, and the FAQPage
      markup, is on the questions page, faq/index.html (b146). The link under the
-     four goes there, and so does "FAQ" in the menu. -->
+     four goes there. "FAQ" in the menu scrolls here, like every other entry, so
+     the menu behaves one way (owner, 2026-11-03). -->
 <section class="faq" id="faq" hidden>
   <div class="sec-head">
     <div class="eyebrow eyebrow--orange">Before you ride</div>
