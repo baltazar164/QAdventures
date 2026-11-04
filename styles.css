@@ -38,6 +38,9 @@ input, button, select, textarea { font-family: inherit; }
 @keyframes sheetIn  { from { opacity:0; transform:translateY(24px) scale(.98); } to { opacity:1; transform:none; } }
 
 .page { max-width: 100%; overflow-x: hidden; }
+/* Arriving from the questions page on /#fleet or /#contact (b146), the section's
+   top lands under the sticky header; the same 68px that scrollToId() leaves. */
+section[id] { scroll-margin-top: 68px; }
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 /* shared -------------------------------------------------------------- */
@@ -78,6 +81,12 @@ input, button, select, textarea { font-family: inherit; }
 
 .nav { margin-left: auto; display: flex; align-items: center; gap: 26px; }
 .nav__item { font-size: 14px; font-weight: 600; color: #4A443B; cursor: pointer; }
+/* The menu entries that are links (FAQ, and every entry on the questions page,
+   b146) keep the colour of the ones that are not; the page under a link of its own
+   is marked, as you are on it. */
+a.nav__item:hover { color: var(--ink); }
+.nav__item[aria-current="page"] { color: var(--orange); }
+a.brand, a.brand:hover { color: inherit; }
 
 .burger { display: none; margin-left: auto; align-items: center; justify-content: center; flex-direction: column; gap: 4px; width: 44px; height: 44px; border: 1.5px solid var(--line-2); border-radius: 11px; background: #fff; cursor: pointer; flex: none; }
 .burger span { width: 18px; height: 2px; background: var(--ink); border-radius: 2px; }
@@ -96,6 +105,8 @@ input, button, select, textarea { font-family: inherit; }
 .mobnav__scrim { position: fixed; inset: 0; z-index: 35; }
 .mobnav__sheet { position: relative; z-index: 36; background: var(--bg); border-top: 1px solid var(--line); padding: 8px 18px 14px; display: flex; flex-direction: column; }
 .mobnav__item { padding: 14px 4px; font-size: 15.5px; font-weight: 700; color: var(--ink); cursor: pointer; border-bottom: 1px solid rgba(27,23,18,.06); }
+a.mobnav__item:hover { color: var(--ink); }
+.mobnav__item[aria-current="page"] { color: var(--orange); }
 
 /* hero ---------------------------------------------------------------- */
 
@@ -386,6 +397,10 @@ textarea.inp { padding: 11px 14px; font-family: inherit; resize: vertical; }
    question on a press, by the browser alone (<details>). */
 .faq { max-width: 1200px; margin: 0 auto; padding: 50px 24px 10px; }
 .faq[hidden] { display: none; }
+/* The questions page (faq/index.html, b146): the block is the page, so it starts
+   nearer the header and runs to the "Still have a question?" line. */
+.faq--page { padding: 40px 24px 50px; }
+.faq__list[hidden] { display: none; }
 /* Two columns where two 420px rows fit side by side, one below that. `start`, so
    an answer opened in one column does not stretch the question beside it. */
 .faq__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr)); align-items: start; gap: 10px; margin-top: 28px; }
@@ -397,12 +412,16 @@ textarea.inp { padding: 11px 14px; font-family: inherit; resize: vertical; }
 .faq__a { padding: 0 20px 16px; font-size: 15px; line-height: 1.6; color: var(--body); }
 .faq__a p { margin: 0; }
 .faq__a p + p { margin-top: 8px; }
-/* Past the first four (FAQ_SHORT in app.js), until "Show all" is pressed. The rows
-   stay in the page. */
-.faq__list.is-short > .faq__item:nth-child(n+5) { display: none; }
-.faq__more { display: block; margin: 16px auto 0; padding: 10px 20px; background: none; border: 1px solid var(--line-2); border-radius: 999px; color: var(--orange); font-weight: 700; font-size: 14.5px; cursor: pointer; }
+/* "All 12 questions →" under the home page's four: a link to the questions page
+   drawn as the button it replaced (b146). */
+.faq__more { display: block; width: fit-content; margin: 16px auto 0; padding: 10px 20px; background: none; border: 1px solid var(--line-2); border-radius: 999px; color: var(--orange); font-weight: 700; font-size: 14.5px; cursor: pointer; }
 .faq__more:hover { border-color: var(--orange); }
 .faq__more[hidden] { display: none; }
+/* Under the list on the questions page: whoever did not find the answer asks it. */
+.faq__ask { margin-top: 44px; text-align: center; }
+.faq__ask-h { font-family: var(--display); font-weight: 700; font-size: clamp(22px,3vw,28px); letter-spacing: -.02em; margin: 0; }
+.faq__ask-p { margin: 8px 0 0; font-size: 15.5px; color: var(--body); }
+.faq__ask .chans { justify-content: center; margin-top: 18px; }
 
 /* contact ------------------------------------------------------------- */
 
@@ -552,6 +571,7 @@ a.citem:hover { color: inherit; }
 
   .how { padding: 40px 20px; }
   .faq { padding: 40px 20px 0; }
+  .faq--page { padding: 28px 20px 40px; }
   .faq__q { font-size: 16px; padding: 14px 44px 14px 16px; }
   .faq__q::after { right: 16px; }
   .faq__a { padding: 0 16px 14px; }

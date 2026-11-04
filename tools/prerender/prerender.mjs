@@ -16,7 +16,9 @@
 //     pressed before Odoo answers opens straight away;
 //   - completes the business card for search engines from Business Settings,
 //     and puts the description from there into the page's own description;
-//   - adds the questions and answers as FAQPage markup (d21 stage 5).
+// And to <folder>/faq/index.html, the questions page (b146): draws every
+// question there with the same functions, and adds them as FAQPage markup.
+// The home page keeps its first four, drawn the same way.
 // And writes <folder>/sitemap.xml and <folder>/llms.txt.
 //
 // Exit codes: 0 — written and checked. 1 — a check failed or something broke;
@@ -37,27 +39,36 @@ function fail(why) { console.error('[prerender] not publishing:', why); process.
 const dir = process.argv[2];
 if (!dir) fail('usage: node tools/prerender/prerender.mjs <site folder>');
 
-const html = await readFile(join(dir, 'index.html'), 'utf8');
 const appJs = await readFile(join(dir, 'app.js'), 'utf8');
 const seedText = await readFile(join(dir, 'catalog.json'), 'utf8');
 
-const dom = new JSDOM(html, { url: SITE, runScripts: 'outside-only' });
-const { window } = dom;
-const doc = window.document;
+// Draws one page of the site from the copy, with app.js run inside it. `url` is
+// the address the page is published under, so its relative addresses resolve as
+// they will in a browser.
+async function draw(file, url) {
+  const html = await readFile(join(dir, file), 'utf8');
+  const dom = new JSDOM(html, { url, runScripts: 'outside-only' });
+  const { window } = dom;
+  const doc = window.document;
 
-// app.js listens for DOMContentLoaded to start fetching the live catalog. Waiting
-// until the document has finished loading means that listener is registered
-// after the event, and never runs here.
-if (doc.readyState !== 'complete') await new Promise(r => window.addEventListener('load', r));
+  // app.js listens for DOMContentLoaded to start fetching the live catalog. Waiting
+  // until the document has finished loading means that listener is registered
+  // after the event, and never runs here.
+  if (doc.readyState !== 'complete') await new Promise(r => window.addEventListener('load', r));
 
-// Read at the top of app.js. Nothing is fetched: init() never runs here.
-window.QA_API = { url: 'https://api.cebuscooterrental.com/qa/catalog', key: '', catalog: new window.Promise(() => {}) };
-// app.js is strict code, and strict code run through eval keeps its declarations
-// to itself — so the one function needed is handed out from inside the same run.
-window.eval(appJs + '\n;window.__qaPrerender = prerender;');
+  // Read at the top of app.js. Nothing is fetched: init() never runs here.
+  window.QA_API = { url: 'https://api.cebuscooterrental.com/qa/catalog', key: '', catalog: new window.Promise(() => {}) };
+  // app.js is strict code, and strict code run through eval keeps its declarations
+  // to itself — so the one function needed is handed out from inside the same run.
+  window.eval(appJs + '\n;window.__qaPrerender = prerender;');
 
-const seed = window.JSON.parse(seedText);
-if (!window.__qaPrerender(seed)) fail('catalog.json has no models');
+  const seed = window.JSON.parse(seedText);
+  if (!window.__qaPrerender(seed)) fail('catalog.json has no models');
+  return { dom, doc };
+}
+
+const { dom, doc } = await draw('index.html', SITE);
+const { dom: faqDom, doc: faqDoc } = await draw(join('faq', 'index.html'), SITE + 'faq/');
 
 const skel = doc.getElementById('fleet-skel');
 if (skel) skel.remove();
@@ -73,15 +84,18 @@ if (!appTag) fail('index.html has no app.js script tag');
 appTag.parentNode.insertBefore(block, appTag);
 
 completeBusinessCard(doc.getElementById('ld-business'), JSON.parse(seedText));
-writeFaqCard(doc, JSON.parse(seedText));
+writeFaqCard(faqDoc, JSON.parse(seedText));
 describePage(doc, JSON.parse(seedText));
 const llms = llmsTxt(JSON.parse(seedText));
 check(doc, JSON.parse(seedText), llms);
+checkFaqPage(faqDoc, JSON.parse(seedText));
 
 await writeFile(join(dir, 'index.html'), dom.serialize());
+await writeFile(join(dir, 'faq', 'index.html'), faqDom.serialize());
 await writeFile(join(dir, 'sitemap.xml'), sitemap());
 await writeFile(join(dir, 'llms.txt'), llms);
-log('wrote index.html with ' + JSON.parse(seedText).models.length + ' models, sitemap.xml and llms.txt');
+log('wrote index.html with ' + JSON.parse(seedText).models.length + ' models, faq/index.html with ' +
+  faqList(JSON.parse(seedText)).length + ' questions, sitemap.xml and llms.txt');
 
 // The two lines under the site in Google's results (d21 stage 4). From Odoo when
 // the copy carries `business`; emptied there, the tag goes, and Google writes its
@@ -171,9 +185,10 @@ function faqList(data) {
     .map(f => ({ question: String(f.question).trim(), answer: String(f.answer).trim() }));
 }
 
-// The same questions as FAQPage markup (d21 stage 5). Written here only: the
-// live catalog redraws the questions on screen but not this block, which robots
-// read from the published page. No questions, no block.
+// The same questions as FAQPage markup (d21 stage 5), on the questions page
+// since b146 — the page that is about them. Written here only: the live catalog
+// redraws the questions on screen but not this block, which robots read from the
+// published page. No questions, no block.
 function writeFaqCard(doc, data) {
   const faq = faqList(data);
   if (!faq.length) return;
@@ -189,7 +204,8 @@ function writeFaqCard(doc, data) {
   el.type = 'application/ld+json';
   el.id = 'ld-faq';
   el.textContent = '\n' + JSON.stringify(card, null, 2).replace(/</g, '\\u003c') + '\n';
-  const after = doc.getElementById('ld-business');
+  const after = doc.querySelector('link[rel="canonical"]');
+  if (!after) fail('faq/index.html has no canonical link');
   after.parentNode.insertBefore(el, after.nextSibling);
 }
 
@@ -290,24 +306,45 @@ function check(doc, data, llms) {
     const price = '₱' + Math.round(m.price).toLocaleString('en-US');
     if (!llms.includes('- ' + m.name) || !llms.includes(price)) fail('llms.txt has no ' + m.name + ' at ' + price);
   }
+  // The home page: the first four questions, and the link to the rest (b146).
   const faq = faqList(data);
   const shown = doc.getElementById('faq-list');
-  const ldFaq = doc.getElementById('ld-faq');
-  const marked = ldFaq ? JSON.parse(ldFaq.textContent).mainEntity.map(q => q.name) : [];
   if (faq.length && doc.getElementById('faq').hidden) fail('the questions block is hidden');
+  const short = faq.slice(0, 4);
+  if (!shown || shown.children.length !== short.length) fail('the home page does not show the first ' + short.length + ' questions');
+  for (const f of short) {
+    if (!shown.textContent.includes(f.question)) fail('the home page has no question "' + f.question + '"');
+  }
+  const more = doc.getElementById('faq-more');
+  if (faq.length > 4 && (!more || more.hidden || more.getAttribute('href') !== 'faq/')) fail('the home page has no link to the questions page');
+  if (doc.getElementById('ld-faq')) fail('the FAQ markup is on the home page');
   for (const f of faq) {
-    if (!shown || !shown.textContent.includes(f.question)) fail('the page has no question "' + f.question + '"');
-    if (!marked.includes(f.question)) fail('the FAQ markup has no question "' + f.question + '"');
     if (!llms.includes('### ' + f.question)) fail('llms.txt has no question "' + f.question + '"');
   }
 }
 
-// One page. lastmod is the publish itself: the site is published when what it
-// says has changed, so the day of the publish is the day the page last changed.
+// The questions page (b146): every question shown, and every one in its FAQPage
+// markup.
+function checkFaqPage(doc, data) {
+  const faq = faqList(data);
+  const shown = doc.getElementById('faq-list');
+  const ldFaq = doc.getElementById('ld-faq');
+  const marked = ldFaq ? JSON.parse(ldFaq.textContent).mainEntity.map(q => q.name) : [];
+  if (faq.length && (!shown || shown.hidden)) fail('the questions page shows no questions');
+  if (shown && shown.children.length !== faq.length) fail('the questions page shows ' + shown.children.length + ' of ' + faq.length + ' questions');
+  for (const f of faq) {
+    if (!shown.textContent.includes(f.question)) fail('the questions page has no question "' + f.question + '"');
+    if (!marked.includes(f.question)) fail('the FAQ markup has no question "' + f.question + '"');
+  }
+}
+
+// Two pages since b146: the home page and the questions page. lastmod is the
+// publish itself: the site is published when what it says has changed, so the day
+// of the publish is the day the pages last changed.
 function sitemap() {
   const day = new Date().toISOString().slice(0, 10);
   return '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    '  <url><loc>' + SITE + '</loc><lastmod>' + day + '</lastmod></url>\n' +
+    [SITE, SITE + 'faq/'].map(u => '  <url><loc>' + u + '</loc><lastmod>' + day + '</lastmod></url>\n').join('') +
     '</urlset>\n';
 }
