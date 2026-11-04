@@ -80,7 +80,7 @@ const S = {
   // live card whose picture is still that one keeps the copy the page already
   // shows, so the swap to live data does not reload a single picture.
   seedPhotos: {},
-  selected: null, photoIndex: 0,
+  selected: null, photoIndex: 0, quoteSeen: false,
   pickup: '', dropoff: '', step: 'form', color: '',
   modalCalOpen: false, modalCursor: '',
   currency: 'PHP', mobileMenuOpen: false,
@@ -959,6 +959,7 @@ function openModal(bike) {
   // with somebody else's error.
   S.selected = bike;
   S.photoIndex = 0;
+  S.quoteSeen = false;
   S.step = 'form';
   // Colours belong to a card; the last bike's choice must not ride along.
   // One offered colour is not a choice — it is a fact, stated pre-picked.
@@ -1275,6 +1276,16 @@ function updateModal() {
   const pwk = $('#m-pwk');
   if (pwk) pwk.textContent = peso(S.selected.weekly) + '/wk · ' + peso(S.selected.monthly) + '/mo';
   updateQuote();
+  // Whether a visitor got as far as the trip's total (b157). The price per day is
+  // already on the card; the total only appears here, once both dates are in, so
+  // this is what tells somebody who left at the total from somebody who never
+  // reached it. Once per opening of the form, however many times the dates change,
+  // and also when the dates ride along from the last bike: the total is on screen
+  // either way.
+  if (days() > 0 && !S.quoteSeen) {
+    S.quoteSeen = true;
+    track('quote-seen', { bike: S.selected.name });
+  }
   updateActions();
 }
 
