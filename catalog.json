@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-11-21T03:23:06Z",
+  "refreshed_at": "2026-11-22T03:23:26Z",
   "currency": "PHP",
   "categories": [
     {
@@ -190,7 +190,7 @@
       "rate": 0.012352224039804361
     }
   ],
-  "rates_date": "2026-11-21",
+  "rates_date": "2026-11-22",
   "models": [
     {
       "id": "adv350",
@@ -240,8 +240,8 @@
       ],
       "colors": [
         {
-          "name": "Grey",
-          "hex": "#7C7F82"
+          "name": "BLACK",
+          "hex": "#000000"
         }
       ],
       "overview": "",
