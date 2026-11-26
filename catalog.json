@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-11-25T03:23:01Z",
+  "refreshed_at": "2026-11-26T03:23:10Z",
   "currency": "PHP",
   "categories": [
     {
@@ -190,7 +190,7 @@
       "rate": 0.012347066965639447
     }
   ],
-  "rates_date": "2026-11-25",
+  "rates_date": "2026-11-26",
   "models": [
     {
       "id": "adv350",
